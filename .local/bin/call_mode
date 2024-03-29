@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Function to get the current state
+get_current_state() {
+    profile=$(pactl list cards | grep 'Active Profile' | cut -d ' ' -f 3)
+    if [ "$profile" = "headset-head-unit-msbc" ]; then
+        echo "on"
+    else
+        echo "off"
+    fi
+}
+
+# Toggle function
+toggle() {
+    current_state=$(get_current_state)
+    if [ "$current_state" = "on" ]; then
+        new_state="off"
+    else
+        new_state="on"
+    fi
+    echo "$new_state"
+}
+
+# Check if no arguments provided, toggle if there is one argument
+if [ $# -eq 0 ]; then
+    new_state=$(toggle)
+elif [ $# -eq 1 ]; then
+    if [ "$1" = "toggle" ]; then
+        new_state=$(toggle)
+    else
+        new_state="$1"
+    fi
+else
+    echo "Usage: $0 [on|off|toggle]"
+    exit 1
+fi
+
+# Check if the argument is either "on" or "off"
+if [ "$new_state" != "on" ] && [ "$new_state" != "off" ]; then
+    echo "Invalid argument. Please provide 'on' or 'off'."
+    exit 1
+fi
+
+# Perform actions based on the argument
+if [ "$new_state" = "on" ]; then
+    echo "Turning call mode ON..."
+    pactl set-card-profile bluez_card.20_15_82_62_10_E8 headset-head-unit-msbc
+    twmnc --bg green --fg white -c "call mode enabled"
+else
+    echo "Turning call mode OFF..."
+    pactl set-card-profile bluez_card.20_15_82_62_10_E8 a2dp-sink
+    twmnc --bg red --fg black -c "call mode disabled"
+fi
+
