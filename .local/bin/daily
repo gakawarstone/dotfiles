@@ -1,0 +1,2 @@
+#!/bin/bash
+nvim "/home/gws/Notes/Daily/$(date +%Y-%m-%d).md"
