@@ -2,8 +2,8 @@
 
 if [ "$1" == "root" ]; then
     xwd -root -out ~/Images/screenshot.xwd
-else
-    xwd -out ~/Images/screenshot.xwd
+elif [ "$1" == "area" ]; then
+    import ~/Images/screenshot.xwd
 fi
 
 convert ~/Images/screenshot.xwd ~/Images/screenshot.jpg
