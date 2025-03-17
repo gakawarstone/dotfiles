@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "$1" == "next" ]; then
+    adb shell input swipe 500 1500 500 500
+elif [ "$1" == "area" ]; then
+    adb shell input swipe 500 500 500 1500
+elif [ "$1" == "stop" ]; then
+    adb shell input keyevent KEYCODE_SPACE
+elif [ "$1" == "play" ]; then
+    adb shell input keyevent KEYCODE_SPACE
+elif [ "$1" == "like" ]; then
+    adb shell input tap 500 1000 && adb shell input tap 500 1000
+fi
