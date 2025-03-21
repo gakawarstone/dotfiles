@@ -31,4 +31,4 @@ mkdir bin
 ln -s $(pwd)/build/dwm/dwm $(pwd)/bin/dwm
 ln -s $(pwd)/build/dmenu/dmenu $(pwd)/bin/dmenu
 ln -s $(pwd)/build/slstatus/slstatus $(pwd)/bin/slstatus
-ln -s $(pwd)/build/slstatus/st $(pwd)/bin/st
+ln -s $(pwd)/build/st/st $(pwd)/bin/st
