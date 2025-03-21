@@ -2,6 +2,11 @@ clean:
 	rm -rf build
 	rm -rf bin
 
+deps:
+	sudo pacman -S --noconfirm libxft libxinerama
+
 .PHONY: all clean build
-all:
+build:
 	sh build.sh
+
+all: clean deps build
