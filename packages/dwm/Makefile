@@ -3,7 +3,7 @@ clean:
 	rm -rf bin
 
 deps:
-	sudo pacman -S --noconfirm libxft libxinerama
+	sudo pacman -S --noconfirm libxft libxinerama python-pywal16
 
 .PHONY: all clean build
 build:
