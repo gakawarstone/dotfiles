@@ -64,6 +64,19 @@ def install_configs(
         _run_cmd(cmd)
 
 
+def install_dwm():
+    cmd = ["make", "all"]
+    dwm_package_path = Path(os.getcwd()) / "packages" / "dwm"
+    print(dwm_package_path.as_posix(), *cmd)
+    subprocess.run(cmd, cwd=dwm_package_path)
+    dwm_package_bins_path = dwm_package_path / "bin"
+    _link_bin_file(dwm_package_bins_path / "dwm", BIN_FILES_PATH / "dwm")
+    _link_bin_file(dwm_package_bins_path / "dmenu", BIN_FILES_PATH / "dmenu")
+    _link_bin_file(dwm_package_bins_path / "slstatus", BIN_FILES_PATH / "slstatus")
+    _link_bin_file(dwm_package_bins_path / "st", BIN_FILES_PATH / "st")
+
+
 if __name__ == "__main__":
     install_bins()
     install_configs()
+    install_dwm()
