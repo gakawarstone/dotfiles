@@ -11,7 +11,6 @@ INCLUDED_BINS = [
 ]
 
 INCLUDED_CONFIGS = [
-    ConfigDirLinkingInfo("nvim-mini"),
     ConfigDirLinkingInfo("tmux"),
     ConfigDirLinkingInfo("alacritty"),
     ConfigDirLinkingInfo("dunst"),
