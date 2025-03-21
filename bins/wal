@@ -1,1 +1,3 @@
-uvx --from pywal16 wal
+#!/bin/bash
+
+uvx --from pywal16 wal "$@"
