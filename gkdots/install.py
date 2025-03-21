@@ -72,6 +72,7 @@ def install_dwm():
     dwm_package_bins_path = dwm_package_path / "bin"
     _link_bin_file(dwm_package_bins_path / "dwm", BIN_FILES_PATH / "dwm")
     _link_bin_file(dwm_package_bins_path / "dmenu", BIN_FILES_PATH / "dmenu")
+    _link_bin_file(dwm_package_bins_path / "dmenu_run", BIN_FILES_PATH / "dmenu_run")
     _link_bin_file(dwm_package_bins_path / "slstatus", BIN_FILES_PATH / "slstatus")
     _link_bin_file(dwm_package_bins_path / "st", BIN_FILES_PATH / "st")
 

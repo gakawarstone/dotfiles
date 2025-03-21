@@ -30,5 +30,6 @@ cd ../..
 mkdir bin
 ln -s $(pwd)/build/dwm/dwm $(pwd)/bin/dwm
 ln -s $(pwd)/build/dmenu/dmenu $(pwd)/bin/dmenu
+ln -s $(pwd)/build/dmenu/dmenu_run $(pwd)/bin/dmenu_run
 ln -s $(pwd)/build/slstatus/slstatus $(pwd)/bin/slstatus
 ln -s $(pwd)/build/st/st $(pwd)/bin/st
