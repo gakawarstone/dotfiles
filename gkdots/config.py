@@ -8,6 +8,7 @@ BIN_FILES_PATH = Path("~/.local/bin/").expanduser()
 INCLUDED_BINS = [
     BinFileLinkingInfo("daily", "daily"),
     BinFileLinkingInfo("screen", "screen"),
+    BinFileLinkingInfo("wal", "wal"),
 ]
 
 INCLUDED_CONFIGS = [
