@@ -37,6 +37,10 @@ def install_bins(
     included_files: list[BinFileLinkingInfo] = INCLUDED_BINS,
     path_to_install: Path = BIN_FILES_PATH,
 ):
+    if not os.path.isdir(path_to_install):
+        if input(f"Create {path_to_install}:") == "y":
+            os.makedirs(path_to_install)
+
     for file_info in included_files:
         file_path = Path(os.getcwd()) / "bins" / file_info.file_name
         target_path = path_to_install / file_info.target_file_name
