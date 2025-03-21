@@ -13,4 +13,4 @@ clean:
 	rm fonts/*
 
 init:
-	sudo pacman -S python
+	sudo pacman -S python stow
