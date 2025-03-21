@@ -1,3 +1,4 @@
+# NOTE: deprecated
 update_fonts:
 	bash ./scripts/update_fonts.sh
 
@@ -10,3 +11,6 @@ fonts:
 
 clean:
 	rm fonts/*
+
+init:
+	sudo pacman -S python
