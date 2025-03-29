@@ -1,0 +1,13 @@
+[opener]
+nvim = [
+  { run = 'nvim "$@"', block = true, desc = "Neovim", for = "unix" }
+]
+zathura = [
+  { run = 'zathura "$@"', desc = "zathura", block = true, for = "unix" }
+]
+
+[open]
+rules = [
+  { mime = "text/*", use = "nvim" },
+  { mime = "application/pdf", use = "zathura" },
+]
