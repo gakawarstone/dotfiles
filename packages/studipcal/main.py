@@ -1,20 +1,25 @@
-import sys
-from icalendar import Calendar
 from datetime import datetime, date, timedelta
+from urllib.request import urlopen
+from pathlib import Path
+
+from icalendar import Calendar
 import pytz
 
+STUIP_CALENDER_URL = open(
+    Path("~/dotfiles/.secrets/packages/studipcal/calender_url").expanduser()
+).read()
 
-def get_events_today(ics_file):
-    # Get current time in local timezone
-    local_now = datetime.now().astimezone() + timedelta(days=4)
+
+def get_events_today():
+    local_now = datetime.now().astimezone() + timedelta(days=1)
     local_tz = local_now.tzinfo
     today_date = local_now.date()
     start_of_today = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_today = start_of_today + timedelta(days=1)
 
-    # Read the ics file
-    with open(ics_file, "rb") as f:
-        cal = Calendar.from_ical(f.read())
+    with urlopen(STUIP_CALENDER_URL) as response:
+        data = response.read().decode("utf-8")
+        cal = Calendar.from_ical(data)
 
     events_today = []
 
@@ -82,11 +87,7 @@ def format_output(event: dict) -> str:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python ics_parser.py <path_to_ics_file>")
-        sys.exit(1)
-
-    events = get_events_today(sys.argv[1])
+    events = get_events_today()
 
     if not events:
         print("No events today.")
