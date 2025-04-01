@@ -1,0 +1,13 @@
+diff --git a/configs/alacritty/.config/alacritty/alacritty.toml b/configs/alacritty/.config/alacritty/alacritty.toml
+index 4b6bf03..dd280d5 100644
+--- a/configs/alacritty/.config/alacritty/alacritty.toml
++++ b/configs/alacritty/.config/alacritty/alacritty.toml
+@@ -4,7 +4,7 @@ general.import = [ "~/.cache/wal/colors-alacritty.toml" ]
+ opacity = 0.9
+ 
+ [font]
+-size = 16.1
++size = 11
+ 
+ [font.bold]
+ family = "MonaspiceKr Nerd Font"
