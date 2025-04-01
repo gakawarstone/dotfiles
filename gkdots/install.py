@@ -33,6 +33,22 @@ def _link_bin_file(file_path: Path, target_path: Path):
     _run_cmd(cmd)
 
 
+def _install_config(
+    config: ConfigDirLinkingInfo,
+    configs_dir: Path = Path("configs/"),
+    target_dir=Path.home(),
+):
+    cmd = [
+        "stow",
+        "-d",
+        configs_dir.as_posix(),
+        "-t",
+        target_dir.as_posix(),
+        config.name,
+    ]
+    _run_cmd(cmd)
+
+
 def install_bins(
     included_files: list[BinFileLinkingInfo] = INCLUDED_BINS,
     path_to_install: Path = BIN_FILES_PATH,
@@ -53,15 +69,7 @@ def install_configs(
     target_dir=Path.home(),
 ):
     for config in included_configs:
-        cmd = [
-            "stow",
-            "-d",
-            configs_dir.as_posix(),
-            "-t",
-            target_dir.as_posix(),
-            config.name,
-        ]
-        _run_cmd(cmd)
+        _install_config(config, configs_dir, target_dir)
 
 
 def install_dwm():
@@ -77,7 +85,16 @@ def install_dwm():
     _link_bin_file(dwm_package_bins_path / "st", BIN_FILES_PATH / "st")
 
 
+def install_tmux():
+    _install_config(ConfigDirLinkingInfo("tmux"))
+    tmux_config_path = Path().home() / ".config" / "tmux"
+    cmd = ["make", "all"]
+    print(tmux_config_path.as_posix(), *cmd)
+    subprocess.run(cmd, cwd=tmux_config_path)
+
+
 if __name__ == "__main__":
     install_bins()
     install_configs()
+    install_tmux()
     install_dwm()
