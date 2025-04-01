@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Read battery percentage from sys
+battery_percent=$(cat /sys/class/power_supply/BAT1/capacity)
+
+# Check if battery percentage is less than 20
+if [ "$battery_percent" -lt 20 ]; then
+    twmnc --bg red --fg black -c "battery low"
+fi
