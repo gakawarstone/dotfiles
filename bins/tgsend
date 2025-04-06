@@ -1,0 +1,3 @@
+#!/bin/bash
+
+uvx git+https://github.com/gakawarstone/tgsend#egg=tgsend "$@"
