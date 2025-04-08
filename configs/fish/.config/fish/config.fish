@@ -2,8 +2,17 @@ set -x PATH /home/gws/.local/bin $PATH
 set -x PATH /home/gws/.cargo/bin $PATH
 set -x PATH /home/gws/.npm-global/bin $PATH
 
-function fish_greeting
-end
+set fish_greeting
+
+export EDITOR=nvim
+
+alias c clear
+alias n nvim
+alias py python3
+alias xo xdg-open
+alias wgu "sudo wg-quick up wg0"
+alias wgd "sudo wg-quick down wg0"
+alias clip "xclip -selection clipboard"
 
 function a
     set tmp (mktemp -t "yazi-cwd.XXXXXX")
@@ -14,4 +23,5 @@ function a
     rm -f -- "$tmp"
 end
 
+source $HOME/.env.fish
 zoxide init fish | source
