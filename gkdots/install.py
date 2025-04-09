@@ -22,7 +22,7 @@ def _run_cmd(cmd: list[str], cwd: Path | None = None):
 
 def _link_bin_file(file_path: Path, target_path: Path):
     if os.path.exists(target_path) or os.path.islink(target_path):
-        if target_path.resolve() == file_path:
+        if target_path.resolve() == file_path.resolve():
             print(f"Link from {file_path} to {target_path} exist")
             return
 
