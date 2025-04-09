@@ -6,10 +6,15 @@ from config import INCLUDED_BINS, BIN_FILES_PATH, INCLUDED_CONFIGS
 from _types import BinFileLinkingInfo, ConfigDirLinkingInfo
 
 
-def _run_cmd(cmd: list[str]):
+def _run_cmd(cmd: list[str], cwd: Path | None = None):
+    if not cwd:
+        cwd = Path(os.getcwd())
+    else:
+        print(cwd.as_posix(), end=" ")
+
     try:
         print(*cmd)
-        subprocess.run(cmd, check=True)
+        subprocess.run(cmd, cwd=cwd, check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {e}")
         raise
@@ -75,8 +80,8 @@ def install_configs(
 def install_dwm():
     cmd = ["make", "all"]
     dwm_package_path = Path(os.getcwd()) / "packages" / "dwm"
-    print(dwm_package_path.as_posix(), *cmd)
-    subprocess.run(cmd, cwd=dwm_package_path)
+    _run_cmd(cmd, dwm_package_path)
+
     dwm_package_bins_path = dwm_package_path / "bin"
     _link_bin_file(dwm_package_bins_path / "dwm", BIN_FILES_PATH / "dwm")
     _link_bin_file(dwm_package_bins_path / "dmenu", BIN_FILES_PATH / "dmenu")
@@ -89,8 +94,7 @@ def install_tmux():
     _install_config(ConfigDirLinkingInfo("tmux"))
     tmux_config_path = Path().home() / ".config" / "tmux"
     cmd = ["make", "all"]
-    print(tmux_config_path.as_posix(), *cmd)
-    subprocess.run(cmd, cwd=tmux_config_path)
+    _run_cmd(cmd, tmux_config_path)
 
 
 if __name__ == "__main__":
