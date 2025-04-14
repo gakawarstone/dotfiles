@@ -11,3 +11,13 @@ rules = [
   { mime = "text/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
 ]
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*"
+run  = "git"
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*/"
+run  = "git"
