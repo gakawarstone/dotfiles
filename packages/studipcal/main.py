@@ -45,6 +45,7 @@ def get_events_today():
                             "all_day": True,
                             "start": dtstart,
                             "end": dtend,
+                            "location": location,
                         }
                     )
             else:
@@ -66,6 +67,7 @@ def get_events_today():
                             "all_day": False,
                             "start": event_start,
                             "end": event_end,
+                            "location": location,
                         }
                     )
 
@@ -74,16 +76,13 @@ def get_events_today():
 
 def format_output(event: dict) -> str:
     start_time = event["start"].strftime("%H:%M")
-    end_time = event["end"].strftime("%H:%M")
     summary = event["summary"]
     summary = summary.split("Vorlesung und Labor")[-1]
     summary = summary.split(":")[-1]
     summary = summary.split("- (")[0]
     summary = summary.split("(")[0].strip()
     summary = summary.replace("Vorlesung", "")
-    # summary = summary.split("-")[0].strip()
-    # return f"{event['category']}: {summary} ({start_time} - {end_time})"
-    return f"{start_time} {event['category']}: {summary}"
+    return f"{start_time} {event['location']} {event['category']}: {summary}"
 
 
 if __name__ == "__main__":
@@ -92,6 +91,5 @@ if __name__ == "__main__":
     if not events:
         print("No events today.")
     else:
-        # print("Today's Events:")
         for event in events:
             print(format_output(event))
