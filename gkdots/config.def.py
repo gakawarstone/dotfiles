@@ -1,7 +1,5 @@
 from pathlib import Path
 
-from _types import BinFileLinkingInfo, ConfigDirLinkingInfo
-
 
 BIN_FILES_PATH = Path("~/.local/bin/").expanduser()
 
@@ -14,6 +12,7 @@ INCLUDED_BINS = [
     # BinFileLinkingInfo("battery_notify", "battery_notify"),
     # BinFileLinkingInfo("tgsend", "tgsend"),
     # BinFileLinkingInfo("wal", "wal"),
+    # BinFileLinkingInfo("autocommit", "autocommit"),
 ]
 
 INCLUDED_CONFIGS = [

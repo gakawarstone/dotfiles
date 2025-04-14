@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; then
+    echo "Error: No directory provided. Usage: $0 /path/to/repo"
+    exit 1
+fi
+
+REPO_DIR="$1"
+
+echo cd "$REPO_DIR"
+cd "$REPO_DIR"
+git add .
+git commit -m "Auto-commit: $(date +'%Y-%m-%d %H:%M:%S')"
+git push
