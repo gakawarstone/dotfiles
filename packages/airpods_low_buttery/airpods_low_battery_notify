@@ -1,0 +1,46 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+#   "bleak",
+# ]
+# ///
+
+import subprocess
+import sys
+import os
+
+
+HOME_DIR = os.path.expanduser("~")
+# sys.path.append(
+#     HOME_DIR
+#     + "/dotfiles/plugins/airpods_battery_notifier/.venv/lib/python3.11/site-packages"
+# )
+sys.path.append(HOME_DIR + "/dotfiles/plugins/airpods_battery_notifier/src")
+
+from data import get_data
+
+# step = 5
+NOTIFY_IF_LESS_THAN = 100 + 1
+
+
+async def main():
+    data = await get_data()
+    from pprint import pprint
+
+    pprint(data)
+    left = data.charging.left.capacity
+    right = data.charging.right.capacity
+
+    if left < NOTIFY_IF_LESS_THAN and left != -1:
+        text = f"airpods left: {left}"
+        subprocess.call(["twmnc", "--bg", "red", "--fg", "black", "-c", text])
+
+    if right < NOTIFY_IF_LESS_THAN and right != -1:
+        text = f"airpods right: {right}"
+        subprocess.call(["twmnc", "--bg", "red", "--fg", "black", "-c", text])
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    asyncio.run(main())
