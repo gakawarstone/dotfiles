@@ -5,11 +5,19 @@ nvim = [
 zathura = [
   { run = 'zathura "$@"', desc = "zathura", block = true, for = "unix" }
 ]
+open = [
+	{ run = 'xdg-open "$@"', desc = "Open" },
+]
+feh  = [
+	{ run = 'feh --scale-down "$@"', desc = "Open" },
+]
 
 [open]
 rules = [
   { mime = "text/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
+  { mime = "image/jpeg", use = "feh" },
+  { mime = "*", use = "open" },
 ]
 
 [[plugin.prepend_fetchers]]
