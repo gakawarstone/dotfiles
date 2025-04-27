@@ -1,11 +1,41 @@
 #!/bin/bash
 
-if [ "$1" == "root" ]; then
-    xwd -root -out ~/Images/screenshot.xwd
-elif [ "$1" == "area" ]; then
-    import ~/Images/screenshot.xwd
-fi
+# deps for wayland
+# grim slurp wl-clipboard 
 
-convert ~/Images/screenshot.xwd ~/Images/screenshot.jpg
-rm ~/Images/screenshot.xwd
-xclip -sel clipboard -t image/jpg < ~/Images/screenshot.jpg
+capture_wayland() {
+    if [ "$1" = "root" ]; then
+        grim -t jpeg ~/Images/screenshot.jpg
+    elif [ "$1" = "area" ]; then
+        if command -v slurp >/dev/null; then
+            grim -g "$(
+                slurp | awk '{
+                    split($1, a, ",");
+                    split($2, b, "x");
+                    printf "%d,%d %dx%d\n", a[1]+1, a[2]+1, b[1]-2, b[2]-2
+                }'
+            )" -t jpeg ~/Images/screenshot.jpg
+        else
+            echo "Error: slurp is required for area selection in Wayland"
+            exit 1
+        fi
+    fi
+    wl-copy < ~/Images/screenshot.jpg
+}
+
+capture_x11() {
+    if [ "$1" = "root" ]; then
+        xwd -root -out ~/Images/screenshot.xwd
+    elif [ "$1" = "area" ]; then
+        import ~/Images/screenshot.xwd
+    fi
+    convert ~/Images/screenshot.xwd ~/Images/screenshot.jpg
+    rm ~/Images/screenshot.xwd
+    xclip -sel clipboard -t image/jpg < ~/Images/screenshot.jpg
+}
+
+if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ -n "$WAYLAND_DISPLAY" ]; then
+    capture_wayland "$1"
+else
+    capture_x11 "$1"
+fi
