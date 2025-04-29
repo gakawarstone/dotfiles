@@ -1,3 +1,6 @@
+/* TODO: symlink to config folder */
+@import '/home/gws/.cache/wal/colors-waybar.css';
+
 * {
     /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
     font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
@@ -5,9 +8,11 @@
     transition: background-color .3s ease-out;
 }
 
+
 window#waybar {
     background: rgba(26, 27, 38, 0.0);
-    color: #c0caf5;
+    /* color: #c0caf5; */
+    color: @cursor;
     font-family: 
         SpaceMono Nerd Font,
         feather;
@@ -18,7 +23,8 @@ window#waybar {
 .modules-center,
 .modules-right
 {
-    background: rgba(0, 0, 8, .7);
+    /* background: rgba(0, 0, 8, .7); */
+    background: @background;
     margin: 5px 10px;
     padding: 0 5px;
     border-radius: 15px;
@@ -81,7 +87,8 @@ window#waybar {
     feather;
   font-weight: 900;
   font-size: 13pt;
-  color: #c0caf5;
+  /* color: #c0caf5; */
+  color: @cursor;
   border:none;
   margin-top: 4px;
   margin-bottom: 4px;
@@ -90,12 +97,15 @@ window#waybar {
 
 #workspaces button.active {
   color: #11111b;
-  background: #cdd6f4;
+  /* background: #cdd6f4; */
+  background: @cursor;
 }
 
 #workspaces button:hover {
-  background: #11111b;
-  color: #cdd6f4;
+  /* background: #11111b; */
+  background: @background;
+  /* color: #cdd6f4; */
+  color: @cursor;
   box-shadow: none;
 }
 
