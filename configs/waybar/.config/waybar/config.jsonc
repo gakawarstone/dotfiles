@@ -21,8 +21,8 @@
         // "cpu",
         // "memory",
         // "temperature",
+        "battery",
         "hyprland/language"
-        // "battery",
         // "battery#bat2",
         // "clock"
     ],

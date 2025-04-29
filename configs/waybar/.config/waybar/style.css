@@ -1,7 +1,7 @@
 * {
     /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
     font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 15px;
+    font-size: 14px;
     transition: background-color .3s ease-out;
 }
 
@@ -48,7 +48,7 @@ window#waybar {
 #power-profiles-daemon,
 #language,
 #mpd {
-    padding: 0 10px;
+    padding: 0 5px;
     border-radius: 15px;
 }
 
@@ -83,7 +83,9 @@ window#waybar {
   font-size: 13pt;
   color: #c0caf5;
   border:none;
-  border-radius: 15px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  border-radius: 17px;
 }
 
 #workspaces button.active {
