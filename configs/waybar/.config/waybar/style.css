@@ -2,10 +2,11 @@
 @import '/home/gws/.cache/wal/colors-waybar.css';
 
 * {
+    min-height: 0;
     /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
-    font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
+    /* font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif; */
     font-size: 14px;
-    transition: background-color .3s ease-out;
+    /* transition: background-color .3s ease-out; */
 }
 
 
@@ -25,15 +26,22 @@ window#waybar {
 {
     /* background: rgba(0, 0, 8, .7); */
     background: @background;
-    margin: 5px 10px;
+    /* margin: 10px 0 20px 20px; */
+    margin-top: 20px;
     padding: 0 5px;
     border-radius: 15px;
+    /* padding: 0; */
+    /* margin: 0; */
 }
 .modules-left {
+    margin-left: 20px;
     padding: 0;
 }
 .modules-center {
     padding: 0 10px;
+}
+.modules-right {
+    margin-right: 20px;
 }
 
 #clock,
