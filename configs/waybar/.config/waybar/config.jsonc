@@ -9,9 +9,10 @@
     "modules-left": [
         "custom/arch",
         "hyprland/workspaces"
+        // "hyprland/window"
     ],
     "modules-center": [
-        "hyprland/window"
+        "wlr/taskbar"
     ],
     "modules-right": [
         // "idle_inhibitor",

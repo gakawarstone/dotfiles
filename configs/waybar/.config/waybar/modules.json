@@ -89,5 +89,15 @@
     "format": "{:%H:%M | %e %B} ",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
     "format-alt": "{:%Y-%m-%d}"
+  },
+  "wlr/taskbar": {
+    "format": "{icon}",
+    "icon-size": 28,
+    "spacing": 3,
+    "icon-theme": "Numix-Circle",
+    "on-click-middle": "close",
+    "tooltip-format": "{title}",
+    "ignore-list": [],
+    "on-click": "activate"
   }
 }
