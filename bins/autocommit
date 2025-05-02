@@ -9,6 +9,7 @@ REPO_DIR="$1"
 
 echo cd "$REPO_DIR"
 cd "$REPO_DIR"
+git fetch && git pull
 git add .
 git commit -m "Auto-commit: $(date +'%Y-%m-%d %H:%M:%S')"
 git push
