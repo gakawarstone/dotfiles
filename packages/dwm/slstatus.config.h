@@ -6,4 +6,5 @@ static const char unknown_str[] = "n/a";
 
 static const struct arg args[] = {
 	{ keymap, "%s",           NULL },
+    { battery_perc,  " %s%% ", "BAT1" },
 };
