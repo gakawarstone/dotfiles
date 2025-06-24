@@ -3,24 +3,43 @@
 # deps for wayland
 # grim slurp wl-clipboard 
 
+# capture_wayland() {
+#     if [ "$1" = "root" ]; then
+#         grim -t jpeg ~/Images/screenshot.jpg
+#     elif [ "$1" = "area" ]; then
+#         if command -v slurp >/dev/null; then
+#             grim -g "$(
+#                 slurp | awk '{
+#                     split($1, a, ",");
+#                     split($2, b, "x");
+#                     printf "%d,%d %dx%d\n", a[1]+1, a[2]+1, b[1]-2, b[2]-2
+#                 }'
+#             )" -t jpeg ~/Images/screenshot.jpg
+#         else
+#             echo "Error: slurp is required for area selection in Wayland"
+#             exit 1
+#         fi
+#     fi
+#     wl-copy < ~/Images/screenshot.jpg
+# }
+
 capture_wayland() {
+    local path=~/Images/screenshot.png
+
     if [ "$1" = "root" ]; then
-        grim -t jpeg ~/Images/screenshot.jpg
+        grim -t png "$path"
     elif [ "$1" = "area" ]; then
-        if command -v slurp >/dev/null; then
-            grim -g "$(
-                slurp | awk '{
-                    split($1, a, ",");
-                    split($2, b, "x");
-                    printf "%d,%d %dx%d\n", a[1]+1, a[2]+1, b[1]-2, b[2]-2
-                }'
-            )" -t jpeg ~/Images/screenshot.jpg
-        else
+        if ! command -v slurp >/dev/null; then
             echo "Error: slurp is required for area selection in Wayland"
-            exit 1
+            return 1
         fi
+        grim -t png -g "$(slurp | awk '{
+            split($1, a, ",");
+            split($2, b, "x");
+            printf "%d,%d %dx%d", a[1]+1, a[2]+1, b[1]-2, b[2]-2
+        }')" "$path"
     fi
-    wl-copy < ~/Images/screenshot.jpg
+    wl-copy < "$path"
 }
 
 capture_x11() {
