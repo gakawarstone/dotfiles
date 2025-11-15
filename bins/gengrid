@@ -1,0 +1,47 @@
+#!/bin/bash
+# grid_generator.sh
+# WARN: Generated with gpt
+#
+# Usage: ./grid_generator.sh <num_pages> <output_file>
+# Example: ./grid_generator.sh 5 my_grid.pdf
+
+# Check arguments
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 <num_pages> <output_file>"
+    exit 1
+fi
+
+NUM_PAGES=$1
+OUTPUT_FILE=$2
+
+# Grid dimensions (A4 at 150 dpi)
+WIDTH=1240
+HEIGHT=1754
+STEP=30
+
+# Initialize lines variable
+lines=""
+
+# Vertical lines
+for ((i=0; i<=WIDTH; i+=STEP)); do
+    lines="$lines line $i,0 $i,$HEIGHT"
+done
+
+# Horizontal lines
+for ((j=0; j<=HEIGHT; j+=STEP)); do
+    lines="$lines line 0,$j $WIDTH,$j"
+done
+
+# Generate pages
+for ((p=1; p<=NUM_PAGES; p++)); do
+    magick -size ${WIDTH}x${HEIGHT} xc:white -stroke "#cccccc" -strokewidth 1 -draw "$lines" page_$p.png
+done
+
+# Combine into a single PDF
+magick page_*.png "$OUTPUT_FILE"
+
+# Clean up temporary PNGs
+rm page_*.png
+
+echo "Created $OUTPUT_FILE with $NUM_PAGES pages."
+
