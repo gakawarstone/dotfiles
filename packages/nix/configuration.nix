@@ -61,6 +61,9 @@
     fastfetch
     firefox
     nur.repos.Ev357.helium
+    telegram-desktop
+    zed-editor
+    gnumake
   ];
 
   system.stateVersion = "26.05";
