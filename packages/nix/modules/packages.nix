@@ -7,7 +7,6 @@
     vim
     git
     fastfetch
-    firefox
     nur.repos.Ev357.helium
     telegram-desktop
     zed-editor
