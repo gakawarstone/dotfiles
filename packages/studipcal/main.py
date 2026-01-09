@@ -11,7 +11,8 @@ STUIP_CALENDER_URL = open(
 
 
 def get_events_today():
-    local_now = datetime.now().astimezone() + timedelta(days=1)
+    # local_now = datetime.now().astimezone() + timedelta(days=1)
+    local_now = datetime.now().astimezone()
     local_tz = local_now.tzinfo
     today_date = local_now.date()
     start_of_today = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
