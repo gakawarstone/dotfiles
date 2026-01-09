@@ -24,6 +24,7 @@
         // "cpu",
         // "memory",
         // "temperature",
+        "bluetooth",
         "battery",
         "hyprland/language"
         // "battery#bat2",
