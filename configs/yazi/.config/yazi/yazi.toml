@@ -17,6 +17,7 @@ rules = [
   { mime = "text/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
   { mime = "image/jpeg", use = "feh" },
+  { mime = "image/png", use = "feh" },
   { mime = "*", use = "open" },
 ]
 
