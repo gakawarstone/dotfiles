@@ -75,9 +75,9 @@
       "warning": 30,
       "critical": 15,
     },
-    "format": "{icon} ",
-    "format-full": "{icon}  ",
-    "format-charging": "{icon}  ",
+    "format": "{icon}",
+    "format-full": "{icon}",
+    "format-charging": "{icon} ",
     "format-plugged": " ",
     "format-alt": "{capacity}%",
     "format-icons": ["", "", "", "", ""],
@@ -100,4 +100,18 @@
     "ignore-list": [],
     "on-click": "activate",
   },
+  "bluetooth": {
+    "on-click": "stay bluetui",
+    // "controller": "controller1", // specify the alias of the controller if there are more than 1 on the system
+    // "format": "󰂯 {status}",
+    // format-* handles every state, so default format is not necessary.
+    "format-on": "󰂯",
+    "format-off": "󰂲",
+    "format-disabled": "", // an empty format will hide the module
+    "format-connected": "󰂱 {num_connections}",
+    // "tooltip-format": "{controller_alias}\t{controller_address}",
+    // "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
+    "tooltip-format-connected": "{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
+    },
 }
