@@ -1,3 +1,4 @@
+mkdir -p $HOME/.local/share/fonts
 mkdir $HOME/.cache/gkdot
 cd $HOME/.cache/gkdot
 
