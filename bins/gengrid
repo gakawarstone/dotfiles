@@ -2,17 +2,29 @@
 # grid_generator.sh
 # WARN: Generated with gpt
 #
-# Usage: ./grid_generator.sh <num_pages> <output_file>
-# Example: ./grid_generator.sh 5 my_grid.pdf
+# Usage: ./grid_generator.sh <num_pages> <output_file> [--blank]
+# Example: ./grid_generator.sh 5 my_grid.pdf --blank
+
+NUM_PAGES=""
+OUTPUT_FILE=""
+BLANK=false
+
+# Parse arguments
+for arg in "$@"; do
+    if [[ "$arg" == "--blank" ]] || [[ "$arg" == "-b" ]]; then
+        BLANK=true
+    elif [ -z "$NUM_PAGES" ]; then
+        NUM_PAGES="$arg"
+    elif [ -z "$OUTPUT_FILE" ]; then
+        OUTPUT_FILE="$arg"
+    fi
+done
 
 # Check arguments
-if [ -z "$1" ] || [ -z "$2" ]; then
-    echo "Usage: $0 <num_pages> <output_file>"
+if [ -z "$NUM_PAGES" ] || [ -z "$OUTPUT_FILE" ]; then
+    echo "Usage: $0 <num_pages> <output_file> [--blank]"
     exit 1
 fi
-
-NUM_PAGES=$1
-OUTPUT_FILE=$2
 
 # Grid dimensions (A4 at 150 dpi)
 WIDTH=1240
@@ -22,19 +34,25 @@ STEP=30
 # Initialize lines variable
 lines=""
 
-# Vertical lines
-for ((i=0; i<=WIDTH; i+=STEP)); do
-    lines="$lines line $i,0 $i,$HEIGHT"
-done
+if [ "$BLANK" = false ]; then
+    # Vertical lines
+    for ((i=0; i<=WIDTH; i+=STEP)); do
+        lines="$lines line $i,0 $i,$HEIGHT"
+    done
 
-# Horizontal lines
-for ((j=0; j<=HEIGHT; j+=STEP)); do
-    lines="$lines line 0,$j $WIDTH,$j"
-done
+    # Horizontal lines
+    for ((j=0; j<=HEIGHT; j+=STEP)); do
+        lines="$lines line 0,$j $WIDTH,$j"
+    done
+fi
 
 # Generate pages
 for ((p=1; p<=NUM_PAGES; p++)); do
-    magick -size ${WIDTH}x${HEIGHT} xc:white -stroke "#cccccc" -strokewidth 1 -draw "$lines" page_$p.png
+    if [ "$BLANK" = true ]; then
+        magick -size ${WIDTH}x${HEIGHT} xc:white page_$p.png
+    else
+        magick -size ${WIDTH}x${HEIGHT} xc:white -stroke "#cccccc" -strokewidth 1 -draw "$lines" page_$p.png
+    fi
 done
 
 # Combine into a single PDF
@@ -44,4 +62,3 @@ magick page_*.png "$OUTPUT_FILE"
 rm page_*.png
 
 echo "Created $OUTPUT_FILE with $NUM_PAGES pages."
-
