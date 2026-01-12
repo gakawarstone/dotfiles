@@ -4,6 +4,10 @@ update_fonts:
 	bash ./scripts/update_fonts.sh
 
 install:
+	@if [ ! -f gkdots/config.py ]; then \
+		echo "Creating gkdots/config.py from defaults..."; \
+		cp gkdots/config.def.py gkdots/config.py; \
+	fi
 	python ./gkdots/install.py
 
 decrypt_secrets:
