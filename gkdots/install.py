@@ -110,5 +110,5 @@ def install_tmux():
 if __name__ == "__main__":
     install_bins()
     install_configs()
-    install_tmux()
-    install_dwm()
+    # install_tmux()
+    # install_dwm()

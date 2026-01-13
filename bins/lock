@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+TARGET_SSID="GKNet"
+IS_ACCESSIBLE=false
+
+current_ssid=$(get_wifi_ssid)
+
+if [ "$current_ssid" == "$TARGET_SSID" ]; then
+  echo "$TARGET_SSID is connected."
+else
+  physlock
+fi

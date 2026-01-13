@@ -1,6 +1,6 @@
 [opener]
 nvim = [
-  { run = 'nvim "$@"', block = true, desc = "Neovim", for = "unix" }
+  { run = 'alacritty -e nvim "$@"', block = true, desc = "Neovim", for = "unix" }
 ]
 zathura = [
   { run = 'zathura "$@"', desc = "zathura", block = true, for = "unix" }
@@ -11,12 +11,18 @@ open = [
 feh  = [
 	{ run = 'feh --scale-down "$@"', desc = "Open" },
 ]
+zen = [
+  { run = 'zen-browser "$@"', desc = "zen-browser", block = false, for = "unix" }
+]
 
 [open]
 rules = [
   { mime = "text/*", use = "nvim" },
+  { mime = "inode/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
+  { mime = "application/pdf", use = "zen" },
   { mime = "image/jpeg", use = "feh" },
+  { mime = "image/png", use = "feh" },
   { mime = "*", use = "open" },
 ]
 
