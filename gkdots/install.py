@@ -6,7 +6,7 @@ from config import INCLUDED_BINS, BIN_FILES_PATH, INCLUDED_CONFIGS
 from _types import BinFileLinkingInfo, ConfigDirLinkingInfo
 
 
-def _run_cmd(cmd: list[str], cwd: Path | None = None):
+def _run_cmd(cmd: list[str], cwd: Path | None = None, capture_output: bool = False):
     if not cwd:
         cwd = Path(os.getcwd())
     else:
@@ -14,9 +14,9 @@ def _run_cmd(cmd: list[str], cwd: Path | None = None):
 
     try:
         print(*cmd)
-        subprocess.run(cmd, cwd=cwd, check=True)
+        subprocess.run(cmd, cwd=cwd, check=True, capture_output=capture_output)
     except subprocess.CalledProcessError as e:
-        print(f"Error running command: {e}")
+        print(f"Error running command")
         raise
 
 
@@ -41,7 +41,8 @@ def _link_bin_file(file_path: Path, target_path: Path):
 def _install_config(
     config: ConfigDirLinkingInfo,
     configs_dir: Path = Path("configs/"),
-    target_dir=Path.home(),
+    target_dir: Path = Path.home(),
+    adopt: bool = False,
 ):
     cmd = [
         "stow",
@@ -51,7 +52,16 @@ def _install_config(
         target_dir.as_posix(),
         config.name,
     ]
-    _run_cmd(cmd)
+
+    if adopt:
+        cmd.insert(1, "--adopt")
+    try:
+        _run_cmd(cmd, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        if "--adopt" in str(e.stderr):
+            print("There is config for", config.name)
+            if input("Rewrite it (y/n)") == "y":
+                _install_config(config, configs_dir, target_dir, adopt=True)
 
 
 def install_bins(
