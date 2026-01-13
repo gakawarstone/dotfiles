@@ -15,11 +15,8 @@ A modular and automated configuration management system for Linux (Arch-based), 
    make init
    ```
 3. **Configure your setup:**
-   Copy the default configuration and edit it to include the bins and configs you want to install.
-   ```bash
-   cp gkdots/config.def.py gkdots/config.py
-   # Edit gkdots/config.py to uncomment/add desired items
-   ```
+   Edit `gkdots/config.py` (it will be created from `gkdots/config.def.py` on first install) to include the bins and configs you want to install.
+
 4. **Decrypt secrets (Optional):**
    > [!WARNING]
    > Secret decryption is in an early stage. The API is subject to change, and its reliability is not yet guaranteed.
@@ -27,7 +24,7 @@ A modular and automated configuration management system for Linux (Arch-based), 
    make decrypt_secrets
    ```
 5. **Install:**
-   This links binaries to `~/.local/bin` and stows configurations to `~`.
+   This bootstraps the config if missing, links binaries to `~/.local/bin`, and stows configurations to `~`.
    ```bash
    make install
    ```
