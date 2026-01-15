@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 
 from config import INCLUDED_BINS, BIN_FILES_PATH, INCLUDED_CONFIGS
-from _types import BinFileLinkingInfo, ConfigDirLinkingInfo
+from datatypes import BinFileLinkingInfo, ConfigDirLinkingInfo
 
 
 def _run_cmd(cmd: list[str], cwd: Path | None = None, capture_output: bool = False):

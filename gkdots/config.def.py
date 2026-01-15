@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from _types import BinFileLinkingInfo, ConfigDirLinkingInfo
+from datatypes import BinFileLinkingInfo, ConfigDirLinkingInfo
 
 
 BIN_FILES_PATH = Path("~/.local/bin/").expanduser()
@@ -20,6 +20,7 @@ INCLUDED_BINS = [
 INCLUDED_CONFIGS = [
     ConfigDirLinkingInfo("tmux"),
     ConfigDirLinkingInfo("alacritty"),
+    ConfigDirLinkingInfo("bat"),
     # ConfigDirLinkingInfo("dunst"),
     # ConfigDirLinkingInfo("wal"),
     ConfigDirLinkingInfo("fish"),
