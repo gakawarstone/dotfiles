@@ -15,6 +15,7 @@ alias lg lazygit
 alias wgu "sudo wg-quick up wg0"
 alias wgd "sudo wg-quick down wg0"
 alias clip "xclip -selection clipboard"
+alias cat bat
 
 function a
     set tmp (mktemp -t "yazi-cwd.XXXXXX")
