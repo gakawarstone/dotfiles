@@ -22,4 +22,4 @@ clean:
 	rm -rf .secrets
 
 init:
-	sudo pacman -S -noconfirm python stow wget
+	sudo pacman -S --noconfirm python stow wget
