@@ -1,47 +1,46 @@
 /* TODO: symlink to config folder */
-@import '/home/gws/.cache/wal/colors-waybar.css';
+/* @import '/home/gws/.cache/wal/colors-waybar.css'; */
+@import "colors.css";
 
 * {
-    min-height: 0;
-    /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
-    /* font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif; */
-    font-size: 14px;
-    /* transition: background-color .3s ease-out; */
+  min-height: 0;
+  /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
+  /* font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif; */
+  font-size: 14px;
+  /* transition: background-color .3s ease-out; */
 }
 
-
 window#waybar {
-    background: rgba(26, 27, 38, 0.0);
-    /* color: #c0caf5; */
-    color: @cursor;
-    font-family: 
-        SpaceMono Nerd Font,
-        feather;
-    transition: background-color .5s;
+  background: rgba(26, 27, 38, 0);
+  /* color: #c0caf5; */
+  color: @cursor;
+  font-family:
+    SpaceMono Nerd Font,
+    feather;
+  transition: background-color 0.5s;
 }
 
 .modules-left,
 .modules-center,
-.modules-right
-{
-    /* background: rgba(0, 0, 8, .7); */
-    background: @background;
-    /* margin: 10px 0 20px 20px; */
-    margin-top: 20px;
-    padding: 0 5px;
-    border-radius: 15px;
-    /* padding: 0; */
-    /* margin: 0; */
+.modules-right {
+  /* background: rgba(0, 0, 8, .7); */
+  background: @background;
+  /* margin: 10px 0 20px 20px; */
+  margin-top: 20px;
+  padding: 0 5px;
+  border-radius: 15px;
+  /* padding: 0; */
+  /* margin: 0; */
 }
 .modules-left {
-    margin-left: 20px;
-    padding: 0;
+  margin-left: 20px;
+  padding: 0;
 }
 .modules-center {
-    padding: 0 10px;
+  padding: 0 10px;
 }
 .modules-right {
-    margin-right: 20px;
+  margin-right: 20px;
 }
 
 #clock,
@@ -62,8 +61,8 @@ window#waybar {
 #power-profiles-daemon,
 #language,
 #mpd {
-    padding: 0 5px;
-    border-radius: 15px;
+  padding: 0 5px;
+  border-radius: 15px;
 }
 
 #clock:hover,
@@ -84,9 +83,8 @@ window#waybar {
 #power-profiles-daemon:hover,
 #language:hover,
 #mpd:hover {
-    background: rgba(26, 27, 38, 0.9);
+  background: rgba(26, 27, 38, 0.9);
 }
-
 
 #workspaces button {
   background: transparent;
@@ -97,7 +95,7 @@ window#waybar {
   font-size: 13pt;
   /* color: #c0caf5; */
   color: @cursor;
-  border:none;
+  border: none;
   margin-top: 4px;
   margin-bottom: 4px;
   border-radius: 17px;
@@ -118,11 +116,11 @@ window#waybar {
 }
 
 #custom-arch {
-    margin-left: 5px;
-    padding: 0 10px;
-    font-size: 25px;
-    transition: color .5s;
+  margin-left: 5px;
+  padding: 0 10px;
+  font-size: 25px;
+  transition: color 0.5s;
 }
 #custom-arch:hover {
-    color: #1793d1;
+  color: #1793d1;
 }
