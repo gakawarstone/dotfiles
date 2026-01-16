@@ -6,17 +6,20 @@ A modular and automated configuration management system for Linux (Arch-based), 
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/gakawarstone/gkdots.git ~/dotfiles
+   git clone https://github.com/gakawarstone/dotfiles.git ~/dotfiles
    cd ~/dotfiles
    ```
 2. **Initialize dependencies:**
-   This installs `python`, `stow`, and `wget` via `pacman`.
+   On Arch Linux, ensure you have `base-devel` installed for `make` to work:
+   ```bash
+   sudo pacman -S --needed base-devel
+   ```
+   Then install other dependencies via:
    ```bash
    make init
    ```
 3. **Configure your setup:**
    Edit `gkdots/config.py` (it will be created from `gkdots/config.def.py` on first install) to include the bins and configs you want to install.
-
 4. **Decrypt secrets (Optional):**
    > [!WARNING]
    > Secret decryption is in an early stage. The API is subject to change, and its reliability is not yet guaranteed.
@@ -55,4 +58,4 @@ A modular and automated configuration management system for Linux (Arch-based), 
 
 ## ⚠️ Warning
 
-This setup is primarily designed for **Arch Linux**. The `make init` command uses `pacman`. If you are on another distribution, ensure you have `stow`, `python`, and `make` installed manually.
+This setup is primarily designed for **Arch Linux**. The `make init` command uses `pacman` and requires `base-devel` (for `make`). If you are on another distribution, ensure you have `stow`, `python`, and `make` installed manually.
