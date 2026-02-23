@@ -2,10 +2,52 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
+import Quickshell.Io
 
 Rectangle {
     id: root
     color: "#1e1e2e"
+
+    property string activeLayout: ".."
+
+    Process {
+        id: initLayout
+        command: ["sh", "-c", "hyprctl devices | grep -B 3 'main: yes' | grep 'active keymap' | cut -d ':' -f 2 | xargs"]
+        running: true
+        stdout: StdioCollector {
+            id: collector
+        }
+        onExited: (exitCode) => {
+            if (exitCode === 0) {
+                const layoutName = collector.text.trim();
+                if (layoutName.toLowerCase().includes("english")) root.activeLayout = "US";
+                else if (layoutName.toLowerCase().includes("german")) root.activeLayout = "DE";
+                else if (layoutName.toLowerCase().includes("russian")) root.activeLayout = "RU";
+                else if (layoutName.length > 0) root.activeLayout = layoutName;
+            }
+        }
+    }
+
+    Process {
+        id: switchLayout
+        command: ["hyprctl", "switchxkblayout", "all", "next"]
+    }
+
+    Connections {
+        target: Hyprland
+        function onRawEvent(event) {
+            if (event.name === "activelayout") {
+                const parts = event.data.split(",");
+                if (parts.length > 1) {
+                    const layoutName = parts[1];
+                    if (layoutName.toLowerCase().includes("english")) root.activeLayout = "US";
+                    else if (layoutName.toLowerCase().includes("german")) root.activeLayout = "DE";
+                    else if (layoutName.toLowerCase().includes("russian")) root.activeLayout = "RU";
+                    else root.activeLayout = layoutName;
+                }
+            }
+        }
+    }
 
     RowLayout {
         anchors.fill: parent
@@ -72,32 +114,32 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
-            // Clock & Date
-            Column {
-                Layout.alignment: Qt.AlignRight
-                Text {
-                    id: clockText
-                    property var time: new Date()
-                    text: Qt.formatDateTime(time, "HH:mm:ss")
-                    color: "#cdd6f4"
-                    font.pixelSize: 14
-                    font.family: "MonaspiceKr Nerd Font"
-                    anchors.right: parent.right
+            // Keyboard Layout
+            Item {
+                Layout.preferredWidth: kbRow.implicitWidth
+                Layout.fillHeight: true
 
-                    Timer {
-                        interval: 1000
-                        repeat: true
-                        running: true
-                        onTriggered: clockText.time = new Date()
+                RowLayout {
+                    id: kbRow
+                    anchors.fill: parent
+                    spacing: 8
+                    Text {
+                        text: "󰌌"
+                        font.pixelSize: 18
+                        color: "#89b4fa"
+                        font.family: "MonaspiceKr Nerd Font"
+                    }
+                    Text {
+                        text: root.activeLayout
+                        color: "#cdd6f4"
+                        font.pixelSize: 14
+                        font.family: "MonaspiceKr Nerd Font"
                     }
                 }
-                Text {
-                    property var time: new Date()
-                    text: Qt.formatDateTime(time, "ddd, d MMM")
-                    color: "#bac2de"
-                    font.pixelSize: 11
-                    font.family: "MonaspiceKr Nerd Font"
-                    anchors.right: parent.right
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: switchLayout.running = true
                 }
             }
         }
