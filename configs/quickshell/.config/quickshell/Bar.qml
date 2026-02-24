@@ -31,6 +31,7 @@ Rectangle {
 
             Bluetooth {}
             Wifi {}
+            Cpu {}
             Battery {}
             KeyboardLayout {}
         }
