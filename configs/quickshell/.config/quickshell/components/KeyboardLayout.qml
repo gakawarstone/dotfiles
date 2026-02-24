@@ -21,9 +21,9 @@ Item {
         onExited: (exitCode) => {
             if (exitCode === 0) {
                 const layoutName = collector.text.trim();
-                if (layoutName.toLowerCase().includes("english")) root.activeLayout = "US";
-                else if (layoutName.toLowerCase().includes("german")) root.activeLayout = "DE";
-                else if (layoutName.toLowerCase().includes("russian")) root.activeLayout = "RU";
+                if (layoutName.toLowerCase().includes("english")) root.activeLayout = "🇺🇸";
+                else if (layoutName.toLowerCase().includes("german")) root.activeLayout = "🇩🇪";
+                else if (layoutName.toLowerCase().includes("russian")) root.activeLayout = "🇷🇺";
                 else if (layoutName.length > 0) root.activeLayout = layoutName;
             }
         }
@@ -41,9 +41,9 @@ Item {
                 const parts = event.data.split(",");
                 if (parts.length > 1) {
                     const layoutName = parts[1];
-                    if (layoutName.toLowerCase().includes("english")) root.activeLayout = "US";
-                    else if (layoutName.toLowerCase().includes("german")) root.activeLayout = "DE";
-                    else if (layoutName.toLowerCase().includes("russian")) root.activeLayout = "RU";
+                    if (layoutName.toLowerCase().includes("english")) root.activeLayout = "🇺🇸";
+                    else if (layoutName.toLowerCase().includes("german")) root.activeLayout = "🇩🇪";
+                    else if (layoutName.toLowerCase().includes("russian")) root.activeLayout = "🇷🇺";
                     else root.activeLayout = layoutName;
                 }
             }
@@ -55,15 +55,9 @@ Item {
         anchors.fill: parent
         spacing: 8
         Text {
-            text: "󰌌"
-            font.pixelSize: 18
-            color: "#89b4fa"
-            font.family: "MonaspiceKr Nerd Font"
-        }
-        Text {
             text: root.activeLayout
             color: "#cdd6f4"
-            font.pixelSize: 14
+            font.pixelSize: 20
             font.family: "MonaspiceKr Nerd Font"
         }
     }
