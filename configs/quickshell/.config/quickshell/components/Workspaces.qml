@@ -27,9 +27,14 @@ RowLayout {
 
                 Text {
                     anchors.centerIn: parent
-                    text: modelData.name
+                    text: {
+                        if (modelData.name === "1") return "󰖟";
+                        if (modelData.name === "2") return "󰍡";
+                        if (modelData.name === "3") return "󰞷";
+                        return modelData.name;
+                    }
                     color: modelData.active ? "#11111b" : "#cdd6f4"
-                    font.pixelSize: 13
+                    font.pixelSize: 16
                     font.bold: modelData.active
                     font.family: "MonaspiceKr Nerd Font"
                 }
