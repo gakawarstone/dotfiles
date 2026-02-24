@@ -9,6 +9,7 @@ MouseArea {
     Layout.fillHeight: true
     implicitWidth: layout.implicitWidth
     hoverEnabled: true
+    cursorShape: Qt.PointingHandCursor
 
     property bool menuOpen: false
     property var adapter: Bluetooth.defaultAdapter
