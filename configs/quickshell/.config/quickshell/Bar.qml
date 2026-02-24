@@ -102,7 +102,7 @@ Rectangle {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
             horizontalAlignment: Text.AlignHCenter
-            text: Hyprland.focusedClient ? Hyprland.focusedClient.title : "Desktop"
+            text: Hyprland.activeToplevel ? (Hyprland.activeToplevel.appId || Hyprland.activeToplevel.title) : "Desktop"
             color: "#cdd6f4"
             elide: Text.ElideRight
             font.pixelSize: 14
