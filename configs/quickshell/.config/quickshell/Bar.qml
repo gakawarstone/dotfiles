@@ -9,8 +9,8 @@ Rectangle {
 
     RowLayout {
         anchors.fill: parent
-        anchors.leftMargin: 15
-        anchors.rightMargin: 15
+        anchors.leftMargin: 25
+        anchors.rightMargin: 25
         spacing: 15
 
         // Left: Arch icon + Workspaces
@@ -30,7 +30,6 @@ Rectangle {
             spacing: 15
 
             Battery {}
-
             KeyboardLayout {}
         }
     }
