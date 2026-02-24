@@ -55,6 +55,7 @@ MouseArea {
             item: root
         }
 
+        relativeX: -40
         relativeY: root.height + 5
 
         onVisibleChanged: {
