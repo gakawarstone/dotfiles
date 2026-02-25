@@ -62,13 +62,6 @@ MouseArea {
             color: !root.muted ? "#89b4fa" : "#f38ba8"
             font.family: "MonaspiceKr Nerd Font"
         }
-
-        Text {
-            text: Math.round(root.volume * 100) + "%"
-            color: "#cdd6f4"
-            font.pixelSize: 14
-            font.family: "MonaspiceKr Nerd Font"
-        }
     }
 
     VolumePopup {

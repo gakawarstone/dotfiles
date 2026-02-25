@@ -37,8 +37,8 @@ PopupWindow {
 
     Rectangle {
         id: content
-        width: 250
-        height: mainColumn.implicitHeight + 20
+        implicitWidth: 250
+        implicitHeight: mainColumn.implicitHeight + 30
         color: "#1e1e2e"
         border.color: "#313244"
         border.width: 1
@@ -46,9 +46,7 @@ PopupWindow {
 
         ColumnLayout {
             id: mainColumn
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
+            anchors.fill: parent
             anchors.margins: 15
             spacing: 15
 
