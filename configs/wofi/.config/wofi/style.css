@@ -60,8 +60,8 @@
 window {
   margin: 0px;
   padding: 10px;
-  border: 0.16em solid @lavender;
-  border-radius: 0.1em;
+  border: 2px solid @surface1;
+  border-radius: 10px;
   background-color: @base;
 }
 
@@ -92,11 +92,11 @@ window {
 /* Input */
 #input {
   margin: 5px 20px;
-  padding: 10px;
-  border: none;
-  border-radius: 0.1em;
+  padding: 5px 10px;
+  border: 1px solid @surface1;
+  border-radius: 8px;
   color: @text;
-  background-color: @base;
+  background-color: @mantle;
 }
 
 #input image {
@@ -105,7 +105,7 @@ window {
 }
 
 #input * {
-  outline: 4px solid @red!important;
+  outline: none!important;
 }
 
 /* Text */
@@ -117,6 +117,8 @@ window {
 
 #entry {
   background-color: @base;
+  border-radius: 8px;
+  padding: 5px;
 }
 
 #entry arrow {
@@ -126,7 +128,7 @@ window {
 
 /* Selected Entry */
 #entry:selected {
-  border: 0.11em solid @lavender;
+  background-color: @surface1;
 }
 
 #entry:selected #text {
