@@ -5,6 +5,7 @@ import Quickshell.Hyprland
 
 RowLayout {
     spacing: 15
+    property var screen
 
     Text {
         text: "󰣇"
@@ -21,7 +22,8 @@ RowLayout {
                 width: 28
                 height: 28
                 radius: 14
-                color: modelData.active ? "#cba6f7" : (modelData.visible ? "#45475a" : "transparent")
+                property bool isActiveOnThisMonitor: screen && modelData.monitor && modelData.monitor.name === screen.name && modelData.active
+                color: isActiveOnThisMonitor ? "#cba6f7" : (modelData.visible ? "#45475a" : "transparent")
                 border.color: modelData.visible ? "#585b70" : "transparent"
                 border.width: 1
 
@@ -33,9 +35,9 @@ RowLayout {
                         if (modelData.name === "3") return "󰞷";
                         return modelData.name;
                     }
-                    color: modelData.active ? "#11111b" : "#cdd6f4"
+                    color: isActiveOnThisMonitor ? "#11111b" : "#cdd6f4"
                     font.pixelSize: 16
-                    font.bold: modelData.active
+                    font.bold: isActiveOnThisMonitor
                     font.family: "MonaspiceKr Nerd Font"
                 }
 
