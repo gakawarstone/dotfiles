@@ -24,21 +24,26 @@ PanelWindow {
     }
 
     function trigger() {
-        visible = true;
-        showAnimation.restart();
+        hideAnimation.stop();
+        if (!visible) {
+            visible = true;
+            showAnimation.restart();
+        } else if (hideAnimation.running || content.opacity < 1.0) {
+            showAnimation.restart();
+        }
         hideTimer.restart();
     }
 
     Timer {
         id: hideTimer
-        interval: 1000
+        interval: 2000
         onTriggered: hideAnimation.restart()
     }
 
     ParallelAnimation {
         id: showAnimation
-        NumberAnimation { target: content; property: "opacity"; from: 0; to: 1; duration: 500; easing.type: Easing.OutCubic }
-        NumberAnimation { target: content; property: "scale"; from: 0.9; to: 1; duration: 500; easing.type: Easing.OutBack }
+        NumberAnimation { target: content; property: "opacity"; to: 1; duration: 500; easing.type: Easing.OutCubic }
+        NumberAnimation { target: content; property: "scale"; to: 1; duration: 500; easing.type: Easing.OutBack }
     }
 
     ParallelAnimation {
