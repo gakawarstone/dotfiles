@@ -92,8 +92,7 @@ PopupWindow {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            popup.muted = !popup.muted;
-                            popup.muteUpdate(popup.muted);
+                            popup.muteUpdate(!popup.muted);
                             toggleMuteProcess.running = true;
                         }
                     }
@@ -120,7 +119,6 @@ PopupWindow {
                         
                         function updateVolume(mouse) {
                             let val = Math.max(0, Math.min(1.5, mouse.x / width)); // Allow up to 150%
-                            popup.volume = val;
                             popup.volumeUpdate(val);
                             setVolumeProcess.running = true;
                         }

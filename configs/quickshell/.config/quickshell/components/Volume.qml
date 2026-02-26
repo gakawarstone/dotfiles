@@ -36,7 +36,7 @@ MouseArea {
     }
 
     Timer {
-        interval: 2000
+        interval: root.menuOpen ? 200 : 2000
         running: true
         repeat: true
         onTriggered: root.updateVolume()
