@@ -13,6 +13,19 @@ MouseArea {
     property bool menuOpen: false
     property real volume: 0
     property bool muted: false
+    property bool startup: true
+
+    onVolumeChanged: {
+        if (!startup && !menuOpen) {
+            toast.trigger();
+        }
+    }
+
+    onMutedChanged: {
+        if (!startup && !menuOpen) {
+            toast.trigger();
+        }
+    }
 
     function updateVolume() {
         volumeProcess.running = true;
@@ -22,21 +35,23 @@ MouseArea {
         id: volumeProcess
         command: ["sh", "-c", "wpctl get-volume @DEFAULT_AUDIO_SINK@"]
         stdout: StdioCollector {
+            id: volumeCollector
             onTextChanged: {
-                if (!text) return;
-                const cleanText = text.trim();
-                // Format: "Volume: 0.20" or "Volume: 0.20 [MUTED]"
+                const cleanText = volumeCollector.text.trim();
+                if (!cleanText) return;
+                
                 const parts = cleanText.split(" ");
                 if (parts.length >= 2) {
                     root.volume = parseFloat(parts[1]);
                     root.muted = cleanText.includes("[MUTED]");
+                    if (root.startup) root.startup = false;
                 }
             }
         }
     }
 
     Timer {
-        interval: root.menuOpen ? 200 : 2000
+        interval: root.menuOpen ? 200 : 500
         running: true
         repeat: true
         onTriggered: root.updateVolume()
@@ -62,6 +77,12 @@ MouseArea {
             color: !root.muted ? "#89b4fa" : "#f38ba8"
             font.family: "MonaspiceKr Nerd Font"
         }
+    }
+
+    VolumeToast {
+        id: toast
+        volume: root.volume
+        muted: root.muted
     }
 
     VolumePopup {
