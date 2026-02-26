@@ -39,6 +39,8 @@ Rectangle {
         }
     }
 
+    Brightness {}
+
     // Bottom border/line
     Rectangle {
         anchors.bottom: parent.bottom
