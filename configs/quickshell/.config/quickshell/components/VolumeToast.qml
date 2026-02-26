@@ -17,35 +17,49 @@ PanelWindow {
     color: "transparent"
     
     anchors {
+        top: true
         bottom: true
         left: true
         right: true
     }
-    
-    implicitHeight: 200
 
     function trigger() {
         visible = true;
+        showAnimation.restart();
         hideTimer.restart();
     }
 
     Timer {
         id: hideTimer
         interval: 1000
-        onTriggered: toast.visible = false
+        onTriggered: hideAnimation.restart()
+    }
+
+    ParallelAnimation {
+        id: showAnimation
+        NumberAnimation { target: content; property: "opacity"; from: 0; to: 1; duration: 500; easing.type: Easing.OutCubic }
+        NumberAnimation { target: content; property: "scale"; from: 0.9; to: 1; duration: 500; easing.type: Easing.OutBack }
+    }
+
+    ParallelAnimation {
+        id: hideAnimation
+        NumberAnimation { target: content; property: "opacity"; from: 1; to: 0; duration: 200; easing.type: Easing.InCubic }
+        NumberAnimation { target: content; property: "scale"; from: 1; to: 0.9; duration: 200; easing.type: Easing.InCubic }
+        onFinished: toast.visible = false
     }
 
     Rectangle {
         id: content
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 100
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
+        opacity: 0
+        scale: 0.9
         
         implicitWidth: 260
         implicitHeight: 80
+        
         color: "#1e1e2e"
-        border.color: "#313244"
-        border.width: 1
+        border.color: "#89b4fa"
+        border.width: 2
         radius: 16
         
         RowLayout {
