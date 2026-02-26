@@ -6,6 +6,8 @@ import "./components"
 Rectangle {
     id: root
     color: "#1e1e2e"
+    property var screen
+    property var pomoState
 
     RowLayout {
         anchors.fill: parent
@@ -16,6 +18,7 @@ Rectangle {
         // Left: Arch icon + Workspaces
         Workspaces {
             Layout.alignment: Qt.AlignLeft
+            screen: root.screen
         }
 
         // Center: Active Window Title
@@ -29,7 +32,9 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
-            Pomodoro {}
+            Pomodoro {
+                pomoState: root.pomoState
+            }
             Volume {}
             Bluetooth {}
             Wifi {}
