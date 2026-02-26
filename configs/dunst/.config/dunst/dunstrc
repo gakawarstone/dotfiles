@@ -23,8 +23,8 @@
     transparency = 0
     separator_height = 2
     padding = 12
-    horizontal_padding = 12
-    text_icon_padding = 10
+    horizontal_padding = 20
+    text_icon_padding = 20
     frame_width = 2
     
     # Catppuccin Mocha colors
@@ -35,7 +35,7 @@
     idle_threshold = 120
 
     ### Text ###
-    font = MonaspiceKr Nerd Font 10
+    font = MonaspiceKr Nerd Font 14
     line_height = 0
     markup = full
     format = "<b>%s</b>\n%b"
