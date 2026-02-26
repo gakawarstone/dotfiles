@@ -41,7 +41,7 @@
     format = "<b>%s</b>\n%b"
     alignment = left
     vertical_alignment = center
-    show_indicators = yes
+    show_indicators = no
     stack_duplicates = true
     hide_duplicate_count = false
     show_age_threshold = 60
