@@ -29,6 +29,7 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
+            Pomodoro {}
             Volume {}
             Bluetooth {}
             Wifi {}
