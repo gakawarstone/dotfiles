@@ -13,7 +13,7 @@ RowLayout {
 
     Process {
         id: wifiInfo
-        command: ["sh", "-c", "nmcli -t -f TYPE,STATE,CONNECTION device | grep '^ethernet:connected' | head -n 1 || nmcli -t -f active,ssid,bars dev wifi | grep '^yes'"]
+        command: ["sh", "-c", "nmcli -t -f TYPE,STATE,CONNECTION device | grep -m 1 '^ethernet:connected' || nmcli -t -f active,ssid,bars dev wifi | grep -m 1 '^yes'"]
         running: true
         stdout: StdioCollector {
             id: wifiCollector
