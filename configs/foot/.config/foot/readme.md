@@ -22,3 +22,10 @@ JINJA_ENV=laptop make
 
 ## Installation
 Managed by `gkdots`. The `configs/foot` directory is stowed to your home directory, placing the config at `~/.config/foot/`.
+
+## Debugging
+To see startup logs and debug configuration issues, run `foot` with the `info` log level from another terminal:
+```bash
+foot -d info
+```
+This will print detailed logs to `stderr`, which is useful for identifying syntax errors or missing fonts in your `foot.ini`.
