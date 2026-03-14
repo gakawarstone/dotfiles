@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import Quickshell.Services.UPower
 
 RowLayout {
     id: root
@@ -38,7 +39,13 @@ RowLayout {
     }
 
     Text {
-        text: root.usage + "%"
+        text: {
+            let res = root.usage + "%"
+            if (UPower.displayDevice && UPower.displayDevice.changeRate > 0) {
+                res += " " + UPower.displayDevice.changeRate.toFixed(1) + "W"
+            }
+            return res
+        }
         color: "#cdd6f4"
         font.pixelSize: 14
         font.family: "MonaspiceKr Nerd Font"
