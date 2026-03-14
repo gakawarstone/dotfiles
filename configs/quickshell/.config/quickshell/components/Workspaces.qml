@@ -19,8 +19,9 @@ RowLayout {
         Repeater {
             model: Hyprland.workspaces
             delegate: Rectangle {
-                width: 28
-                height: 28
+                visible: !modelData.name.startsWith("special:")
+                width: visible ? 28 : 0
+                height: visible ? 28 : 0
                 radius: 14
                 property bool isActiveOnThisMonitor: screen && modelData.monitor && modelData.monitor.name === screen.name && modelData.active
                 color: isActiveOnThisMonitor ? "#cba6f7" : (modelData.visible ? "#45475a" : "transparent")

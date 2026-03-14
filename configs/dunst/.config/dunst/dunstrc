@@ -6,9 +6,9 @@
     # Geometry
     # width = (min, max)
     width = (300, 500)
-    height = 500
+    height = (0, 500)
     origin = top-right
-    offset = 20x20
+    offset = (20, 20)
     scale = 0
     notification_limit = 5
 
@@ -23,8 +23,8 @@
     transparency = 0
     separator_height = 2
     padding = 12
-    horizontal_padding = 20
-    text_icon_padding = 20
+    horizontal_padding = 30
+    text_icon_padding = 30
     frame_width = 2
     
     # Catppuccin Mocha colors
@@ -51,8 +51,8 @@
     
     ### Icons ###
     icon_position = left
-    min_icon_size = 0
-    max_icon_size = 48
+    min_icon_size = 32
+    max_icon_size = 80
 
     ### History ###
     sticky_history = yes
