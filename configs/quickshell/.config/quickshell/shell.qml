@@ -18,6 +18,9 @@ ShellRoot {
             required property var modelData
             screen: modelData
 
+            // NOTE: try to fix bar in front of steam game
+            WlrLayershell.layer: WlrLayershell.Bottom
+
             anchors {
                 top: true
                 left: true

@@ -69,6 +69,7 @@
     corner_radius = 10
     
     ignore_dbusclose = false
+    script = /home/gws/dotfiles/bins/dunst_play_sound
 
     ### Wayland ###
     force_xwayland = false
