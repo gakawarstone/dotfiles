@@ -32,19 +32,21 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
+            NetworkSpeed {}
             Pomodoro {
                 pomoState: root.pomoState
             }
             Volume {}
+            Microphone {}
             Bluetooth {}
-            Wifi {}
-            Cpu {}
+            // Wifi {}
+            // Cpu {}
             Battery {}
             KeyboardLayout {}
         }
     }
 
-    Brightness {}
+    // Brightness {}
 
     // Bottom border/line
     Rectangle {

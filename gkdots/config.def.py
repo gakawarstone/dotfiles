@@ -21,8 +21,10 @@ INCLUDED_CONFIGS = [
     ConfigDirLinkingInfo("tmux"),
     ConfigDirLinkingInfo("alacritty"),
     ConfigDirLinkingInfo("bat"),
-    # ConfigDirLinkingInfo("dunst"),
+    ConfigDirLinkingInfo("dunst"),
     # ConfigDirLinkingInfo("wal"),
     ConfigDirLinkingInfo("fish"),
+    ConfigDirLinkingInfo("quickshell"),
     # ConfigDirLinkingInfo("yazi"),
+    ConfigDirLinkingInfo("foot"),
 ]
