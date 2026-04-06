@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import ".."
 
 RowLayout {
     id: root
@@ -57,12 +58,12 @@ RowLayout {
         Text {
             text: "󰇚"
             font.pixelSize: 18
-            color: "#a6e3a1"
+            color: Theme.green
             font.family: "MonaspiceKr Nerd Font"
         }
         Text {
             text: root.downSpeed
-            color: "#cdd6f4"
+            color: Theme.text
             font.pixelSize: 14
             font.family: "MonaspiceKr Nerd Font"
         }
@@ -73,12 +74,12 @@ RowLayout {
         Text {
             text: "󰕒"
             font.pixelSize: 18
-            color: "#f38ba8"
+            color: Theme.red
             font.family: "MonaspiceKr Nerd Font"
         }
         Text {
             text: root.upSpeed
-            color: "#cdd6f4"
+            color: Theme.text
             font.pixelSize: 14
             font.family: "MonaspiceKr Nerd Font"
         }

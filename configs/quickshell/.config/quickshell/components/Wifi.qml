@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import ".."
 
 RowLayout {
     id: root
@@ -60,13 +61,13 @@ RowLayout {
     Text {
         text: root.ssid === "Disconnected" ? "󰖪" : (root.isEthernet ? "󰈀" : "󰖩")
         font.pixelSize: 18
-        color: root.ssid === "Disconnected" ? "#f38ba8" : (root.isEthernet ? "#a6e3a1" : "#89b4fa")
+        color: root.ssid === "Disconnected" ? Theme.red : (root.isEthernet ? Theme.green : Theme.blue)
         font.family: "MonaspiceKr Nerd Font"
     }
 
     Text {
         text: root.isEthernet ? "" : root.ssid
-        color: "#cdd6f4"
+        color: Theme.text
         font.pixelSize: 14
         font.family: "MonaspiceKr Nerd Font"
         visible: text !== ""

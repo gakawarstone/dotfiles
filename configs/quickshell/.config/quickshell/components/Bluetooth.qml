@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
 import Quickshell.Wayland
+import ".."
 
 MouseArea {
     id: root
@@ -32,14 +33,14 @@ MouseArea {
         Text {
             text: !root.adapter || !root.adapter.enabled ? "󰂲" : (root.connectedDevice ? "󰂰" : "󰂯")
             font.pixelSize: 18
-            color: !root.adapter || !root.adapter.enabled ? "#f38ba8" : (root.connectedDevice ? "#89b4fa" : "#cdd6f4")
+            color: !root.adapter || !root.adapter.enabled ? Theme.red : (root.connectedDevice ? Theme.blue : Theme.text)
             font.family: "MonaspiceKr Nerd Font"
         }
 
         Text {
             visible: root.connectedDevice !== null
             text: root.connectedDevice ? root.connectedDevice.name : ""
-            color: "#cdd6f4"
+            color: Theme.text
             font.pixelSize: 14
             font.family: "MonaspiceKr Nerd Font"
         }

@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import ".."
 
 MouseArea {
     id: root
@@ -74,7 +75,7 @@ MouseArea {
                 return "󰕾"
             }
             font.pixelSize: 18
-            color: !root.muted ? "#89b4fa" : "#f38ba8"
+            color: !root.muted ? Theme.blue : Theme.red
             font.family: "MonaspiceKr Nerd Font"
         }
     }

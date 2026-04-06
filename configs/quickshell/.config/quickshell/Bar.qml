@@ -1,11 +1,12 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import "."
 import "./components"
 
 Rectangle {
     id: root
-    color: "#1e1e2e"
+    color: Theme.base
     property var screen
     property var pomoState
 
@@ -53,6 +54,6 @@ Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width
         height: 1
-        color: "#313244"
+        color: Theme.surface0
     }
 }

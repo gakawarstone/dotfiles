@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+import ".."
 
 PanelWindow {
     id: toast
@@ -62,8 +63,8 @@ PanelWindow {
         implicitWidth: 260
         implicitHeight: 80
         
-        color: "#1e1e2e"
-        border.color: "#89b4fa"
+        color: Theme.base
+        border.color: Theme.blue
         border.width: 2
         radius: 16
         
@@ -80,7 +81,7 @@ PanelWindow {
                     return "󰕾"
                 }
                 font.pixelSize: 32
-                color: !toast.muted ? "#89b4fa" : "#f38ba8"
+                color: !toast.muted ? Theme.blue : Theme.red
                 font.family: "MonaspiceKr Nerd Font"
             }
 
@@ -92,14 +93,14 @@ PanelWindow {
                     Layout.fillWidth: true
                     Text {
                         text: "Volume"
-                        color: "#cdd6f4"
+                        color: Theme.text
                         font.pixelSize: 16
                         font.family: "MonaspiceKr Nerd Font"
                     }
                     Item { Layout.fillWidth: true }
                     Text {
                         text: Math.round(toast.volume * 100) + "%"
-                        color: "#cdd6f4"
+                        color: Theme.text
                         font.pixelSize: 16
                         font.family: "MonaspiceKr Nerd Font"
                     }
@@ -108,13 +109,13 @@ PanelWindow {
                 Rectangle {
                     Layout.fillWidth: true
                     height: 6
-                    color: "#313244"
+                    color: Theme.surface0
                     radius: 3
 
                     Rectangle {
                         width: parent.width * Math.min(toast.volume, 1.0)
                         height: parent.height
-                        color: !toast.muted ? "#89b4fa" : "#6c7086"
+                        color: !toast.muted ? Theme.blue : Theme.overlay0
                         radius: 3
                     }
                 }

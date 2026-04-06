@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
 import Quickshell.Io
+import ".."
 
 Item {
     id: root
@@ -56,7 +57,7 @@ Item {
         spacing: 8
         Text {
             text: root.activeLayout
-            color: "#cdd6f4"
+            color: Theme.text
             font.pixelSize: 20
             font.family: "MonaspiceKr Nerd Font"
         }

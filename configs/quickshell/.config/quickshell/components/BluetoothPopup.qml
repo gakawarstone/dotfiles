@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
 import Quickshell.Wayland
+import ".."
 
 PopupWindow {
     id: popup
@@ -25,8 +26,8 @@ PopupWindow {
         id: content
         width: 250
         height: mainColumn.implicitHeight + 20
-        color: "#1e1e2e"
-        border.color: "#313244"
+        color: Theme.base
+        border.color: Theme.surface0
         border.width: 1
         radius: 8
 
@@ -42,7 +43,7 @@ PopupWindow {
                 Layout.fillWidth: true
                 Text {
                     text: "Bluetooth"
-                    color: "#cdd6f4"
+                    color: Theme.text
                     font.pixelSize: 16
                     font.bold: true
                     font.family: "MonaspiceKr Nerd Font"
@@ -52,13 +53,13 @@ PopupWindow {
                     width: 40
                     height: 20
                     radius: 10
-                    color: popup.adapter && popup.adapter.enabled ? "#a6e3a1" : "#45475a"
+                    color: popup.adapter && popup.adapter.enabled ? Theme.green : Theme.surface1
                     
                     Rectangle {
                         width: 16
                         height: 16
                         radius: 8
-                        color: "#1e1e2e"
+                        color: Theme.base
                         x: popup.adapter && popup.adapter.enabled ? 22 : 2
                         anchors.verticalCenter: parent.verticalCenter
                         
@@ -81,7 +82,7 @@ PopupWindow {
             Rectangle {
                 Layout.fillWidth: true
                 height: 1
-                color: "#313244"
+                color: Theme.surface0
             }
 
             ColumnLayout {
@@ -99,7 +100,7 @@ PopupWindow {
 
                         Rectangle {
                             anchors.fill: parent
-                            color: deviceItem.containsMouse ? "#313244" : "transparent"
+                            color: deviceItem.containsMouse ? Theme.surface0 : "transparent"
                             radius: 4
                         }
 
@@ -110,14 +111,14 @@ PopupWindow {
                             
                             Text {
                                 text: modelData.connected ? "󰂱" : "󰂯"
-                                color: modelData.connected ? "#89b4fa" : "#6c7086"
+                                color: modelData.connected ? Theme.blue : Theme.overlay0
                                 font.pixelSize: 16
                                 font.family: "MonaspiceKr Nerd Font"
                             }
 
                             Text {
                                 text: modelData.name || modelData.address
-                                color: "#cdd6f4"
+                                color: Theme.text
                                 font.pixelSize: 14
                                 Layout.fillWidth: true
                                 elide: Text.ElideRight
@@ -127,7 +128,7 @@ PopupWindow {
                             Text {
                                 visible: modelData.connected && modelData.batteryAvailable
                                 text: Math.round(modelData.battery * 100) + "%"
-                                color: "#a6e3a1"
+                                color: Theme.green
                                 font.pixelSize: 12
                                 font.family: "MonaspiceKr Nerd Font"
                             }
@@ -146,7 +147,7 @@ PopupWindow {
                 Text {
                     visible: !Bluetooth.devices.values || Bluetooth.devices.values.length === 0
                     text: "No devices found"
-                    color: "#6c7086"
+                    color: Theme.overlay0
                     font.pixelSize: 12
                     Layout.alignment: Qt.AlignCenter
                     font.family: "MonaspiceKr Nerd Font"

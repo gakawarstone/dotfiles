@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Define paths
+DOTFILES="$HOME/dotfiles"
+HYPR_DIR="$DOTFILES/configs/hyprland/.config/hypr"
+FOOT_DIR="$DOTFILES/configs/foot/.config/foot"
+QUICKSHELL_DIR="$DOTFILES/configs/quickshell/.config/quickshell"
+
+# Detect current theme by checking where theme.conf points to
+if [ -L "$HYPR_DIR/theme.conf" ]; then
+    CURRENT=$(readlink "$HYPR_DIR/theme.conf")
+    if [[ "$CURRENT" == *"mocha.conf"* ]]; then
+        TARGET="latte"
+    else
+        TARGET="mocha"
+    fi
+else
+    # Default to mocha if symlink doesn't exist
+    TARGET="mocha"
+fi
+
+echo "Switching theme to: $TARGET"
+
+if [[ "$TARGET" == "mocha" ]]; then
+    # Swap symlinks in dotfiles repo
+    ln -sf mocha.conf "$HYPR_DIR/theme.conf"
+    ln -sf mocha_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf"
+    ln -sf mocha.ini "$FOOT_DIR/theme.ini"
+    ln -sf Mocha.qml "$QUICKSHELL_DIR/Theme.qml"
+else
+    # Swap symlinks in dotfiles repo
+    ln -sf latte.conf "$HYPR_DIR/theme.conf"
+    ln -sf latte_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf"
+    ln -sf latte.ini "$FOOT_DIR/theme.ini"
+    ln -sf Latte.qml "$QUICKSHELL_DIR/Theme.qml"
+fi
+
+# Reload applications
+hyprctl reload
+
+# Reload Hyprpaper
+if pgrep -x hyprpaper > /dev/null; then
+    killall hyprpaper
+    sleep 0.2
+    hyprpaper > /dev/null 2>&1 &
+fi
+
+# Reload Foot
+if pgrep -x foot > /dev/null; then
+    killall -SIGUSR1 foot
+fi
+
+# Restart quickshell (as requested, it's better to restart it)
+if pgrep quickshell > /dev/null; then
+    killall quickshell
+    sleep 0.2
+    quickshell > /dev/null 2>&1 &
+fi

@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
+import ".."
 
 RowLayout {
     spacing: 15
@@ -10,7 +11,7 @@ RowLayout {
     Text {
         text: "󰣇"
         font.pixelSize: 22
-        color: "#89b4fa"
+        color: Theme.blue
         font.family: "MonaspiceKr Nerd Font"
     }
 
@@ -24,8 +25,8 @@ RowLayout {
                 height: visible ? 28 : 0
                 radius: 14
                 property bool isActiveOnThisMonitor: screen && modelData.monitor && modelData.monitor.name === screen.name && modelData.active
-                color: isActiveOnThisMonitor ? "#cba6f7" : (modelData.visible ? "#45475a" : "transparent")
-                border.color: modelData.visible ? "#585b70" : "transparent"
+                color: isActiveOnThisMonitor ? Theme.mauve : (modelData.visible ? Theme.surface1 : "transparent")
+                border.color: modelData.visible ? Theme.surface2 : "transparent"
                 border.width: 1
 
                 Text {
@@ -36,7 +37,7 @@ RowLayout {
                         if (modelData.name === "3") return "󰞷";
                         return modelData.name;
                     }
-                    color: isActiveOnThisMonitor ? "#11111b" : "#cdd6f4"
+                    color: isActiveOnThisMonitor ? Theme.crust : Theme.text
                     font.pixelSize: 16
                     font.bold: isActiveOnThisMonitor
                     font.family: "MonaspiceKr Nerd Font"

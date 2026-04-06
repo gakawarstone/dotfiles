@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+import ".."
 
 PanelWindow {
     id: toast
@@ -61,8 +62,8 @@ PanelWindow {
         implicitWidth: 260
         implicitHeight: 80
         
-        color: "#1e1e2e"
-        border.color: "#f9e2af" // catppuccin yellow for brightness
+        color: Theme.base
+        border.color: Theme.yellow // catppuccin yellow for brightness
         border.width: 2
         radius: 16
         
@@ -78,7 +79,7 @@ PanelWindow {
                     return "󰃠"
                 }
                 font.pixelSize: 32
-                color: "#f9e2af"
+                color: Theme.yellow
                 font.family: "MonaspiceKr Nerd Font"
             }
 
@@ -90,14 +91,14 @@ PanelWindow {
                     Layout.fillWidth: true
                     Text {
                         text: "Brightness"
-                        color: "#cdd6f4"
+                        color: Theme.text
                         font.pixelSize: 16
                         font.family: "MonaspiceKr Nerd Font"
                     }
                     Item { Layout.fillWidth: true }
                     Text {
                         text: Math.round(toast.brightness * 100) + "%"
-                        color: "#cdd6f4"
+                        color: Theme.text
                         font.pixelSize: 16
                         font.family: "MonaspiceKr Nerd Font"
                     }
@@ -106,13 +107,13 @@ PanelWindow {
                 Rectangle {
                     Layout.fillWidth: true
                     height: 6
-                    color: "#313244"
+                    color: Theme.surface0
                     radius: 3
 
                     Rectangle {
                         width: parent.width * Math.min(toast.brightness, 1.0)
                         height: parent.height
-                        color: "#f9e2af"
+                        color: Theme.yellow
                         radius: 3
                     }
                 }

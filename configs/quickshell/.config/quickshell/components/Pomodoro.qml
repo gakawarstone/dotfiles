@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import ".."
 
 MouseArea {
     id: root
@@ -80,8 +81,8 @@ MouseArea {
             text: (pomoState && pomoState.mode === "work") ? "󱎫" : "󱐌"
             font.pixelSize: 18
             color: {
-                if (!pomoState || !pomoState.isRunning) return "#fab387" // Peach when paused
-                return pomoState.mode === "work" ? "#f38ba8" : "#a6e3a1"
+                if (!pomoState || !pomoState.isRunning) return Theme.peach // Peach when paused
+                return pomoState.mode === "work" ? Theme.red : Theme.green
             }
             font.family: "MonaspiceKr Nerd Font"
         }
@@ -90,7 +91,7 @@ MouseArea {
             property int minutes: pomoState ? Math.floor(pomoState.timeLeft / 60) : 0
             property int seconds: pomoState ? pomoState.timeLeft % 60 : 0
             text: minutes.toString().padStart(2, '0') + ":" + seconds.toString().padStart(2, '0')
-            color: "#cdd6f4"
+            color: Theme.text
             font.pixelSize: 14
             font.family: "MonaspiceKr Nerd Font"
         }

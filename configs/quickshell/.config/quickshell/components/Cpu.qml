@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Services.UPower
+import ".."
 
 RowLayout {
     id: root
@@ -34,7 +35,7 @@ RowLayout {
     Text {
         text: "󰻠"
         font.pixelSize: 18
-        color: "#fab387"
+        color: Theme.peach
         font.family: "MonaspiceKr Nerd Font"
     }
 
@@ -46,7 +47,7 @@ RowLayout {
             }
             return res
         }
-        color: "#cdd6f4"
+        color: Theme.text
         font.pixelSize: 14
         font.family: "MonaspiceKr Nerd Font"
     }

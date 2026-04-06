@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
+import ".."
 
 RowLayout {
     spacing: 8
@@ -24,14 +25,14 @@ RowLayout {
         }
         font.pixelSize: 18
         color: {
-            if (UPower.displayDevice && (UPower.displayDevice.percentage * 100) < 20) return "#f38ba8"
-            return "#a6e3a1"
+            if (UPower.displayDevice && (UPower.displayDevice.percentage * 100) < 20) return Theme.red
+            return Theme.green
         }
         font.family: "MonaspiceKr Nerd Font"
     }
     Text {
         text: UPower.displayDevice ? Math.round(UPower.displayDevice.percentage * 100) + "%" : ""
-        color: "#cdd6f4"
+        color: Theme.text
         font.pixelSize: 14
         font.family: "MonaspiceKr Nerd Font"
     }

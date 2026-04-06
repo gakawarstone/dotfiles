@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Wayland
+import ".."
 
 PopupWindow {
     id: popup
@@ -39,8 +40,8 @@ PopupWindow {
         id: content
         implicitWidth: 250
         implicitHeight: mainColumn.implicitHeight + 30
-        color: "#1e1e2e"
-        border.color: "#313244"
+        color: Theme.base
+        border.color: Theme.surface0
         border.width: 1
         radius: 8
 
@@ -54,7 +55,7 @@ PopupWindow {
                 Layout.fillWidth: true
                 Text {
                     text: "Volume"
-                    color: "#cdd6f4"
+                    color: Theme.text
                     font.pixelSize: 16
                     font.bold: true
                     font.family: "MonaspiceKr Nerd Font"
@@ -62,7 +63,7 @@ PopupWindow {
                 Item { Layout.fillWidth: true }
                 Text {
                     text: Math.round(popup.volume * 100) + "%"
-                    color: "#cdd6f4"
+                    color: Theme.text
                     font.pixelSize: 14
                     font.family: "MonaspiceKr Nerd Font"
                 }
@@ -71,7 +72,7 @@ PopupWindow {
             Rectangle {
                 Layout.fillWidth: true
                 height: 1
-                color: "#313244"
+                color: Theme.surface0
             }
 
             RowLayout {
@@ -86,7 +87,7 @@ PopupWindow {
                         return "󰕾"
                     }
                     font.pixelSize: 20
-                    color: !popup.muted ? "#89b4fa" : "#f38ba8"
+                    color: !popup.muted ? Theme.blue : Theme.overlay0
                     font.family: "MonaspiceKr Nerd Font"
                     
                     MouseArea {
@@ -103,13 +104,13 @@ PopupWindow {
                     id: sliderTrack
                     Layout.fillWidth: true
                     height: 6
-                    color: "#313244"
+                    color: Theme.surface0
                     radius: 3
 
                     Rectangle {
                         width: sliderTrack.width * Math.min(popup.volume, 1.0)
                         height: parent.height
-                        color: !popup.muted ? "#89b4fa" : "#6c7086"
+                        color: !popup.muted ? Theme.blue : Theme.overlay0
                         radius: 3
                     }
 
