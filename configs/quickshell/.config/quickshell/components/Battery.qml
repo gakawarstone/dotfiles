@@ -7,6 +7,17 @@ import ".."
 RowLayout {
     spacing: 8
     visible: UPower.displayDevice && UPower.displayDevice.isLaptopBattery
+    property bool showEstimate: true
+
+    function formatTime(minutes) {
+        if (!minutes || minutes < 0) return ""
+        const total = Math.round(minutes)
+        const hours = Math.floor(total / 60)
+        const mins = total % 60
+        if (hours <= 0) return `${mins}m`
+        return `${hours}h ${mins}m`
+    }
+
     Text {
         text: {
             if (!UPower.displayDevice) return "󰂑"
@@ -31,9 +42,29 @@ RowLayout {
         font.family: "MonaspiceKr Nerd Font"
     }
     Text {
-        text: UPower.displayDevice ? Math.round(UPower.displayDevice.percentage * 100) + "%" : ""
+        text: {
+            if (!UPower.displayDevice) return ""
+            const rawPct = UPower.displayDevice.percentage * 100
+            const pct = Math.round(rawPct)
+            if (showEstimate && UPower.displayDevice.state === UPowerDeviceState.Discharging && rawPct > 20) {
+                // Approximate time to 20% from UPower's time-to-empty estimate.
+                const secondsToEmpty = UPower.displayDevice.timeToEmpty ? UPower.displayDevice.timeToEmpty : 0
+                const minutesToTwenty = secondsToEmpty > 0
+                    ? (secondsToEmpty / 60) * ((rawPct - 20) / rawPct)
+                    : 0
+                const time = formatTime(minutesToTwenty)
+                if (time) return `${pct}% · ${time} to 20%`
+            }
+            return pct + "%"
+        }
         color: Theme.text
         font.pixelSize: 14
         font.family: "MonaspiceKr Nerd Font"
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        onClicked: showEstimate = !showEstimate
     }
 }
