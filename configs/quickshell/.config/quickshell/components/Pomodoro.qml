@@ -36,11 +36,11 @@ MouseArea {
             if (mode === "work") {
                 mode = "rest"
                 timeLeft = restTime
-                notifyProcess.command = ["notify-send", "Pomodoro", "Work session finished! Time to rest.", "-i", "timer-symbolic"]
+                notifyProcess.command = ["notify-send", "Pomodoro", "Work session finished! Time to rest.", "-u", "critical", "-i", "timer-symbolic"]
             } else {
                 mode = "work"
                 timeLeft = workTime
-                notifyProcess.command = ["notify-send", "Pomodoro", "Rest finished! Back to work.", "-i", "timer-symbolic"]
+                notifyProcess.command = ["notify-send", "Pomodoro", "Rest finished! Back to work.", "-u", "critical", "-i", "timer-symbolic"]
             }
             notifyProcess.running = true
         }
