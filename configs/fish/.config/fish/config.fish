@@ -13,6 +13,7 @@ alias n nvim
 alias py python3
 alias xo xdg-open
 alias lg lazygit
+alias oo opencode
 alias wgu "sudo wg-quick up wg0"
 alias wgd "sudo wg-quick down wg0"
 alias clip "xclip -selection clipboard"
@@ -36,3 +37,4 @@ set --export PATH $BUN_INSTALL/bin $PATH
 
 # starship
 starship init fish | source
+set -gx PATH $HOME/.npm-global/bin $PATH
