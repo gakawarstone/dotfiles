@@ -2,8 +2,36 @@ import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 
 const BLOCK_REASON = "Blocked by user";
 const NO_UI_REASON = "No UI available for confirmation";
-const ALLOWED_BASH_PREFIXES = ["cd", "find", "rg", "git diff", "git status"];
-const DISALLOWED_BASH_TOKENS = [";", "|", "<", ">", "`", "$(", "\n", "\r", "||"];
+const READONLY_TOOLS = new Set(["read", "grep", "find", "ls"]);
+const ALLOWED_BASH_COMMANDS = new Set([
+	"cat",
+	"cd",
+	"fd",
+	"find",
+	"git",
+	"grep",
+	"head",
+	"ls",
+	"pwd",
+	"rg",
+	"sort",
+	"tail",
+	"tree",
+	"uniq",
+	"wc",
+]);
+const ALLOWED_GIT_SUBCOMMANDS = new Set([
+	"branch",
+	"diff",
+	"grep",
+	"log",
+	"ls-files",
+	"show",
+	"status",
+]);
+const DISALLOWED_BASH_TOKENS = [";", "<", ">", "`", "$(", "\n", "\r", "||"];
+
+type ExtensionContext = Parameters<Parameters<ExtensionAPI["on"]>[1]>[1];
 
 type EditInput = {
 	oldText?: unknown;
@@ -15,11 +43,66 @@ function toText(value: unknown, fallback = "") {
 	return text || fallback;
 }
 
+function getCommandName(segment: string) {
+	const [name] = segment.trim().split(/\s+/, 1);
+	return name ?? "";
+}
+
 function isAllowedBashSegment(command: string) {
 	const trimmed = command.trim();
-	return ALLOWED_BASH_PREFIXES.some(
-		(prefix) => trimmed === prefix || trimmed.startsWith(`${prefix} `),
-	);
+	if (!trimmed) return false;
+
+	const name = getCommandName(trimmed);
+	if (!ALLOWED_BASH_COMMANDS.has(name)) return false;
+
+	if (name === "git") {
+		const subcommand = trimmed.split(/\s+/)[1] ?? "";
+		return ALLOWED_GIT_SUBCOMMANDS.has(subcommand);
+	}
+
+	return true;
+}
+
+function splitBashSegments(command: string) {
+	const segments: string[] = [];
+	let current = "";
+	let quote: "'" | '"' | undefined;
+
+	for (let i = 0; i < command.length; i++) {
+		const char = command[i];
+
+		if (quote) {
+			current += char;
+			if (char === quote) quote = undefined;
+			continue;
+		}
+
+		if (char === "'" || char === '"') {
+			quote = char;
+			current += char;
+			continue;
+		}
+
+		if (char === "|") {
+			segments.push(current);
+			current = "";
+			continue;
+		}
+
+		if (char === "&") {
+			if (command[i + 1] !== "&") return undefined;
+			segments.push(current);
+			current = "";
+			i++;
+			continue;
+		}
+
+		current += char;
+	}
+
+	if (quote) return undefined;
+	segments.push(current);
+	return segments;
 }
 
 function isAllowedBashCommand(command: string) {
@@ -30,94 +113,24 @@ function isAllowedBashCommand(command: string) {
 		return false;
 	}
 
-	if (trimmed.replaceAll("&&", "").includes("&")) {
-		return false;
-	}
-
-	return trimmed.split("&&").every((segment) => isAllowedBashSegment(segment));
+	const segments = splitBashSegments(trimmed);
+	return segments !== undefined && segments.every((segment) => isAllowedBashSegment(segment));
 }
 
-function formatDiffLines(prefix: "-" | "+", text: string) {
-	return text.split("\n").map((line) => `${prefix} ${line}`);
-}
-
-function buildEditDiff(edits: EditInput[]) {
-	return edits
-		.map((edit, index) => {
-			const oldText = toText(edit.oldText, "(empty)");
-			const newText = toText(edit.newText, "(empty)");
-
-			return [
-				`## Edit ${index + 1}`,
-				"```diff",
-				...formatDiffLines("-", oldText),
-				...formatDiffLines("+", newText),
-				"```",
-			].join("\n");
-		})
-		.join("\n\n");
-}
-
-async function confirmSimple(
-	ctx: Parameters<Parameters<ExtensionAPI["on"]>[1]>[1],
-	title: string,
-	message: string,
-) {
+async function confirmSimple(ctx: ExtensionContext, title: string, message: string) {
 	return ctx.ui.confirm(title, message);
 }
 
-async function confirmEdit(
-	ctx: Parameters<Parameters<ExtensionAPI["on"]>[1]>[1],
-	path: string,
-	edits: EditInput[],
-) {
-	const diff = buildEditDiff(edits);
-	const [{ getMarkdownTheme }, { Box, Container, Key, Markdown, Spacer, Text, matchesKey }] =
-		await Promise.all([
-			import("@mariozechner/pi-coding-agent"),
-			import("@mariozechner/pi-tui"),
-		]);
-	const markdownTheme = getMarkdownTheme();
-
-	return ctx.ui.custom<boolean>(
-		(_tui, theme, _kb, done) => {
-			const content = new Container();
-			content.addChild(new Text(theme.fg("accent", theme.bold("Allow edit?")), 0, 0));
-			content.addChild(new Spacer(1));
-			content.addChild(new Markdown(`**File:** \`${path}\``, 0, 0, markdownTheme));
-			content.addChild(new Spacer(1));
-			content.addChild(new Markdown(diff || "*(no diff provided)*", 0, 0, markdownTheme));
-			content.addChild(new Spacer(1));
-			content.addChild(new Text(theme.fg("dim", "Enter = allow, Esc = block"), 0, 0));
-
-			const box = new Box(1, 1, (text) => theme.bg("customMessageBg", text));
-			box.addChild(content);
-
-			return {
-				render(width: number) {
-					return box.render(width);
-				},
-				invalidate() {
-					box.invalidate();
-				},
-				handleInput(data: string) {
-					if (matchesKey(data, Key.enter)) {
-						done(true);
-						return;
-					}
-
-					if (matchesKey(data, Key.escape)) {
-						done(false);
-					}
-				},
-			};
-		},
-		{ overlay: true },
-	);
+async function confirmEdit(ctx: ExtensionContext, filePath: string, _edits: EditInput[]) {
+	return confirmSimple(ctx, "Allow edit?", `Apply edit to ${filePath}?`);
 }
 
 export default function confirmToolsExtension(pi: ExtensionAPI) {
 	pi.on("tool_call", async (event, ctx) => {
+		if (READONLY_TOOLS.has(event.toolName)) {
+			return undefined;
+		}
+
 		if (event.toolName === "bash") {
 			const command = toText(event.input.command);
 			if (isAllowedBashCommand(command)) {
