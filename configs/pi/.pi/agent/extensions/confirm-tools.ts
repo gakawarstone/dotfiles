@@ -1,6 +1,4 @@
-import { getMarkdownTheme } from "@mariozechner/pi-coding-agent";
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { Box, Container, Key, Markdown, Spacer, Text, matchesKey } from "@mariozechner/pi-tui";
 
 const BLOCK_REASON = "Blocked by user";
 const NO_UI_REASON = "No UI available for confirmation";
@@ -74,6 +72,11 @@ async function confirmEdit(
 	edits: EditInput[],
 ) {
 	const diff = buildEditDiff(edits);
+	const [{ getMarkdownTheme }, { Box, Container, Key, Markdown, Spacer, Text, matchesKey }] =
+		await Promise.all([
+			import("@mariozechner/pi-coding-agent"),
+			import("@mariozechner/pi-tui"),
+		]);
 	const markdownTheme = getMarkdownTheme();
 
 	return ctx.ui.custom<boolean>(
@@ -115,14 +118,14 @@ async function confirmEdit(
 
 export default function confirmToolsExtension(pi: ExtensionAPI) {
 	pi.on("tool_call", async (event, ctx) => {
-		if (!ctx.hasUI) {
-			return { block: true, reason: NO_UI_REASON };
-		}
-
 		if (event.toolName === "bash") {
 			const command = toText(event.input.command);
 			if (isAllowedBashCommand(command)) {
 				return undefined;
+			}
+
+			if (!ctx.hasUI) {
+				return { block: true, reason: NO_UI_REASON };
 			}
 
 			const confirmed = await confirmSimple(
@@ -131,6 +134,10 @@ export default function confirmToolsExtension(pi: ExtensionAPI) {
 				command || "(empty command)",
 			);
 			if (!confirmed) return { block: true, reason: BLOCK_REASON };
+		}
+
+		if (!ctx.hasUI) {
+			return { block: true, reason: NO_UI_REASON };
 		}
 
 		if (event.toolName === "write") {
