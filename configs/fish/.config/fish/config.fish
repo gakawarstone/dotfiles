@@ -7,6 +7,8 @@ set -x PATH /home/gws/.dotnet/tools $PATH
 set fish_greeting
 
 export EDITOR=nvim
+set -gx PI_SKIP_VERSION_CHECK 1
+set -gx PI_TELEMETRY 0
 
 alias c clear
 alias n nvim
