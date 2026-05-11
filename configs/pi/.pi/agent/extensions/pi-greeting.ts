@@ -2,13 +2,13 @@ import type { ExtensionAPI, Theme } from "@mariozechner/pi-coding-agent";
 import { VERSION } from "@mariozechner/pi-coding-agent";
 
 const ART = [
-	"PPPPPP  IIIIIII",
-	"PP   PP   III  ",
-	"PP   PP   III  ",
-	"PPPPPP    III  ",
-	"PP        III  ",
-	"PP        III  ",
-	"PP      IIIIIII",
+	"██████  ███████",
+	"██   ██   ███  ",
+	"██   ██   ███  ",
+	"██████    ███  ",
+	"██        ███  ",
+	"██        ███  ",
+	"██      ███████",
 ];
 
 function renderGreeting(theme: Theme): string[] {
