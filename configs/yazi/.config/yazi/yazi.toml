@@ -1,6 +1,6 @@
 [opener]
 nvim = [
-  { run = 'alacritty -e nvim "$@"', block = true, desc = "Neovim", for = "unix" }
+  { run = 'foot -e nvim "$@"', block = true, desc = "Neovim", for = "unix" }
 ]
 zathura = [
   { run = 'zathura "$@"', desc = "zathura", block = true, for = "unix" }
@@ -27,11 +27,13 @@ rules = [
 ]
 
 [[plugin.prepend_fetchers]]
-id   = "git"
-name = "*"
-run  = "git"
+id    = "git"
+url   = "*"
+run   = "git"
+group = "git"
 
 [[plugin.prepend_fetchers]]
-id   = "git"
-name = "*/"
-run  = "git"
+id    = "git"
+url   = "*/"
+run   = "git"
+group = "git"
