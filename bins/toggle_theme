@@ -6,18 +6,56 @@ HYPR_DIR="$DOTFILES/configs/hyprland/.config/hypr"
 FOOT_DIR="$DOTFILES/configs/foot/.config/foot"
 QUICKSHELL_DIR="$DOTFILES/configs/quickshell/.config/quickshell"
 
-# Detect current theme by checking where theme.conf points to
-if [ -L "$HYPR_DIR/theme.conf" ]; then
-    CURRENT=$(readlink "$HYPR_DIR/theme.conf")
-    if [[ "$CURRENT" == *"mocha.conf"* ]]; then
-        TARGET="latte"
+detect_target_from_symlink() {
+    # Detect current theme by checking where theme.conf points to
+    if [ -L "$HYPR_DIR/theme.conf" ]; then
+        CURRENT=$(readlink "$HYPR_DIR/theme.conf")
+        if [[ "$CURRENT" == *"mocha.conf"* ]]; then
+            echo "latte"
+        else
+            echo "mocha"
+        fi
     else
-        TARGET="mocha"
+        # Default to mocha if symlink doesn't exist
+        echo "mocha"
     fi
-else
-    # Default to mocha if symlink doesn't exist
-    TARGET="mocha"
-fi
+}
+
+detect_target_from_portal() {
+    local COLOR_SCHEME
+
+    COLOR_SCHEME=$(gdbus call \
+        --session \
+        --dest org.freedesktop.portal.Desktop \
+        --object-path /org/freedesktop/portal/desktop \
+        --method org.freedesktop.portal.Settings.Read \
+        org.freedesktop.appearance \
+        color-scheme 2>/dev/null) || return 1
+
+    case "$COLOR_SCHEME" in
+        *"uint32 1"*) echo "latte" ;; # Portal currently prefers dark
+        *"uint32 2"*) echo "mocha" ;; # Portal currently prefers light
+        *) return 1 ;; # No preference or unsupported response
+    esac
+}
+
+sync_portal_preference() {
+    if ! command -v gsettings >/dev/null 2>&1; then
+        return
+    fi
+
+    if [[ "$(gsettings writable org.gnome.desktop.interface color-scheme 2>/dev/null)" != "true" ]]; then
+        return
+    fi
+
+    if [[ "$TARGET" == "mocha" ]]; then
+        gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+    else
+        gsettings set org.gnome.desktop.interface color-scheme prefer-light
+    fi
+}
+
+TARGET=$(detect_target_from_portal || detect_target_from_symlink)
 
 echo "Switching theme to: $TARGET"
 
@@ -34,6 +72,8 @@ else
     ln -sf latte.ini "$FOOT_DIR/theme.ini"
     ln -sf Latte.qml "$QUICKSHELL_DIR/Theme.qml"
 fi
+
+sync_portal_preference
 
 # Reload applications
 hyprctl reload
