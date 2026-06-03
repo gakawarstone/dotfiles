@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from urllib.parse import urlencode
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
+
+
+CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
 
 
 def format_reset(seconds):
@@ -47,15 +51,68 @@ def format_reset_at(seconds):
     return f"{reset_at.day} {reset_at:%b %H:%M}"
 
 
+def auth_path():
+    return Path.home() / ".codex" / "auth.json"
+
+
 def load_auth():
-    auth_path = Path.home() / ".codex" / "auth.json"
-    auth = json.loads(auth_path.read_text())
+    auth = json.loads(auth_path().read_text())
     tokens = auth.get("tokens") or {}
-    return tokens.get("access_token"), tokens.get("account_id")
+    return auth, tokens.get("access_token"), tokens.get("account_id")
 
 
-def fetch_usage():
-    token, account_id = load_auth()
+def save_refreshed_auth(auth, refreshed):
+    tokens = auth.setdefault("tokens", {})
+    tokens["access_token"] = refreshed["access_token"]
+    tokens["refresh_token"] = refreshed.get("refresh_token", tokens.get("refresh_token"))
+    tokens["id_token"] = refreshed.get("id_token", tokens.get("id_token"))
+    auth["last_refresh"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    auth_path().write_text(json.dumps(auth, indent=2) + "\n")
+
+
+def refresh_auth(auth):
+    refresh_token = (auth.get("tokens") or {}).get("refresh_token")
+    if not refresh_token:
+        raise RuntimeError("missing Codex refresh token")
+
+    body = urlencode({
+        "grant_type": "refresh_token",
+        "refresh_token": refresh_token,
+        "client_id": CLIENT_ID,
+    }).encode("utf-8")
+
+    request = Request(
+        "https://auth.openai.com/oauth/token",
+        data=body,
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Accept": "application/json",
+            "User-Agent": "quickshell-codex-usage",
+        },
+    )
+    with urlopen(request, timeout=10) as response:
+        refreshed = json.loads(response.read().decode("utf-8"))
+
+    if not refreshed.get("access_token"):
+        raise RuntimeError("missing refreshed Codex access token")
+
+    save_refreshed_auth(auth, refreshed)
+    return refreshed["access_token"]
+
+
+def is_expired_token_error(error):
+    if error.code != 401:
+        return False
+
+    try:
+        payload = json.loads(error.read().decode("utf-8"))
+    except json.JSONDecodeError:
+        return False
+
+    return (payload.get("error") or {}).get("code") == "token_expired"
+
+
+def fetch_usage_with_token(token, account_id):
     if not token or not account_id:
         raise RuntimeError("missing Codex auth")
 
@@ -70,6 +127,17 @@ def fetch_usage():
     )
     with urlopen(request, timeout=10) as response:
         return json.loads(response.read().decode("utf-8"))
+
+
+def fetch_usage():
+    auth, token, account_id = load_auth()
+    try:
+        return fetch_usage_with_token(token, account_id)
+    except HTTPError as error:
+        if not is_expired_token_error(error):
+            raise
+
+    return fetch_usage_with_token(refresh_auth(auth), account_id)
 
 
 try:
