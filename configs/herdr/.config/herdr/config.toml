@@ -1,0 +1,7 @@
+onboarding = false
+
+[keys]
+prefix = "alt+j"
+
+[ui]
+agent_panel_scope = "all"
