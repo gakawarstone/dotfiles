@@ -2,6 +2,8 @@ onboarding = false
 
 [keys]
 prefix = "alt+j"
+previous_agent = "prefix+shift+h"
+next_agent = "prefix+shift+l"
 
 [ui]
 agent_panel_scope = "all"
