@@ -8,7 +8,6 @@
   "theme": "catppuccin-mocha",
   "packages": [
     "npm:pi-wakatime",
-    "npm:pi-claude-permissions",
     "npm:pi-web-access"
   ]
 }
