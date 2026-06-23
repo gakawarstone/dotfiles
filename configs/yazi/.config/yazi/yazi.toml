@@ -5,6 +5,9 @@ nvim = [
 zathura = [
   { run = 'zathura "$@"', desc = "zathura", block = true, for = "unix" }
 ]
+okular = [
+  { run = 'okular "$@"', desc = "okular", block = true, for = "unix" }
+]
 open = [
 	{ run = 'xdg-open "$@"', desc = "Open" },
 ]
@@ -20,6 +23,7 @@ rules = [
   { mime = "text/*", use = "nvim" },
   { mime = "inode/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
+  { mime = "application/pdf", use = "okular" },
   { mime = "application/pdf", use = "zen" },
   { mime = "image/jpeg", use = "feh" },
   { mime = "image/png", use = "feh" },
