@@ -1,0 +1,11 @@
+local programs = require("programs")
+
+hl.on("hyprland.start", function()
+    hl.exec_cmd("quickshell & hyprpaper")
+    hl.exec_cmd("[workspace 1 silent] zen-browser")
+    hl.exec_cmd("[workspace 2 silent] Telegram")
+    hl.exec_cmd("[workspace 2 silent] legcord")
+    hl.exec_cmd("[workspace 2 silent] thunderbird")
+    hl.exec_cmd("[workspace 3 silent] " .. programs.terminal .. " -e tmux")
+    hl.exec_cmd("hyprctl dispatch workspace 3")
+end)
