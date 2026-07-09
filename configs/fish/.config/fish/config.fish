@@ -30,7 +30,9 @@ function a
     rm -f -- "$tmp"
 end
 
-source $HOME/.env.fish
+if test -f $HOME/.env.fish
+    source $HOME/.env.fish
+end
 zoxide init fish | source
 
 # bun
