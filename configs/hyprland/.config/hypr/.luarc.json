@@ -1,0 +1,12 @@
+{
+  "workspace": {
+    "library": [
+      "/home/gws/.config/hypr"
+    ]
+  },
+  "diagnostics": {
+    "globals": [
+      "hl"
+    ]
+  }
+}
