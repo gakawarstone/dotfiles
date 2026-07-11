@@ -1,13 +1,13 @@
 {
-  "lastChangelogVersion": "0.73.1",
-  "quietStartup": true,
-  "enableInstallTelemetry": false,
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "low",
-  "theme": "catppuccin-mocha",
-  "packages": [
-    "npm:pi-wakatime",
-    "npm:pi-web-access"
-  ]
+	"lastChangelogVersion": "0.79.10",
+	"quietStartup": true,
+	"enableInstallTelemetry": false,
+	"defaultProvider": "openai-codex",
+	"defaultModel": "gpt-5.5",
+	"defaultThinkingLevel": "medium",
+	"theme": "catppuccin-mocha",
+	"packages": [
+		"npm:pi-wakatime",
+		"npm:pi-web-access"
+	]
 }
