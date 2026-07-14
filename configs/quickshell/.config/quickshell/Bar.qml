@@ -34,6 +34,8 @@ Rectangle {
             spacing: 15
 
             NetworkSpeed {}
+            CodexUsage {}
+            LanMouse {}
             Pomodoro {
                 pomoState: root.pomoState
             }
