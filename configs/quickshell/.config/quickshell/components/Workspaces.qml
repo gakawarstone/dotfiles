@@ -45,7 +45,7 @@ RowLayout {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: Hyprland.dispatch("workspace " + modelData.name)
+                    onClicked: modelData.activate()
                 }
             }
         }
