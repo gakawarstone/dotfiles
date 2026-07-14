@@ -48,7 +48,7 @@ MouseArea {
 
     Process {
         id: startProcess
-        command: ["sh", "-c", "fifo='" + root.fifo + "'; log='" + root.log + "'; pidfile='" + root.pidFile + "'; if [ -s \"$pidfile\" ] && kill -0 \"$(cat \"$pidfile\")\" 2>/dev/null; then :; else rm -f \"$fifo\"; mkfifo \"$fifo\"; : > \"$log\"; (while true; do cat \"$fifo\"; done | lan-mouse --capture-backend layer-shell -f cli > \"$log\" 2>&1) & echo $! > \"$pidfile\"; fi; sleep 0.2; printf '%s' '" + root.workflowCommands() + "' > \"$fifo\""]
+        command: ["sh", "-c", "fifo='" + root.fifo + "'; log='" + root.log + "'; pidfile='" + root.pidFile + "'; if [ -s \"$pidfile\" ] && kill -0 \"$(cat \"$pidfile\")\" 2>/dev/null; then :; else rm -f \"$fifo\"; mkfifo \"$fifo\"; : > \"$log\"; setsid sh -c 'while true; do cat \"$1\"; done | lan-mouse --capture-backend layer-shell -f cli > \"$2\" 2>&1' sh \"$fifo\" \"$log\" & echo $! > \"$pidfile\"; fi; sleep 0.2; printf '%s' '" + root.workflowCommands() + "' > \"$fifo\""]
         onExited: () => statusProcess.running = true
     }
 
@@ -60,7 +60,7 @@ MouseArea {
 
     Process {
         id: stopProcess
-        command: ["sh", "-c", "pidfile='" + root.pidFile + "'; fifo='" + root.fifo + "'; [ -s \"$pidfile\" ] && kill \"$(cat \"$pidfile\")\" 2>/dev/null || true; rm -f \"$pidfile\" \"$fifo\""]
+        command: ["sh", "-c", "pidfile='" + root.pidFile + "'; fifo='" + root.fifo + "'; if [ -s \"$pidfile\" ]; then pid=$(cat \"$pidfile\"); case \"$pid\" in *[!0-9]*|'') ;; *) kill -TERM -- \"-$pid\" 2>/dev/null || true ;; esac; fi; rm -f \"$pidfile\" \"$fifo\""]
         onExited: () => statusProcess.running = true
     }
 
