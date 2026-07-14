@@ -10,9 +10,6 @@ install:
 	fi
 	python ./gkdots/install.py
 
-decrypt_secrets:
-	python ./gkdots/secrets.py
-
 .PHONY: fonts
 fonts:
 	sh ./scripts/build_fonts.sh
