@@ -1,23 +1,28 @@
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 from config import INCLUDED_BINS, BIN_FILES_PATH, INCLUDED_CONFIGS
 from datatypes import BinFileLinkingInfo, ConfigDirLinkingInfo
 
 
-def _run_cmd(cmd: list[str], cwd: Path | None = None, capture_output: bool = False):
+def _run_cmd(
+    cmd: list[str], cwd: Path | None = None, capture_output: bool = False
+) -> subprocess.CompletedProcess[str]:
     if not cwd:
         cwd = Path(os.getcwd())
     else:
         print(cwd.as_posix(), end=" ")
 
-    try:
-        print(*cmd)
-        subprocess.run(cmd, cwd=cwd, check=True, capture_output=capture_output)
-    except subprocess.CalledProcessError as e:
-        print(f"Error running command")
-        raise
+    print(*cmd)
+    return subprocess.run(
+        cmd,
+        cwd=cwd,
+        check=True,
+        capture_output=capture_output,
+        text=True,
+    )
 
 
 def _link_bin_file(file_path: Path, target_path: Path):
@@ -57,11 +62,21 @@ def _install_config(
         cmd.insert(1, "--adopt")
     try:
         _run_cmd(cmd, capture_output=True)
-    except subprocess.CalledProcessError as e:
-        if "--adopt" in str(e.stderr):
+    except subprocess.CalledProcessError as error:
+        stderr = error.stderr or ""
+        if not adopt and "--adopt" in stderr:
             print("There is config for", config.name)
             if input("Rewrite it (y/n)") == "y":
                 _install_config(config, configs_dir, target_dir, adopt=True)
+                return
+
+        if stderr:
+            print(
+                stderr,
+                end="" if stderr.endswith("\n") else "\n",
+                file=sys.stderr,
+            )
+        raise
 
 
 def install_bins(
