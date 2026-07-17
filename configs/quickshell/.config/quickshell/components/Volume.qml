@@ -1,107 +1,14 @@
-import Quickshell
-import QtQuick
-import QtQuick.Layouts
-import Quickshell.Io
 import ".."
 
-MouseArea {
-    id: root
-    Layout.fillHeight: true
-    implicitWidth: layout.implicitWidth
-    hoverEnabled: true
-    cursorShape: Qt.PointingHandCursor
-
-    property bool menuOpen: false
-    property real volume: 0
-    property bool muted: false
-    property bool startup: true
-
-    onVolumeChanged: {
-        if (!startup && !menuOpen) {
-            toast.trigger();
-        }
+AudioControl {
+    audioNode: "@DEFAULT_AUDIO_SINK@"
+    label: "Volume"
+    icon: {
+        if (muted || volume === 0) return "󰝟";
+        if (volume < 0.33) return "󰕿";
+        if (volume < 0.66) return "󰖀";
+        return "󰕾";
     }
-
-    onMutedChanged: {
-        if (!startup && !menuOpen) {
-            toast.trigger();
-        }
-    }
-
-    function updateVolume() {
-        volumeProcess.running = true;
-    }
-
-    Process {
-        id: volumeProcess
-        command: ["sh", "-c", "wpctl get-volume @DEFAULT_AUDIO_SINK@"]
-        stdout: StdioCollector {
-            id: volumeCollector
-            onTextChanged: {
-                const cleanText = volumeCollector.text.trim();
-                if (!cleanText) return;
-                
-                const parts = cleanText.split(" ");
-                if (parts.length >= 2) {
-                    root.volume = parseFloat(parts[1]);
-                    root.muted = cleanText.includes("[MUTED]");
-                    if (root.startup) root.startup = false;
-                }
-            }
-        }
-    }
-
-    Timer {
-        interval: root.menuOpen ? 200 : 500
-        running: true
-        repeat: true
-        onTriggered: root.updateVolume()
-    }
-
-    Component.onCompleted: root.updateVolume()
-
-    onClicked: menuOpen = !menuOpen
-
-    RowLayout {
-        id: layout
-        anchors.fill: parent
-        spacing: 8
-
-        Text {
-            text: {
-                if (root.muted || root.volume === 0) return "󰝟"
-                if (root.volume < 0.33) return "󰕿"
-                if (root.volume < 0.66) return "󰖀"
-                return "󰕾"
-            }
-            font.pixelSize: 18
-            color: !root.muted ? Theme.blue : Theme.red
-            font.family: "MonaspiceKr Nerd Font"
-        }
-    }
-
-    VolumeToast {
-        id: toast
-        volume: root.volume
-        muted: root.muted
-    }
-
-    VolumePopup {
-        visible: root.menuOpen
-        anchorItem: root
-        volume: root.volume
-        muted: root.muted
-
-        onVisibleChanged: {
-            if (!visible) root.menuOpen = false;
-        }
-        
-        onVolumeUpdate: (volume) => {
-            root.volume = volume;
-        }
-        
-        onMuteUpdate: (muted) => {
-            root.muted = muted;
-        }
-    }
+    accentColor: Theme.blue
+    popupMutedIconColor: Theme.overlay0
 }

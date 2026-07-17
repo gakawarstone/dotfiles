@@ -1,12 +1,10 @@
-import Quickshell
 import QtQuick
-import QtQuick.Layouts
 import Quickshell.Io
 import ".."
 
 Item {
     id: root
-    
+
     property real brightness: 0
     property int maxBrightness: 1
     property bool startup: true
@@ -54,8 +52,16 @@ Item {
         onTriggered: root.updateBrightness()
     }
 
-    BrightnessToast {
+    StatusToast {
         id: toast
-        brightness: root.brightness
+        namespace: "brightness-toast"
+        label: "Brightness"
+        icon: {
+            if (root.brightness < 0.33) return "󰃞";
+            if (root.brightness < 0.66) return "󰃟";
+            return "󰃠";
+        }
+        accentColor: Theme.yellow
+        value: root.brightness
     }
 }

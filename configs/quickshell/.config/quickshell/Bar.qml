@@ -1,4 +1,3 @@
-import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import "."
@@ -16,19 +15,16 @@ Rectangle {
         anchors.rightMargin: 25
         spacing: 15
 
-        // Left: Arch icon + Workspaces
         Workspaces {
             Layout.alignment: Qt.AlignLeft
             screen: root.screen
         }
 
-        // Center: Active Window Title
         WindowTitle {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
         }
 
-        // Right: System Info
         RowLayout {
             Layout.alignment: Qt.AlignRight
             spacing: 15
@@ -42,16 +38,11 @@ Rectangle {
             Volume {}
             Microphone {}
             Bluetooth {}
-            // Wifi {}
-            // Cpu {}
             Battery {}
             KeyboardLayout {}
         }
     }
 
-    // Brightness {}
-
-    // Bottom border/line
     Rectangle {
         anchors.bottom: parent.bottom
         width: parent.width

@@ -7,7 +7,6 @@ import "./components"
 ShellRoot {
     id: shellRoot
 
-    // This uses the TimerLogic defined inside Pomodoro.qml
     Pomodoro.TimerLogic {
         id: globalPomoState
     }
@@ -19,7 +18,6 @@ ShellRoot {
             required property var modelData
             screen: modelData
 
-            // NOTE: try to fix bar in front of steam game
             WlrLayershell.layer: WlrLayershell.Bottom
 
             anchors {

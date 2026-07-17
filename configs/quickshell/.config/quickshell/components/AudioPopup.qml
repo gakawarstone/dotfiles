@@ -1,39 +1,39 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
-import Quickshell.Wayland
 import ".."
 
 PopupWindow {
-    id: popup
-    
-    property var anchorItem
+    id: root
+
+    required property var anchorItem
+    required property string audioNode
+    required property string label
+    required property string icon
+    required property color accentColor
+    property color iconColor: accentColor
     property real volume: 0
     property bool muted: false
 
     signal volumeUpdate(real volume)
     signal muteUpdate(bool muted)
 
-    color: "transparent"
+    anchor.item: root.anchorItem
+    relativeX: -100
+    relativeY: root.anchorItem ? root.anchorItem.height + 5 : 0
     width: content.width
     height: content.height
-    
-    anchor {
-        item: popup.anchorItem
-    }
-
-    relativeX: -100
-    relativeY: popup.anchorItem ? popup.anchorItem.height + 5 : 0
+    color: "transparent"
 
     Process {
         id: setVolumeProcess
-        command: ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", popup.volume.toFixed(2)]
+        command: ["wpctl", "set-volume", root.audioNode, root.volume.toFixed(2)]
     }
 
     Process {
         id: toggleMuteProcess
-        command: ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"]
+        command: ["wpctl", "set-mute", root.audioNode, "toggle"]
     }
 
     Rectangle {
@@ -53,19 +53,20 @@ PopupWindow {
 
             RowLayout {
                 Layout.fillWidth: true
+
                 Text {
-                    text: "Volume"
+                    text: root.label
                     color: Theme.text
-                    font.pixelSize: 16
                     font.bold: true
                     font.family: "MonaspiceKr Nerd Font"
+                    font.pixelSize: 16
                 }
                 Item { Layout.fillWidth: true }
                 Text {
-                    text: Math.round(popup.volume * 100) + "%"
+                    text: Math.round(root.volume * 100) + "%"
                     color: Theme.text
-                    font.pixelSize: 14
                     font.family: "MonaspiceKr Nerd Font"
+                    font.pixelSize: 14
                 }
             }
 
@@ -80,26 +81,20 @@ PopupWindow {
                 spacing: 10
 
                 Text {
-                    text: {
-                        if (popup.muted || popup.volume === 0) return "󰝟"
-                        if (popup.volume < 0.33) return "󰕿"
-                        if (popup.volume < 0.66) return "󰖀"
-                        return "󰕾"
-                    }
-                    font.pixelSize: 20
-                    color: !popup.muted ? Theme.blue : Theme.overlay0
+                    text: root.icon
+                    color: root.iconColor
                     font.family: "MonaspiceKr Nerd Font"
-                    
+                    font.pixelSize: 20
+
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            popup.muteUpdate(!popup.muted);
+                            root.muteUpdate(!root.muted);
                             toggleMuteProcess.running = true;
                         }
                     }
                 }
 
-                // Volume Slider
                 Rectangle {
                     id: sliderTrack
                     Layout.fillWidth: true
@@ -108,27 +103,27 @@ PopupWindow {
                     radius: 3
 
                     Rectangle {
-                        width: sliderTrack.width * Math.min(popup.volume, 1.0)
+                        width: sliderTrack.width * Math.min(root.volume, 1)
                         height: parent.height
-                        color: !popup.muted ? Theme.blue : Theme.overlay0
+                        color: root.muted ? Theme.overlay0 : root.accentColor
                         radius: 3
                     }
 
                     MouseArea {
                         anchors.fill: parent
                         property bool dragging: false
-                        
+
                         function updateVolume(mouse) {
-                            let val = Math.max(0, Math.min(1.5, mouse.x / width)); // Allow up to 150%
-                            popup.volumeUpdate(val);
+                            const value = Math.max(0, Math.min(1.5, mouse.x / width));
+                            root.volumeUpdate(value);
                             setVolumeProcess.running = true;
                         }
 
-                        onPressed: (mouse) => {
+                        onPressed: mouse => {
                             dragging = true;
                             updateVolume(mouse);
                         }
-                        onPositionChanged: (mouse) => {
+                        onPositionChanged: mouse => {
                             if (dragging) updateVolume(mouse);
                         }
                         onReleased: dragging = false

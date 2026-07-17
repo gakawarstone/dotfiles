@@ -5,17 +5,22 @@ import QtQuick.Layouts
 import ".."
 
 PanelWindow {
-    id: toast
-    
+    id: root
+
+    required property string namespace
+    required property string label
+    required property string icon
+    required property color accentColor
+    property color iconColor: accentColor
+    property color barColor: accentColor
+    property real value: 0
+
     WlrLayershell.layer: WlrLayershell.Overlay
+    WlrLayershell.namespace: root.namespace
     exclusiveZone: -1
-    WlrLayershell.namespace: "brightness-toast"
-    
-    property real brightness: 0
-    
     visible: false
     color: "transparent"
-    
+
     anchors {
         top: true
         bottom: true
@@ -25,10 +30,8 @@ PanelWindow {
 
     function trigger() {
         hideAnimation.stop();
-        if (!visible) {
+        if (!visible || hideAnimation.running || content.opacity < 1) {
             visible = true;
-            showAnimation.restart();
-        } else if (hideAnimation.running || content.opacity < 1.0) {
             showAnimation.restart();
         }
         hideTimer.restart();
@@ -50,37 +53,31 @@ PanelWindow {
         id: hideAnimation
         NumberAnimation { target: content; property: "opacity"; from: 1; to: 0; duration: 200; easing.type: Easing.InCubic }
         NumberAnimation { target: content; property: "scale"; from: 1; to: 0.9; duration: 200; easing.type: Easing.InCubic }
-        onFinished: toast.visible = false
+        onFinished: root.visible = false
     }
 
     Rectangle {
         id: content
         anchors.centerIn: parent
-        opacity: 0
-        scale: 0.9
-        
         implicitWidth: 260
         implicitHeight: 80
-        
+        opacity: 0
+        scale: 0.9
         color: Theme.base
-        border.color: Theme.yellow // catppuccin yellow for brightness
+        border.color: root.accentColor
         border.width: 2
         radius: 16
-        
+
         RowLayout {
             anchors.fill: parent
             anchors.margins: 20
             spacing: 16
 
             Text {
-                text: {
-                    if (toast.brightness < 0.33) return "󰃞"
-                    if (toast.brightness < 0.66) return "󰃟"
-                    return "󰃠"
-                }
-                font.pixelSize: 32
-                color: Theme.yellow
+                text: root.icon
+                color: root.iconColor
                 font.family: "MonaspiceKr Nerd Font"
+                font.pixelSize: 32
             }
 
             ColumnLayout {
@@ -89,18 +86,19 @@ PanelWindow {
 
                 RowLayout {
                     Layout.fillWidth: true
+
                     Text {
-                        text: "Brightness"
+                        text: root.label
                         color: Theme.text
-                        font.pixelSize: 16
                         font.family: "MonaspiceKr Nerd Font"
+                        font.pixelSize: 16
                     }
                     Item { Layout.fillWidth: true }
                     Text {
-                        text: Math.round(toast.brightness * 100) + "%"
+                        text: Math.round(root.value * 100) + "%"
                         color: Theme.text
-                        font.pixelSize: 16
                         font.family: "MonaspiceKr Nerd Font"
+                        font.pixelSize: 16
                     }
                 }
 
@@ -111,9 +109,9 @@ PanelWindow {
                     radius: 3
 
                     Rectangle {
-                        width: parent.width * Math.min(toast.brightness, 1.0)
+                        width: parent.width * Math.min(root.value, 1)
                         height: parent.height
-                        color: Theme.yellow
+                        color: root.barColor
                         radius: 3
                     }
                 }
