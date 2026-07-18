@@ -7,6 +7,10 @@ import "./components"
 ShellRoot {
     id: shellRoot
 
+    NotificationCenter {
+        id: notificationCenter
+    }
+
     Pomodoro.TimerLogic {
         id: globalPomoState
     }
@@ -33,6 +37,7 @@ ShellRoot {
                 anchors.fill: parent
                 screen: modelData
                 pomoState: globalPomoState
+                notificationController: notificationCenter
             }
         }
     }

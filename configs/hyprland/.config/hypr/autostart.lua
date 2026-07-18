@@ -1,6 +1,7 @@
 local programs = require("programs")
 
 hl.on("hyprland.start", function()
+	hl.exec_cmd("systemctl --user stop dunst.service")
 	hl.exec_cmd("quickshell & hyprpaper")
 	hl.exec_cmd("[workspace 1 silent] zen-browser")
 	hl.exec_cmd("[workspace 2 silent] Telegram")

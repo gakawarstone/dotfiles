@@ -8,6 +8,7 @@ Rectangle {
     color: Theme.base
     property var screen
     property var pomoState
+    property var notificationController
 
     RowLayout {
         anchors.fill: parent
@@ -40,6 +41,10 @@ Rectangle {
             Bluetooth {}
             Battery {}
             KeyboardLayout {}
+            NotificationIndicator {
+                notificationCenter: root.notificationController
+                screen: root.screen
+            }
         }
     }
 
