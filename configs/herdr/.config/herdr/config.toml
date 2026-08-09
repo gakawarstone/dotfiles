@@ -4,5 +4,4 @@ onboarding = false
 prefix = "alt+j"
 
 [ui]
-agent_panel_scope = "all"
 agent_panel_sort = "priority"
