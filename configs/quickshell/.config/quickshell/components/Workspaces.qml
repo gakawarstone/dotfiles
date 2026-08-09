@@ -8,12 +8,7 @@ RowLayout {
     spacing: 15
     property var screen
 
-    Text {
-        text: "󰣇"
-        font.pixelSize: 22
-        color: Theme.blue
-        font.family: "MonaspiceKr Nerd Font"
-    }
+    DistroLogo {}
 
     Row {
         spacing: 8
