@@ -3,7 +3,7 @@
 # Docs: https://worktrunk.dev/config/#shell-integration
 # Check: wt config show | Uninstall: wt config shell uninstall
 
-if type -P wt >/dev/null
+if command -sq wt
     function wt
         command wt config shell init fish | source
         # Check both command exit code ($pipestatus[1]) and source exit code ($pipestatus[2])
