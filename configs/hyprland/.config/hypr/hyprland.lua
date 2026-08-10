@@ -177,6 +177,13 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("systemctl suspend"), { locked = true })
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd(programs.lockscreen), { locked = true })
 
+-- Hide the annoying close and minimize buttons in T3 Code.
+hl.window_rule({
+    name = "t3code-hide-window-controls",
+    match = { class = "^t3code$" },
+    fullscreen_state = "0 2",
+})
+
 hl.window_rule({
     name = "ignore-maximize",
     match = { class = ".*" },
