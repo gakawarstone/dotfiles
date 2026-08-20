@@ -110,7 +110,7 @@ Scope {
         }
 
         margins {
-            top: 50
+            top: 20
             right: 20
         }
 
