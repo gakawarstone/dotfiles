@@ -11,6 +11,8 @@ ShellRoot {
         id: notificationCenter
     }
 
+    AppLauncher {}
+
     Pomodoro.TimerLogic {
         id: globalPomoState
     }
