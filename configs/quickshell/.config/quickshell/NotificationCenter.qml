@@ -43,6 +43,7 @@ Scope {
             "notificationId": notification.id,
             "appName": notification.appName || "",
             "appIcon": notification.appIcon || "",
+            "image": notification.image || "",
             "summary": notification.summary || "Notification",
             "body": notification.body || "",
             "urgency": notification.urgency,
@@ -72,7 +73,7 @@ Scope {
         bodySupported: true
         bodyMarkupSupported: false
         actionsSupported: false
-        imageSupported: false
+        imageSupported: true
 
         onNotification: notification => {
             notification.tracked = true
@@ -129,6 +130,7 @@ Scope {
                     Layout.fillWidth: true
                     appName: modelData.appName
                     appIcon: modelData.appIcon
+                    notificationImage: modelData.image
                     summary: modelData.summary
                     body: modelData.body
                     urgency: modelData.urgency
@@ -243,6 +245,7 @@ Scope {
                         required property int index
                         required property string appName
                         required property string appIcon
+                        required property string image
                         required property string summary
                         required property string body
                         required property string timestamp
@@ -256,6 +259,7 @@ Scope {
                             anchors.fill: parent
                             appName: historyDelegate.appName
                             appIcon: historyDelegate.appIcon
+                            notificationImage: historyDelegate.image
                             summary: historyDelegate.summary
                             body: historyDelegate.body
                             timestamp: historyDelegate.timestamp

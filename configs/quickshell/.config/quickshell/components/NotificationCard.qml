@@ -8,6 +8,7 @@ Rectangle {
 
     property string appName: ""
     property string appIcon: ""
+    property string notificationImage: ""
     property string summary: ""
     property string body: ""
     property string timestamp: ""
@@ -51,6 +52,7 @@ Rectangle {
             Layout.alignment: Qt.AlignTop
             color: Theme.surface0
             radius: 8
+            clip: true
 
             Text {
                 anchors.centerIn: parent
@@ -62,9 +64,9 @@ Rectangle {
 
             Image {
                 anchors.fill: parent
-                anchors.margins: 7
-                source: root.appIcon ? Quickshell.iconPath(root.appIcon, true) : ""
-                fillMode: Image.PreserveAspectFit
+                anchors.margins: root.notificationImage ? 0 : 7
+                source: root.notificationImage || (root.appIcon ? Quickshell.iconPath(root.appIcon, true) : "")
+                fillMode: root.notificationImage ? Image.PreserveAspectCrop : Image.PreserveAspectFit
                 visible: status === Image.Ready
             }
         }
