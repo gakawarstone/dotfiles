@@ -4,72 +4,81 @@ import QtQuick.Layouts
 import Quickshell.Io
 import ".."
 
-RowLayout {
+MouseArea {
     id: root
-    spacing: 8
+    Layout.fillHeight: true
+    implicitWidth: layout.implicitWidth
+    hoverEnabled: true
+    cursorShape: Qt.PointingHandCursor
 
+    property bool menuOpen: false
     property string ssid: "Disconnected"
-    property string bars: ""
     property bool isEthernet: false
+
+    function refresh() {
+        if (!wifiInfo.running) wifiInfo.running = true;
+    }
+
+    onClicked: menuOpen = !menuOpen
 
     Process {
         id: wifiInfo
-        command: ["sh", "-c", "nmcli -t -f TYPE,STATE,CONNECTION device | grep -m 1 '^ethernet:connected' || nmcli -t -f active,ssid,bars dev wifi | grep -m 1 '^yes'"]
+        command: ["sh", "-c", "nmcli -t -f TYPE,STATE,CONNECTION device | grep -m 1 '^ethernet:connected' || nmcli -t -f active,ssid dev wifi | grep -m 1 '^yes'"]
         running: true
-        stdout: StdioCollector {
-            id: wifiCollector
-        }
-        onExited: (exitCode) => {
+        stdout: StdioCollector { id: wifiCollector }
+
+        onExited: exitCode => {
             const cleanText = wifiCollector.text.trim();
-            if (exitCode === 0) {
-                if (cleanText.startsWith("ethernet:connected:")) {
-                    const parts = cleanText.split(":");
-                    root.ssid = parts[2] || "Ethernet";
-                    root.bars = "";
-                    root.isEthernet = true;
-                } else if (cleanText.startsWith("yes:")) {
-                    const parts = cleanText.split(":");
-                    if (parts.length >= 3) {
-                        root.ssid = parts[1];
-                        root.bars = parts[2];
-                        root.isEthernet = false;
-                    }
-                } else {
-                    root.ssid = "Disconnected";
-                    root.bars = "";
-                    root.isEthernet = false;
-                }
+            if (exitCode === 0 && cleanText.startsWith("ethernet:connected:")) {
+                const parts = cleanText.split(":");
+                root.ssid = parts[2] || "Ethernet";
+                root.isEthernet = true;
+            } else if (exitCode === 0 && cleanText.startsWith("yes:")) {
+                const parts = cleanText.split(":");
+                root.ssid = parts[1] || "Connected";
+                root.isEthernet = false;
             } else {
                 root.ssid = "Disconnected";
-                root.bars = "";
                 root.isEthernet = false;
             }
         }
     }
 
     Timer {
-        interval: 10000 // 10 seconds
+        interval: 10000
         running: true
         repeat: true
-        onTriggered: wifiInfo.running = true
+        onTriggered: root.refresh()
     }
 
-    Component.onCompleted: {
-        wifiInfo.running = true;
+    RowLayout {
+        id: layout
+        anchors.fill: parent
+        spacing: 8
+
+        Text {
+            text: root.ssid === "Disconnected" ? "󰖪" : (root.isEthernet ? "󰈀" : "󰖩")
+            font.pixelSize: 18
+            color: root.ssid === "Disconnected" ? Theme.red : (root.isEthernet ? Theme.green : Theme.blue)
+            font.family: "MonaspiceKr Nerd Font"
+        }
+
+        Text {
+            visible: text !== ""
+            text: root.isEthernet ? "" : root.ssid
+            color: Theme.text
+            font.pixelSize: 14
+            font.family: "MonaspiceKr Nerd Font"
+        }
     }
 
-    Text {
-        text: root.ssid === "Disconnected" ? "󰖪" : (root.isEthernet ? "󰈀" : "󰖩")
-        font.pixelSize: 18
-        color: root.ssid === "Disconnected" ? Theme.red : (root.isEthernet ? Theme.green : Theme.blue)
-        font.family: "MonaspiceKr Nerd Font"
-    }
+    WifiPopup {
+        visible: root.menuOpen
+        anchorItem: root
 
-    Text {
-        text: root.isEthernet ? "" : root.ssid
-        color: Theme.text
-        font.pixelSize: 14
-        font.family: "MonaspiceKr Nerd Font"
-        visible: text !== ""
+        onNetworkChanged: root.refresh()
+        onVisibleChanged: {
+            if (!visible) root.menuOpen = false;
+        }
     }
 }
