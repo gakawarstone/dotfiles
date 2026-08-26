@@ -1,6 +1,6 @@
 # GKdots
 
-A modular and automated configuration management system for Linux (Arch-based), using Python, GNU Stow, and Jinja2 templates.
+A modular and automated configuration management system for Linux (Arch-based), using Python and GNU Stow.
 
 ## 🚀 Quick Start
 
@@ -34,21 +34,18 @@ A modular and automated configuration management system for Linux (Arch-based), 
 - `packages/`: Source code for custom builds like `dwm`, `st`, and `slstatus`.
 - `wallpapers/`: A collection of curated wallpapers.
 - `scripts/`: Utility shell scripts for system maintenance and font management.
-- `secrets/`: GPG-encrypted files managed by `gkdots/secrets.py`.
 
 ## 🛠 Features
 
 - **Automated Symlinking**: Uses Python to safely link custom scripts.
 - **Stow Integration**: Cleanly manages application configs in the home directory.
 - **Suckless Management**: Automated build and link process for `dwm` and related tools.
-- **Secret Management**: Simple GPG-based decryption workflow for sensitive configurations.
-- **Templating**: Initial support for Jinja2 templates in configurations (e.g., Alacritty).
 
 ## 📝 Maintenance
 
 - **Adding a config**: Add the folder to `configs/` and update `INCLUDED_CONFIGS` in `gkdots/config.py`.
 - **Adding a binary**: Add the script to `bins/` and update `INCLUDED_BINS` in `gkdots/config.py`.
-- **Cleaning up**: Use `make clean` to remove fonts and decrypted secrets.
+- **Cleaning up**: Use `make clean` to remove downloaded fonts.
 
 ## ⚠️ Warning
 
