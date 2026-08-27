@@ -21,11 +21,18 @@ MouseArea {
     property int secondaryLeft: 0
     property string primaryReset: "?"
     property string secondaryReset: "?"
+    property bool reserveAvailable: false
+    property bool reserveAllowed: false
+    property int reserveUsed: 0
+    property int reserveLeft: 0
+    property string reserveReset: "?"
+    property bool reserveLimitReached: false
 
     function accentColor() {
         if (statusColor === "red") return Theme.red
         if (statusColor === "yellow") return Theme.yellow
         if (statusColor === "green") return Theme.green
+        if (statusColor === "luna") return Theme.mauve
         return Theme.overlay2
     }
 
@@ -46,6 +53,10 @@ MouseArea {
 
             try {
                 const data = JSON.parse(codexCollector.text.trim())
+                if (data.ok === false) {
+                    return
+                }
+
                 root.usage = data.text || "--"
                 root.detail = data.detail || "No Codex usage snapshot"
                 root.statusColor = data.color || "muted"
@@ -55,6 +66,12 @@ MouseArea {
                 root.secondaryLeft = data.secondary || 0
                 root.primaryReset = data.primary_reset || "?"
                 root.secondaryReset = data.secondary_reset || "?"
+                root.reserveAvailable = data.reserve_available === true
+                root.reserveAllowed = data.reserve_allowed === true
+                root.reserveUsed = data.reserve_used || 0
+                root.reserveLeft = data.reserve || 0
+                root.reserveReset = data.reserve_reset || "?"
+                root.reserveLimitReached = data.reserve_limit_reached === true
             } catch (error) {
                 root.usage = "--"
                 root.detail = "Codex usage parse failed"
@@ -102,6 +119,12 @@ MouseArea {
         secondaryLeft: root.secondaryLeft
         primaryReset: root.primaryReset
         secondaryReset: root.secondaryReset
+        reserveAvailable: root.reserveAvailable
+        reserveAllowed: root.reserveAllowed
+        reserveUsed: root.reserveUsed
+        reserveLeft: root.reserveLeft
+        reserveReset: root.reserveReset
+        reserveLimitReached: root.reserveLimitReached
 
         onVisibleChanged: {
             if (!visible) root.menuOpen = false

@@ -15,6 +15,12 @@ PopupWindow {
     property int secondaryLeft: 0
     property string primaryReset: "?"
     property string secondaryReset: "?"
+    property bool reserveAvailable: false
+    property bool reserveAllowed: false
+    property int reserveUsed: 0
+    property int reserveLeft: 0
+    property string reserveReset: "?"
+    property bool reserveLimitReached: false
     readonly property string popupFont: "MonaspiceKr Nerd Font"
 
     function barColor(value) {
@@ -145,6 +151,53 @@ PopupWindow {
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: 14
                     font.family: popup.popupFont
+                }
+
+                ColumnLayout {
+                    visible: popup.reserveAvailable
+                    Layout.fillWidth: true
+                    spacing: 6
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: 8
+
+                        Text {
+                            Layout.preferredWidth: 58
+                            text: "Luna 🌙"
+                            color: popup.reserveAllowed && !popup.reserveLimitReached
+                                ? Theme.text
+                                : Theme.overlay2
+                            font.pixelSize: 14
+                            font.family: popup.popupFont
+                        }
+
+                        UsageBar {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: 6
+                            Layout.alignment: Qt.AlignVCenter
+                            value: popup.reserveLeft
+                            fillColor: Theme.yellow
+                        }
+
+                        Text {
+                            Layout.preferredWidth: 36
+                            text: popup.reserveLeft + "%"
+                            color: Theme.text
+                            horizontalAlignment: Text.AlignRight
+                            font.pixelSize: 14
+                            font.family: popup.popupFont
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: "reset " + popup.reserveReset
+                        color: Theme.text
+                        horizontalAlignment: Text.AlignRight
+                        font.pixelSize: 14
+                        font.family: popup.popupFont
+                    }
                 }
             }
         }
