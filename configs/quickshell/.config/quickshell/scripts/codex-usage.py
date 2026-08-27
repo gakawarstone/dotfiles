@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import json
+import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlencode
@@ -8,6 +10,7 @@ from urllib.request import Request, urlopen
 
 
 CLIENT_ID = "app_EMoamEEZ73f0CkXaXp7hrann"
+FETCH_ATTEMPTS = 3
 
 
 def format_reset(seconds):
@@ -140,9 +143,20 @@ def fetch_usage():
     return fetch_usage_with_token(refresh_auth(auth), account_id)
 
 
-try:
-    usage = fetch_usage()
-except (OSError, HTTPError, URLError, RuntimeError, json.JSONDecodeError):
+last_error = None
+for attempt in range(FETCH_ATTEMPTS):
+    try:
+        usage = fetch_usage()
+        break
+    except (OSError, HTTPError, URLError, RuntimeError, json.JSONDecodeError) as error:
+        last_error = error
+        if attempt + 1 < FETCH_ATTEMPTS:
+            time.sleep(0.5 * (attempt + 1))
+else:
+    print(
+        f"Codex usage unavailable: {type(last_error).__name__}: {last_error}",
+        file=sys.stderr,
+    )
     print(json.dumps({"ok": False, "text": "--", "color": "muted"}))
     raise SystemExit(0)
 

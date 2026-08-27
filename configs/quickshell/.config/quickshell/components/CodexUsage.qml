@@ -53,6 +53,10 @@ MouseArea {
 
             try {
                 const data = JSON.parse(codexCollector.text.trim())
+                if (data.ok === false) {
+                    return
+                }
+
                 root.usage = data.text || "--"
                 root.detail = data.detail || "No Codex usage snapshot"
                 root.statusColor = data.color || "muted"
