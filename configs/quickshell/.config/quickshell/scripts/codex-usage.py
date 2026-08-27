@@ -149,13 +149,30 @@ except (OSError, HTTPError, URLError, RuntimeError, json.JSONDecodeError):
 limits = usage.get("rate_limit") or {}
 primary = limits.get("primary_window") or {}
 secondary = limits.get("secondary_window") or {}
+reserve_limit = next(
+    (
+        limit.get("rate_limit") or {}
+        for limit in usage.get("additional_rate_limits") or []
+        if limit.get("limit_name") == "gpt-reserve"
+    ),
+    None,
+)
+reserve = (reserve_limit or {}).get("primary_window") or {}
 primary_used = round(primary.get("used_percent") or 0)
 secondary_used = round(secondary.get("used_percent") or 0)
+reserve_used = round(reserve.get("used_percent") or 0)
 primary_remaining = max(0, 100 - primary_used)
 secondary_remaining = max(0, 100 - secondary_used)
+reserve_remaining = max(0, 100 - reserve_used)
+reserve_available = reserve_limit is not None and bool(reserve)
+reserve_allowed = reserve_available and bool(reserve_limit.get("allowed"))
 lowest = min(primary_remaining, secondary_remaining)
+standard_exhausted = bool(limits.get("limit_reached")) or lowest == 0
+using_reserve = standard_exhausted and reserve_allowed and reserve_remaining > 0
 
-if lowest <= 30:
+if using_reserve:
+    color = "luna"
+elif lowest <= 30:
     color = "red"
 elif lowest <= 50:
     color = "yellow"
@@ -164,7 +181,7 @@ else:
 
 print(json.dumps({
     "ok": True,
-    "text": str(primary_remaining),
+    "text": f"L{reserve_remaining}" if using_reserve else str(primary_remaining),
     "color": color,
     "primary": primary_remaining,
     "secondary": secondary_remaining,
@@ -172,6 +189,12 @@ print(json.dumps({
     "secondary_used": secondary_used,
     "primary_reset": format_duration_clock(primary.get('reset_after_seconds')),
     "secondary_reset": format_reset_at(secondary.get('reset_after_seconds')),
+    "reserve_available": reserve_available,
+    "reserve_allowed": reserve_allowed,
+    "reserve_used": reserve_used,
+    "reserve": reserve_remaining,
+    "reserve_reset": format_reset_at(reserve.get('reset_after_seconds')),
+    "reserve_limit_reached": bool((reserve_limit or {}).get("limit_reached")),
     "detail": f"5h resets {format_reset(primary.get('reset_after_seconds'))} | weekly resets {format_reset(secondary.get('reset_after_seconds'))}",
     "plan": usage.get("plan_type") or "",
 }))
