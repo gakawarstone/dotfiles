@@ -6,6 +6,12 @@ hl.config({
     },
 })
 
+hl.window_rule({
+    name = "full-width-agent-apps",
+    match = { class = "^(herdr|t3code)$" },
+    scrolling_width = 1.0,
+})
+
 local mainMod = "SUPER"
 
 hl.bind(mainMod .. " + L", hl.dsp.layout("focus r"))
