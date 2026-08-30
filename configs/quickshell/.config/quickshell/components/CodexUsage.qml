@@ -15,6 +15,7 @@ MouseArea {
     property string usage: "--"
     property string detail: "No Codex usage snapshot"
     property string statusColor: "muted"
+    property bool burnTime: false
     property int primaryUsed: 0
     property int primaryLeft: 0
     property int secondaryUsed: 0
@@ -48,6 +49,7 @@ MouseArea {
                 root.usage = "--"
                 root.detail = "Codex usage unavailable"
                 root.statusColor = "muted"
+                root.burnTime = false
                 return
             }
 
@@ -60,6 +62,7 @@ MouseArea {
                 root.usage = data.text || "--"
                 root.detail = data.detail || "No Codex usage snapshot"
                 root.statusColor = data.color || "muted"
+                root.burnTime = data.burn_time === true
                 root.primaryUsed = data.primary_used || 0
                 root.primaryLeft = data.primary || 0
                 root.secondaryUsed = data.secondary_used || 0
@@ -76,6 +79,7 @@ MouseArea {
                 root.usage = "--"
                 root.detail = "Codex usage parse failed"
                 root.statusColor = "muted"
+                root.burnTime = false
             }
         }
     }
@@ -95,7 +99,7 @@ MouseArea {
         spacing: 8
 
         Text {
-            text: "󰚩"
+            text: root.burnTime ? "󰈸" : "󰚩"
             font.pixelSize: 18
             color: root.accentColor()
             font.family: "MonaspiceKr Nerd Font"

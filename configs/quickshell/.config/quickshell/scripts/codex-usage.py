@@ -175,6 +175,7 @@ reserve = (reserve_limit or {}).get("primary_window") or {}
 primary_used = round(primary.get("used_percent") or 0)
 secondary_used = round(secondary.get("used_percent") or 0)
 reserve_used = round(reserve.get("used_percent") or 0)
+primary_reset_seconds = primary.get("reset_after_seconds")
 primary_remaining = max(0, 100 - primary_used)
 secondary_remaining = max(0, 100 - secondary_used)
 reserve_remaining = max(0, 100 - reserve_used)
@@ -193,15 +194,18 @@ elif lowest <= 50:
 else:
     color = "green"
 
+burn_time = primary_reset_seconds is not None and 0 <= primary_reset_seconds <= 60 * 60
+
 print(json.dumps({
     "ok": True,
     "text": f"L{reserve_remaining}" if using_reserve else str(primary_remaining),
+    "burn_time": burn_time,
     "color": color,
     "primary": primary_remaining,
     "secondary": secondary_remaining,
     "primary_used": primary_used,
     "secondary_used": secondary_used,
-    "primary_reset": format_duration_clock(primary.get('reset_after_seconds')),
+    "primary_reset": format_duration_clock(primary_reset_seconds),
     "secondary_reset": format_reset_at(secondary.get('reset_after_seconds')),
     "reserve_available": reserve_available,
     "reserve_allowed": reserve_allowed,
@@ -209,6 +213,6 @@ print(json.dumps({
     "reserve": reserve_remaining,
     "reserve_reset": format_reset_at(reserve.get('reset_after_seconds')),
     "reserve_limit_reached": bool((reserve_limit or {}).get("limit_reached")),
-    "detail": f"5h resets {format_reset(primary.get('reset_after_seconds'))} | weekly resets {format_reset(secondary.get('reset_after_seconds'))}",
+    "detail": f"5h resets {format_reset(primary_reset_seconds)} | weekly resets {format_reset(secondary.get('reset_after_seconds'))}",
     "plan": usage.get("plan_type") or "",
 }))
