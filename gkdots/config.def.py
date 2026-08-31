@@ -27,4 +27,5 @@ INCLUDED_CONFIGS = [
     ConfigDirLinkingInfo("quickshell"),
     # ConfigDirLinkingInfo("yazi"),
     ConfigDirLinkingInfo("foot"),
+    ConfigDirLinkingInfo("codex"),
 ]
