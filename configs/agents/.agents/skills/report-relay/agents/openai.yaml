@@ -1,0 +1,4 @@
+interface:
+  display_name: "Report Relay"
+  short_description: "Publish polished HTML reports to Report Relay"
+  default_prompt: "Use $report-relay to create and publish a polished HTML report."
