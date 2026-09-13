@@ -113,11 +113,7 @@ hl.animation({ leaf = "workspaces", enabled = true, speed = 1.94, bezier = "almo
 hl.animation({ leaf = "workspacesIn", enabled = true, speed = 1.21, bezier = "almostLinear", style = "fade" })
 hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "almostLinear", style = "fade" })
 
-hl.window_rule({
-    name = "smart-gaps-borders-tv1",
-    match = { workspace = "w[tv1]" },
-    border_size = 0,
-})
+require("window_rules")
 
 hl.gesture({
     fingers = 3,
@@ -176,29 +172,6 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { locked = true 
 
 hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("systemctl suspend"), { locked = true })
 hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd(programs.lockscreen), { locked = true })
-
--- Hide the annoying close and minimize buttons in T3 Code.
-hl.window_rule({
-    name = "t3code-hide-window-controls",
-    match = { class = "^t3code$" },
-    fullscreen_state = "0 2",
-})
-
-hl.window_rule({
-    name = "ignore-maximize",
-    match = { class = ".*" },
-    suppress_event = "maximize",
-})
-
-hl.window_rule({
-    name = "xwayland-nofocus",
-    match = {
-        class = "^$",
-        title = "^$",
-        xwayland = true,
-    },
-    no_focus = true,
-})
 
 require("scrolling")
 require("groups")
