@@ -73,10 +73,19 @@ MouseArea {
     }
 
     WifiPopup {
-        visible: root.menuOpen
+        visible: root.menuOpen && !root.isEthernet
         anchorItem: root
 
         onNetworkChanged: root.refresh()
+        onVisibleChanged: {
+            if (!visible) root.menuOpen = false;
+        }
+    }
+
+    EthernetPopup {
+        visible: root.menuOpen && root.isEthernet
+        anchorItem: root
+
         onVisibleChanged: {
             if (!visible) root.menuOpen = false;
         }
