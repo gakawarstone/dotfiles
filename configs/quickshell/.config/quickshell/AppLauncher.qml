@@ -12,12 +12,69 @@ Scope {
 
     property bool open: false
     property int selectedIndex: 0
-    readonly property var applications: {
+    property string activeMenu: "root"
+    property var navigationStack: []
+    readonly property int rowHeight: searchField.text.length > 0 ? 68 : 58
+
+    readonly property var menuItems: [
+        { id: "apps", parent: "root", kind: "menu", icon: "󰀻", label: "Apps", description: "Installed applications" },
+        { id: "actions", parent: "root", kind: "menu", icon: "󱓞", label: "Actions", description: "Common desktop actions" },
+        { id: "setup", parent: "root", kind: "menu", icon: "", label: "Setup", description: "Edit desktop configuration" },
+        { id: "system", parent: "root", kind: "menu", icon: "", label: "System", description: "Lock, suspend, or log out" },
+
+        { id: "actions.terminal", parent: "actions", kind: "action", icon: "", label: "Terminal", description: "Open Foot", command: "foot" },
+        { id: "actions.files", parent: "actions", kind: "action", icon: "", label: "Files", description: "Open Dolphin", command: "dolphin" },
+        { id: "actions.activity", parent: "actions", kind: "action", icon: "󰄨", label: "Activity", description: "Open btop", command: "foot -e btop" },
+        { id: "actions.screenshot", parent: "actions", kind: "action", icon: "", label: "Screenshot", description: "Capture an area", command: "screen area" },
+        { id: "actions.notifications", parent: "actions", kind: "action", icon: "󰂚", label: "Notifications", description: "Toggle notification center", command: "qs ipc call notifications toggle" },
+        { id: "actions.theme", parent: "actions", kind: "action", icon: "󰸌", label: "Toggle theme", description: "Switch between Latte and Mocha", command: "toggle_theme" },
+
+        { id: "setup.hyprland", parent: "setup", kind: "action", icon: "", label: "Hyprland", description: "Edit hyprland.lua", command: "foot -e nvim ~/.config/hypr/hyprland.lua" },
+        { id: "setup.quickshell", parent: "setup", kind: "action", icon: "󰖯", label: "Quickshell", description: "Edit the shell configuration", command: "foot -e nvim ~/.config/quickshell/shell.qml" },
+
+        { id: "system.lock", parent: "system", kind: "action", icon: "", label: "Lock", description: "Lock the session", command: "lock" },
+        { id: "system.suspend", parent: "system", kind: "action", icon: "󰒲", label: "Suspend", description: "Suspend the computer", command: "systemctl suspend" },
+        { id: "system.logout", parent: "system", kind: "action", icon: "󰍃", label: "Log out", description: "Exit Hyprland", command: "hyprctl dispatch exit" }
+    ]
+
+    readonly property var applicationItems: DesktopEntries.applications.values
+        .filter(app => !app.noDisplay)
+        .map(app => ({
+            id: "apps." + app.id,
+            parent: "apps",
+            kind: "app",
+            icon: app.icon,
+            label: app.name,
+            description: "Application",
+            application: app
+        }))
+
+    readonly property var allItems: menuItems.concat(applicationItems)
+    readonly property var displayItems: {
         const query = searchField.text.trim().toLowerCase()
-        return DesktopEntries.applications.values
-            .filter(app => !app.noDisplay && app.name.toLowerCase().includes(query))
-            .sort((left, right) => left.name.localeCompare(right.name))
+        let items
+
+        if (query) {
+            items = allItems.filter(item => {
+                if (!isDescendantOf(item, activeMenu))
+                    return false
+                return (item.label + " " + item.description + " " + pathFor(item)).toLowerCase().includes(query)
+            })
+        } else {
+            items = allItems.filter(item => item.parent === activeMenu)
+        }
+
+        return items.sort((left, right) => {
+            if (!query && activeMenu !== "apps")
+                return menuItems.indexOf(left) - menuItems.indexOf(right)
+            const leftStarts = left.label.toLowerCase().startsWith(query)
+            const rightStarts = right.label.toLowerCase().startsWith(query)
+            if (leftStarts !== rightStarts)
+                return leftStarts ? -1 : 1
+            return left.label.localeCompare(right.label)
+        })
     }
+
     readonly property var activeScreen: {
         const monitor = Hyprland.focusedMonitor
         for (let i = 0; monitor && i < Quickshell.screens.length; i++) {
@@ -27,8 +84,42 @@ Scope {
         return Quickshell.screens[0] ?? null
     }
 
+    function itemById(id) {
+        return menuItems.find(item => item.id === id)
+    }
+
+    function isDescendantOf(item, ancestorId) {
+        if (ancestorId === "root")
+            return true
+
+        let current = item
+        while (current && current.parent !== "root") {
+            if (current.parent === ancestorId)
+                return true
+            current = itemById(current.parent)
+        }
+        return false
+    }
+
+    function pathFor(item) {
+        const labels = []
+        let current = itemById(item.parent)
+        while (current) {
+            labels.unshift(current.label)
+            current = itemById(current.parent)
+        }
+        return labels.join(" › ")
+    }
+
+    function menuTitle() {
+        const item = itemById(activeMenu)
+        return item ? item.label : "Go"
+    }
+
     function show() {
         searchField.text = ""
+        activeMenu = "root"
+        navigationStack = []
         selectedIndex = 0
         open = true
         Qt.callLater(() => searchField.forceActiveFocus())
@@ -39,26 +130,64 @@ Scope {
     }
 
     function moveSelection(offset) {
-        if (applications.length === 0)
+        if (displayItems.length === 0)
             return
-        selectedIndex = (selectedIndex + offset + applications.length) % applications.length
+        selectedIndex = (selectedIndex + offset + displayItems.length) % displayItems.length
         results.positionViewAtIndex(selectedIndex, ListView.Contain)
     }
 
-    function launch(app) {
-        if (!app)
-            return
-        app.execute()
-        hide()
+    function enterMenu(id) {
+        navigationStack = navigationStack.concat([activeMenu])
+        activeMenu = id
+        searchField.text = ""
+        selectedIndex = 0
     }
 
-    onApplicationsChanged: selectedIndex = 0
+    function goBack() {
+        if (searchField.text.length > 0) {
+            searchField.text = ""
+            return
+        }
+        if (navigationStack.length === 0) {
+            hide()
+            return
+        }
+
+        activeMenu = navigationStack[navigationStack.length - 1]
+        navigationStack = navigationStack.slice(0, -1)
+        selectedIndex = 0
+    }
+
+    function activate(item) {
+        if (!item)
+            return
+        if (item.kind === "menu") {
+            enterMenu(item.id)
+        } else if (item.kind === "app") {
+            item.application.execute()
+            hide()
+        } else {
+            actionProcess.command = ["sh", "-lc", item.command]
+            actionProcess.running = true
+            hide()
+        }
+    }
+
+    onDisplayItemsChanged: selectedIndex = 0
+
+    Process {
+        id: actionProcess
+    }
 
     IpcHandler {
         target: "launcher"
 
         function toggle() {
             root.open ? root.hide() : root.show()
+        }
+
+        function close() {
+            root.hide()
         }
     }
 
@@ -81,7 +210,7 @@ Scope {
 
         Rectangle {
             anchors.fill: parent
-            color: "#80000000"
+            color: Qt.rgba(Theme.base.r, Theme.base.g, Theme.base.b, 0.5)
 
             MouseArea {
                 anchors.fill: parent
@@ -90,14 +219,12 @@ Scope {
         }
 
         Rectangle {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: Math.max(80, parent.height * 0.16)
-            width: Math.min(600, parent.width - 40)
-            height: Math.min(500, parent.height - anchors.topMargin - 40)
+            anchors.centerIn: parent
+            width: Math.min(450, parent.width - 40)
+            height: Math.min(600, 86 + Math.max(1, root.displayItems.length) * root.rowHeight + Math.max(0, root.displayItems.length - 1) * 4)
             color: Theme.base
-            border.color: Theme.surface0
-            border.width: 1
+            border.color: Theme.text
+            border.width: 2
             radius: 10
 
             MouseArea {
@@ -106,41 +233,48 @@ Scope {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 14
-                spacing: 10
+                anchors.margins: 18
+                spacing: 8
 
-                Rectangle {
+                Item {
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 46
-                    color: Theme.mantle
-                    border.color: searchField.activeFocus ? Theme.mauve : Theme.surface0
-                    border.width: 1
-                    radius: 7
+                    Layout.preferredHeight: 42
 
                     TextInput {
                         id: searchField
                         anchors.fill: parent
-                        anchors.margins: 12
                         color: Theme.text
-                        selectionColor: Theme.surface2
+                        selectionColor: Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.35)
                         clip: true
                         font.family: "MonaspiceKr Nerd Font"
-                        font.pixelSize: 16
+                        font.pixelSize: 20
+                        font.weight: Font.Medium
+                        verticalAlignment: TextInput.AlignVCenter
 
                         Text {
                             anchors.fill: parent
                             visible: searchField.text.length === 0
-                            text: "Search applications…"
-                            color: Theme.overlay0
+                            text: root.menuTitle() + "..."
+                            color: Theme.text
+                            opacity: 0.58
                             font: searchField.font
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        Keys.onEscapePressed: root.hide()
+                        Keys.onEscapePressed: root.goBack()
                         Keys.onUpPressed: root.moveSelection(-1)
                         Keys.onDownPressed: root.moveSelection(1)
-                        Keys.onReturnPressed: root.launch(root.applications[root.selectedIndex])
-                        Keys.onEnterPressed: root.launch(root.applications[root.selectedIndex])
+                        Keys.onReturnPressed: root.activate(root.displayItems[root.selectedIndex])
+                        Keys.onEnterPressed: root.activate(root.displayItems[root.selectedIndex])
+                        Keys.onPressed: event => {
+                            if ((event.key === Qt.Key_Backspace || event.key === Qt.Key_Left) && searchField.text.length === 0) {
+                                root.goBack()
+                                event.accepted = true
+                            } else if (event.key === Qt.Key_Right && searchField.text.length === 0) {
+                                root.activate(root.displayItems[root.selectedIndex])
+                                event.accepted = true
+                            }
+                        }
                     }
                 }
 
@@ -148,7 +282,7 @@ Scope {
                     id: results
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    model: root.applications
+                    model: root.displayItems
                     spacing: 4
                     clip: true
                     currentIndex: root.selectedIndex
@@ -159,30 +293,72 @@ Scope {
                         required property int index
 
                         width: results.width
-                        height: 54
-                        color: index === root.selectedIndex ? Theme.surface0 : "transparent"
-                        radius: 7
+                        height: root.rowHeight
+                        color: index === root.selectedIndex ? Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.08) : "transparent"
+                        radius: 10
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            spacing: 12
+                            anchors.leftMargin: 10
+                            anchors.rightMargin: 10
+                            spacing: 6
 
-                            IconImage {
-                                Layout.preferredWidth: 34
-                                Layout.preferredHeight: 34
-                                source: Quickshell.iconPath(result.modelData.icon, "application-x-executable")
-                                asynchronous: true
+                            Item {
+                                Layout.preferredWidth: 36
+                                Layout.preferredHeight: 36
+
+                                IconImage {
+                                    anchors.fill: parent
+                                    visible: result.modelData.kind === "app"
+                                    source: visible ? Quickshell.iconPath(result.modelData.icon, "application-x-executable") : ""
+                                    asynchronous: true
+                                }
+
+                                Text {
+                                    anchors.fill: parent
+                                    visible: result.modelData.kind !== "app"
+                                    text: result.modelData.icon
+                                    color: result.index === root.selectedIndex ? Theme.mauve : Theme.text
+                                    font.family: "MonaspiceKr Nerd Font"
+                                    font.pixelSize: 28
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                            }
+
+                            ColumnLayout {
+                                Layout.fillWidth: true
+                                spacing: 3
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: result.modelData.label
+                                    color: result.index === root.selectedIndex ? Theme.mauve : Theme.text
+                                    elide: Text.ElideRight
+                                    font.family: "MonaspiceKr Nerd Font"
+                                    font.pixelSize: 18
+                                    font.weight: Font.Medium
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: root.pathFor(result.modelData)
+                                    visible: searchField.text.length > 0 && text.length > 0
+                                    color: Theme.text
+                                    opacity: 0.52
+                                    elide: Text.ElideRight
+                                    font.family: "MonaspiceKr Nerd Font"
+                                    font.pixelSize: 14
+                                }
                             }
 
                             Text {
-                                Layout.fillWidth: true
-                                text: result.modelData.name
-                                color: Theme.text
-                                elide: Text.ElideRight
+                                visible: result.modelData.kind === "menu"
+                                text: "›"
+                                color: result.index === root.selectedIndex ? Theme.mauve : Theme.text
+                                opacity: 0.36
                                 font.family: "MonaspiceKr Nerd Font"
-                                font.pixelSize: 15
+                                font.pixelSize: 18
                             }
                         }
 
@@ -191,17 +367,17 @@ Scope {
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
                             onEntered: root.selectedIndex = result.index
-                            onClicked: root.launch(result.modelData)
+                            onClicked: root.activate(result.modelData)
                         }
                     }
 
                     Text {
                         anchors.centerIn: parent
-                        visible: root.applications.length === 0
-                        text: "No applications found"
+                        visible: root.displayItems.length === 0
+                        text: "No matches"
                         color: Theme.overlay0
                         font.family: "MonaspiceKr Nerd Font"
-                        font.pixelSize: 14
+                        font.pixelSize: 17
                     }
                 }
             }
