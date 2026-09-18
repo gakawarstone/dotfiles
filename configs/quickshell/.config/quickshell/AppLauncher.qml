@@ -16,6 +16,41 @@ Scope {
     property var navigationStack: []
     readonly property int rowHeight: searchField.text.length > 0 ? 68 : 58
 
+    // Mapping from the Russian keyboard layout to the US layout, so that
+    // typing "кув" (what "red" produces on a Russian keyboard) also matches "red".
+    readonly property var cyrToLat: {
+        "й":"q","ц":"w","у":"e","к":"r","е":"t","н":"y","г":"u","ш":"i","щ":"o","з":"p","х":"[","ъ":"]",
+        "ф":"a","ы":"s","в":"d","а":"f","п":"g","р":"h","о":"j","л":"k","д":"l","ж":";","э":"'",
+        "я":"z","ч":"x","с":"c","м":"v","и":"b","т":"n","ь":"m","б":",","ю":".","/":"/"
+    }
+
+    function latToCyr() {
+        const m = {}
+        for (const k in cyrToLat) {
+            const v = cyrToLat[k]
+            if (v && v.length === 1) m[v] = k
+        }
+        return m
+    }
+
+    function transliterate(text, dir) {
+        const map = dir === "lat" ? latToCyr() : cyrToLat
+        let out = ""
+        for (const ch of text.toLowerCase())
+            out += map[ch] !== undefined ? map[ch] : ch
+        return out
+    }
+
+    function queryVariants(query) {
+        const q = query.toLowerCase()
+        const variants = [q]
+        const toLat = transliterate(q, "cyr")
+        if (toLat !== q) variants.push(toLat)
+        const toCyr = transliterate(q, "lat")
+        if (toCyr !== q) variants.push(toCyr)
+        return variants
+    }
+
     readonly property var menuItems: [
         { id: "apps", parent: "root", kind: "menu", icon: "󰀻", label: "Apps", description: "Installed applications" },
         { id: "actions", parent: "root", kind: "menu", icon: "󱓞", label: "Actions", description: "Common desktop actions" },
@@ -51,24 +86,31 @@ Scope {
 
     readonly property var allItems: menuItems.concat(applicationItems)
     readonly property var displayItems: {
-        const query = searchField.text.trim().toLowerCase()
+        const rawQuery = searchField.text.trim()
+        const variants = queryVariants(rawQuery)
         let items
 
-        if (query) {
+        if (rawQuery) {
             items = allItems.filter(item => {
                 if (!isDescendantOf(item, activeMenu))
                     return false
-                return (item.label + " " + item.description + " " + pathFor(item)).toLowerCase().includes(query)
+                const hay = (item.label + " " + item.description + " " + pathFor(item)).toLowerCase()
+                const hayTranslit = transliterate(hay, "cyr")
+                return variants.some(v => hay.includes(v) || hayTranslit.includes(v))
             })
         } else {
             items = allItems.filter(item => item.parent === activeMenu)
         }
 
+        // Prefer the Latin (transliterated) form for sorting when the query is Cyrillic,
+        // e.g. "кув" should rank items starting with "red".
+        const sortQuery = variants.find(v => /^[a-z0-9]+$/i.test(v)) || rawQuery.toLowerCase()
+
         return items.sort((left, right) => {
-            if (!query && activeMenu !== "apps")
+            if (!rawQuery && activeMenu !== "apps")
                 return menuItems.indexOf(left) - menuItems.indexOf(right)
-            const leftStarts = left.label.toLowerCase().startsWith(query)
-            const rightStarts = right.label.toLowerCase().startsWith(query)
+            const leftStarts = left.label.toLowerCase().startsWith(sortQuery)
+            const rightStarts = right.label.toLowerCase().startsWith(sortQuery)
             if (leftStarts !== rightStarts)
                 return leftStarts ? -1 : 1
             return left.label.localeCompare(right.label)
