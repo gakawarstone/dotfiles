@@ -1,0 +1,7 @@
+interface:
+  display_name: "To Tasks"
+  short_description: "Turn plans into dependency-aware local tasks"
+  default_prompt: "Use $to-tasks to break this work into reviewable tasks and save the approved set under .tasks."
+
+policy:
+  allow_implicit_invocation: false
