@@ -20,7 +20,9 @@ function sessionTitleFrom(value) {
   if (!value || typeof value !== "object") return undefined;
 
   const obj = value;
+  const data = obj.data && typeof obj.data === "object" ? obj.data : undefined;
   return (
+    asTitle(data?.title) ??
     asTitle(obj.title) ??
     asTitle(obj.session?.title) ??
     asTitle(obj.info?.title) ??
@@ -34,7 +36,9 @@ function sessionIdFrom(value) {
   if (!value || typeof value !== "object") return undefined;
 
   const obj = value;
+  const data = obj.data && typeof obj.data === "object" ? obj.data : undefined;
   return (
+    asTitle(data?.sessionID) ??
     asTitle(obj.id) ??
     asTitle(obj.sessionID) ??
     asTitle(obj.session?.id) ??
@@ -46,12 +50,12 @@ function sessionIdFrom(value) {
   );
 }
 
-async function sessionTitleFromClient(client, sessionId) {
-  if (!client || !sessionId) return undefined;
+async function sessionTitleFromClient(ctx, sessionID) {
+  if (!ctx || !sessionID) return undefined;
 
   try {
-    const response = await client.session.get({ path: { id: sessionId } });
-    return sessionTitleFrom(response?.data ?? response);
+    const session = await ctx.session.get({ sessionID });
+    return sessionTitleFrom(session ?? undefined);
   } catch {
     return undefined;
   }
@@ -104,18 +108,22 @@ async function reportTitle(title) {
   }
 }
 
-export const HerdrPaneTitle = async ({ client } = {}) => {
-  if (!herdrEnabled) return {};
+export default {
+  id: "herdr.pane-title",
+  setup(ctx) {
+    if (!herdrEnabled) return;
 
-  return {
-    event: async (input) => {
-      const event = input?.event;
-      if (event?.type !== "session.created" && event?.type !== "session.updated") return;
+    const controller = new AbortController();
+    void (async () => {
+      for await (const event of ctx.event.subscribe({ signal: controller.signal })) {
+        if (event?.type !== "session.created" && event?.type !== "session.renamed") continue;
 
-      const title =
-        sessionTitleFrom(event) ??
-        (await sessionTitleFromClient(client, sessionIdFrom(event)));
-      if (title) await reportTitle(title);
-    },
-  };
+        const title =
+          sessionTitleFrom(event) ?? (await sessionTitleFromClient(ctx, sessionIdFrom(event)));
+        if (title) await reportTitle(title);
+      }
+    })();
+
+    return () => controller.abort();
+  },
 };
