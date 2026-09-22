@@ -21,9 +21,13 @@ Rectangle {
             screen: root.screen
         }
 
-        WindowTitle {
+        Item {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
+
+            Media {
+                anchors.centerIn: parent
+            }
         }
 
         RowLayout {
