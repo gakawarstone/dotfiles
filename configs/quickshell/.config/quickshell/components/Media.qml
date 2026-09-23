@@ -1,4 +1,6 @@
+import Quickshell
 import Quickshell.Services.Mpris
+import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
@@ -14,6 +16,7 @@ MouseArea {
         return selected || players.find(p => p.isPlaying) || players[0] || null;
     }
     property bool menuOpen: false
+    property var levels: [0, 0, 0, 0, 0]
 
     Layout.fillHeight: true
     implicitWidth: island.implicitWidth
@@ -27,6 +30,20 @@ MouseArea {
     }
     onPlayersChanged: {
         if (!players.some(p => p.dbusName === selectedPlayer)) selectedPlayer = "";
+    }
+
+    Process {
+        command: ["python3", Quickshell.shellPath("scripts/media-spectrum.py")]
+        running: root.player !== null && root.player.isPlaying && root.visible
+        stdout: SplitParser {
+            onRead: data => {
+                const values = data.split(",").map(Number);
+                if (values.length === 5 && values.every(Number.isFinite)) root.levels = values;
+            }
+        }
+        onRunningChanged: {
+            if (!running) root.levels = [0, 0, 0, 0, 0];
+        }
     }
 
     Rectangle {
@@ -123,6 +140,7 @@ MouseArea {
 
             Row {
                 Layout.alignment: Qt.AlignVCenter
+                Layout.preferredHeight: 18
                 spacing: 3
 
                 Repeater {
@@ -130,21 +148,14 @@ MouseArea {
 
                     Rectangle {
                         required property int index
-                        property real level: 7
                         width: 3
-                        height: root.player && root.player.isPlaying ? level : 7
+                        height: root.player && root.player.isPlaying ? 3 + 14 * root.levels[index] : 7
                         radius: width / 2
                         anchors.verticalCenter: parent.verticalCenter
                         color: root.player && root.player.isPlaying ? Theme.mauve : Theme.overlay0
 
-                        SequentialAnimation on level {
-                            running: root.player && root.player.isPlaying
-                            loops: Animation.Infinite
-
-                            NumberAnimation { to: [11, 17, 9, 15, 12][index]; duration: [210, 280, 190, 250, 310][index]; easing.type: Easing.InOutQuad }
-                            NumberAnimation { to: [5, 8, 15, 6, 9][index]; duration: [270, 200, 300, 220, 180][index]; easing.type: Easing.InOutQuad }
-                            NumberAnimation { to: [16, 10, 6, 12, 17][index]; duration: [230, 310, 240, 290, 210][index]; easing.type: Easing.InOutQuad }
-                            NumberAnimation { to: 7; duration: [260, 230, 280, 190, 250][index]; easing.type: Easing.InOutQuad }
+                        Behavior on height {
+                            SmoothedAnimation { velocity: 100; maximumEasingTime: 90 }
                         }
                     }
                 }
