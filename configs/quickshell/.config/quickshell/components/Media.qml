@@ -14,7 +14,6 @@ MouseArea {
         return selected || players.find(p => p.isPlaying) || players[0] || null;
     }
     property bool menuOpen: false
-    property int pulseStep: 0
 
     Layout.fillHeight: true
     implicitWidth: island.implicitWidth
@@ -28,13 +27,6 @@ MouseArea {
     }
     onPlayersChanged: {
         if (!players.some(p => p.dbusName === selectedPlayer)) selectedPlayer = "";
-    }
-
-    Timer {
-        interval: 130
-        running: root.player && root.player.isPlaying
-        repeat: true
-        onTriggered: root.pulseStep = (root.pulseStep + 1) % 6
     }
 
     Rectangle {
@@ -53,7 +45,7 @@ MouseArea {
 
         RowLayout {
             anchors.fill: parent
-            anchors.leftMargin: 6
+            anchors.leftMargin: 12
             anchors.rightMargin: 12
             spacing: 9
 
@@ -134,22 +126,25 @@ MouseArea {
                 spacing: 3
 
                 Repeater {
-                    model: 6
+                    model: 5
 
                     Rectangle {
                         required property int index
-                        width: root.player && root.player.isPlaying && index === root.pulseStep ? 5 : 4
-                        height: width
+                        property real level: 7
+                        width: 3
+                        height: root.player && root.player.isPlaying ? level : 7
                         radius: width / 2
-                        color: root.player && root.player.isPlaying && index === root.pulseStep
-                            ? Theme.mauve : Theme.overlay0
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: root.player && root.player.isPlaying ? Theme.mauve : Theme.overlay0
 
-                        Behavior on width {
-                            NumberAnimation { duration: 100 }
-                        }
+                        SequentialAnimation on level {
+                            running: root.player && root.player.isPlaying
+                            loops: Animation.Infinite
 
-                        Behavior on color {
-                            ColorAnimation { duration: 100 }
+                            NumberAnimation { to: [11, 17, 9, 15, 12][index]; duration: [210, 280, 190, 250, 310][index]; easing.type: Easing.InOutQuad }
+                            NumberAnimation { to: [5, 8, 15, 6, 9][index]; duration: [270, 200, 300, 220, 180][index]; easing.type: Easing.InOutQuad }
+                            NumberAnimation { to: [16, 10, 6, 12, 17][index]; duration: [230, 310, 240, 290, 210][index]; easing.type: Easing.InOutQuad }
+                            NumberAnimation { to: 7; duration: [260, 230, 280, 190, 250][index]; easing.type: Easing.InOutQuad }
                         }
                     }
                 }
