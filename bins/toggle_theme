@@ -75,6 +75,9 @@ fi
 
 sync_portal_preference
 
+# Keep Okular's interface and document palette in step with the desktop theme.
+"$DOTFILES/scripts/sync_okular_theme.sh" "$TARGET"
+
 # Reload applications
 hyprctl reload
 
