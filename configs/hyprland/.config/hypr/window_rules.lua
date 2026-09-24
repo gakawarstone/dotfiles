@@ -1,4 +1,13 @@
 hl.window_rule({
+    name = "energy-meter-window",
+    match = { class = "^org\\.quickshell$", title = "^Energy Meter$" },
+    float = true,
+    center = true,
+    size = { 650, 670 },
+    group = "barred",
+})
+
+hl.window_rule({
     name = "smart-gaps-borders-tv1",
     match = { workspace = "w[tv1]" },
     border_size = 0,

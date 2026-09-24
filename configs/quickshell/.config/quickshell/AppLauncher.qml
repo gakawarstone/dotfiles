@@ -56,6 +56,7 @@ Scope {
         { id: "actions", parent: "root", kind: "menu", icon: "󱓞", label: "Actions", description: "Common desktop actions" },
         { id: "setup", parent: "root", kind: "menu", icon: "", label: "Setup", description: "Edit desktop configuration" },
         { id: "system", parent: "root", kind: "menu", icon: "", label: "System", description: "Lock, suspend, or log out" },
+        { id: "energy", parent: "root", kind: "action", icon: "", label: "Energy Meter", description: "Power use and electricity cost", command: "qs ipc call energy-meter toggle" },
 
         { id: "actions.terminal", parent: "actions", kind: "action", icon: "", label: "Terminal", description: "Open Foot", command: "foot" },
         { id: "actions.files", parent: "actions", kind: "action", icon: "", label: "Files", description: "Open Dolphin", command: "dolphin" },

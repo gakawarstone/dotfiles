@@ -1,0 +1,1 @@
+../../../../packages/energy-meter/qml/EnergyMeter.qml

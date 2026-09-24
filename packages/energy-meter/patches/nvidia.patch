@@ -1,0 +1,85 @@
+diff --git a/bin/omaenergy b/bin/omaenergy
+index 4f6e3b6..e469119 100755
+--- a/bin/omaenergy
++++ b/bin/omaenergy
+@@ -73,0 +74,2 @@ import argparse
++import atexit
++import ctypes
+@@ -807 +809 @@ class GpuSensor:
+-    """An amdgpu power reading, chosen deterministically.
++    """A discrete GPU power reading, chosen deterministically.
+@@ -821,0 +824,2 @@ class GpuSensor:
++        self._nvml = None
++        self._nvml_device = None
+@@ -855 +859,3 @@ class GpuSensor:
+-            self.skipped_reason = "no amdgpu power sensor found"
++            if self._probe_nvidia():
++                return
++            self.skipped_reason = "no amdgpu or NVIDIA power sensor found"
+@@ -872,0 +879,47 @@ class GpuSensor:
++    def _probe_nvidia(self) -> bool:
++        """Use the same NVML power source that btop uses for NVIDIA cards."""
++        try:
++            nvml = ctypes.CDLL("libnvidia-ml.so.1")
++            nvml.nvmlInit_v2.argtypes = []
++            nvml.nvmlInit_v2.restype = ctypes.c_int
++            nvml.nvmlDeviceGetCount_v2.argtypes = [ctypes.POINTER(ctypes.c_uint)]
++            nvml.nvmlDeviceGetCount_v2.restype = ctypes.c_int
++            nvml.nvmlDeviceGetHandleByIndex_v2.argtypes = [ctypes.c_uint, ctypes.POINTER(ctypes.c_void_p)]
++            nvml.nvmlDeviceGetHandleByIndex_v2.restype = ctypes.c_int
++            nvml.nvmlDeviceGetPowerUsage.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_uint)]
++            nvml.nvmlDeviceGetPowerUsage.restype = ctypes.c_int
++            nvml.nvmlDeviceGetPowerManagementLimit.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_uint)]
++            nvml.nvmlDeviceGetPowerManagementLimit.restype = ctypes.c_int
++            nvml.nvmlShutdown.argtypes = []
++            nvml.nvmlShutdown.restype = ctypes.c_int
++            if nvml.nvmlInit_v2() != 0:
++                return False
++            atexit.register(nvml.nvmlShutdown)
++            count = ctypes.c_uint()
++            if nvml.nvmlDeviceGetCount_v2(ctypes.byref(count)) != 0:
++                return False
++            best = None
++            for index in range(count.value):
++                device = ctypes.c_void_p()
++                power = ctypes.c_uint()
++                limit = ctypes.c_uint()
++                if nvml.nvmlDeviceGetHandleByIndex_v2(index, ctypes.byref(device)) != 0:
++                    continue
++                if nvml.nvmlDeviceGetPowerUsage(device, ctypes.byref(power)) != 0:
++                    continue
++                nvml.nvmlDeviceGetPowerManagementLimit(device, ctypes.byref(limit))
++                if best is None or limit.value > best[2]:
++                    best = (index, device, limit.value)
++            if best is None:
++                return False
++            index, device, limit = best
++            self._nvml = nvml
++            self._nvml_device = device
++            self.path = Path(f"nvml:{index}")
++            self.label = "NVIDIA"
++            self.cap_w = round(limit / 1000, 1)
++            self.candidates.append({"source": str(self.path), "label": self.label, "cap_w": self.cap_w})
++            return True
++        except (OSError, AttributeError):
++            return False
++
+@@ -899,0 +953,5 @@ class GpuSensor:
++        if self._nvml_device is not None:
++            power = ctypes.c_uint()
++            if self._nvml.nvmlDeviceGetPowerUsage(self._nvml_device, ctypes.byref(power)) == 0:
++                return power.value / 1000
++            return 0.0
+@@ -1095,0 +1154,12 @@ def run_daemon(args: argparse.Namespace) -> int:
++        # The user service can start before the NVIDIA driver is ready. Keep
++        # looking so that a later sensor does not remain 0 W until a restart.
++        if not gpu.available and cfg.get("gpu_source") != "off":
++            recovered = GpuSensor(cfg)
++            if recovered.available:
++                gpu = recovered
++                prev_gpu_w = gpu.watts()
++                with db:
++                    meta_set(db, "gpu_source", str(gpu.path))
++                    meta_set(db, "gpu_skipped", "")
++                print(f"omaenergy: GPU source recovered: {gpu.path}", file=sys.stderr)
++

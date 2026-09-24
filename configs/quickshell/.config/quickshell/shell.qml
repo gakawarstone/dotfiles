@@ -12,6 +12,7 @@ ShellRoot {
     }
 
     AppLauncher {}
+    EnergyMeter {}
 
     Pomodoro.TimerLogic {
         id: globalPomoState
