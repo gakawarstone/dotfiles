@@ -14,6 +14,8 @@ Scope {
     property int selectedIndex: 0
     property string activeMenu: "root"
     property var navigationStack: []
+    property var fileItems: []
+    property string fileSearchQuery: ""
     readonly property int rowHeight: searchField.text.length > 0 ? 68 : 58
 
     // Mapping from the Russian keyboard layout to the US layout, so that
@@ -85,9 +87,10 @@ Scope {
             application: app
         }))
 
-    readonly property var allItems: menuItems.concat(applicationItems)
+    readonly property var allItems: menuItems.concat(applicationItems, fileItems)
     readonly property var displayItems: {
         const rawQuery = searchField.text.trim()
+
         const variants = queryVariants(rawQuery)
         let items
 
@@ -110,6 +113,8 @@ Scope {
         return items.sort((left, right) => {
             if (!rawQuery && activeMenu !== "apps")
                 return menuItems.indexOf(left) - menuItems.indexOf(right)
+            if ((left.kind === "file") !== (right.kind === "file"))
+                return left.kind === "file" ? 1 : -1
             const leftStarts = left.label.toLowerCase().startsWith(sortQuery)
             const rightStarts = right.label.toLowerCase().startsWith(sortQuery)
             if (leftStarts !== rightStarts)
@@ -152,6 +157,34 @@ Scope {
             current = itemById(current.parent)
         }
         return labels.join(" › ")
+    }
+
+    function descriptionFor(item) {
+        if (item.kind === "file")
+            return item.path
+        return pathFor(item)
+    }
+
+    function searchFiles() {
+        const query = searchField.text.trim()
+        if (!open || activeMenu !== "root" || query.length < 2 || query.startsWith("?")) {
+            fileSearchQuery = ""
+            fileItems = []
+            fileSearchProcess.running = false
+            return
+        }
+
+        if (fileSearchProcess.running) {
+            fileSearchProcess.running = false
+            return
+        }
+
+        fileSearchQuery = query
+        fileSearchProcess.command = ["fd", "--type", "file", "--absolute-path", "-i",
+                                     "--fixed-strings", "--print0", "--max-results", "100",
+                                     "--exclude", ".git", "--exclude", ".cache", "--exclude", "node_modules",
+                                     query, Quickshell.env("HOME")]
+        fileSearchProcess.running = true
     }
 
     function menuTitle() {
@@ -209,6 +242,9 @@ Scope {
         } else if (item.kind === "app") {
             item.application.execute()
             hide()
+        } else if (item.kind === "file") {
+            Qt.openUrlExternally("file://" + item.path.split("/").map(encodeURIComponent).join("/"))
+            hide()
         } else {
             actionProcess.command = ["sh", "-lc", item.command]
             actionProcess.running = true
@@ -220,6 +256,32 @@ Scope {
 
     Process {
         id: actionProcess
+    }
+
+    Timer {
+        id: fileSearchTimer
+        interval: 180
+        onTriggered: root.searchFiles()
+    }
+
+    Process {
+        id: fileSearchProcess
+        stdout: StdioCollector { id: fileSearchOutput }
+        onExited: {
+            const query = searchField.text.trim()
+            if (root.open && root.activeMenu === "root" && query === root.fileSearchQuery) {
+                root.fileItems = fileSearchOutput.text.split("\0").filter(path => path.length > 0).map(path => ({
+                    id: "file." + path,
+                    parent: "root",
+                    kind: "file",
+                    icon: "󰈔",
+                    label: path.slice(path.lastIndexOf("/") + 1),
+                    path: path
+                }))
+            }
+            if (root.open && query !== root.fileSearchQuery)
+                fileSearchTimer.restart()
+        }
     }
 
     IpcHandler {
@@ -293,11 +355,15 @@ Scope {
                         font.pixelSize: 20
                         font.weight: Font.Medium
                         verticalAlignment: TextInput.AlignVCenter
+                        onTextChanged: {
+                            root.fileItems = []
+                            fileSearchTimer.restart()
+                        }
 
                         Text {
                             anchors.fill: parent
                             visible: searchField.text.length === 0
-                            text: root.menuTitle() + "..."
+                            text: root.activeMenu === "root" ? "Search apps and files..." : root.menuTitle() + "..."
                             color: Theme.text
                             opacity: 0.58
                             font: searchField.font
@@ -347,6 +413,8 @@ Scope {
                             spacing: 6
 
                             Item {
+                                id: resultIcon
+                                readonly property bool pdfFile: result.modelData.kind === "file" && /\.pdf$/i.test(result.modelData.path)
                                 Layout.preferredWidth: 36
                                 Layout.preferredHeight: 36
 
@@ -357,9 +425,29 @@ Scope {
                                     asynchronous: true
                                 }
 
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: 29
+                                    height: 34
+                                    visible: resultIcon.pdfFile
+                                    color: "transparent"
+                                    border.color: Theme.mauve
+                                    border.width: 2
+                                    radius: 3
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: "PDF"
+                                        color: Theme.mauve
+                                        font.family: "MonaspiceKr Nerd Font"
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                    }
+                                }
+
                                 Text {
                                     anchors.fill: parent
-                                    visible: result.modelData.kind !== "app"
+                                    visible: result.modelData.kind !== "app" && !resultIcon.pdfFile
                                     text: result.modelData.icon
                                     color: result.index === root.selectedIndex ? Theme.mauve : Theme.text
                                     font.family: "MonaspiceKr Nerd Font"
@@ -385,7 +473,7 @@ Scope {
 
                                 Text {
                                     Layout.fillWidth: true
-                                    text: root.pathFor(result.modelData)
+                                    text: root.descriptionFor(result.modelData)
                                     visible: searchField.text.length > 0 && text.length > 0
                                     color: Theme.text
                                     opacity: 0.52
