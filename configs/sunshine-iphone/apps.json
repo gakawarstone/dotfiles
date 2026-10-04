@@ -1,0 +1,9 @@
+{
+  "env": {},
+  "apps": [
+    {
+      "name": "iPhone Desktop",
+      "image-path": "desktop.png"
+    }
+  ]
+}

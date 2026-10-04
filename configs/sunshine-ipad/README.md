@@ -48,4 +48,5 @@ Logs are also available with `journalctl --user -u ipad-screen.service`.
 The server uses `capture = wlr`, `encoder = nvenc`, and `output_name = IPAD`.
 The web UI accepts only local connections and UPnP is disabled. Both devices
 should be on the same LAN, with the iPad on 5/6 GHz Wi-Fi if available.
-If another Sunshine instance is running, stop it before `ipad-screen on`.
+The iPhone profile uses separate ports and can run alongside this profile.
+Other Sunshine instances using the iPad ports must be stopped before `on`.

@@ -2,7 +2,9 @@
 set -euo pipefail
 
 repo_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sunshine-ipad"
+device="${MOBILE_SCREEN_DEVICE:-ipad}"
+case "$device" in ipad|iphone) ;; *) printf 'Unknown mobile screen: %s\n' "$device" >&2; exit 1 ;; esac
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sunshine-$device"
 sunshine_version=2026.914.233613-1
 sunshine_sha256=17eb8c4d823a2693038f40aeeab56943ef0d5d6ace8ac90b3693905b0acbba87
 
@@ -29,17 +31,17 @@ fi
 
 mkdir -p "$HOME/.local/bin" "$config_dir/credentials"
 chmod 700 "$config_dir" "$config_dir/credentials"
-target="$HOME/.local/bin/ipad-screen"
+target="$HOME/.local/bin/$device-screen"
 if [[ -e "$target" || -L "$target" ]]; then
-    [[ $(readlink -f "$target") == "$repo_dir/bins/ipad-screen" ]] || {
+    [[ $(readlink -f "$target") == "$repo_dir/bins/$device-screen" ]] || {
         printf 'Refusing to overwrite existing %s\n' "$target" >&2; exit 1;
     }
 else
-    ln -s "$repo_dir/bins/ipad-screen" "$target"
+    ln -s "$repo_dir/bins/$device-screen" "$target"
 fi
 
 if [[ ! -e "$config_dir/sunshine.conf" ]]; then
-    cp "$repo_dir/configs/sunshine-ipad/sunshine.conf" "$config_dir/sunshine.conf"
+    cp "$repo_dir/configs/sunshine-$device/sunshine.conf" "$config_dir/sunshine.conf"
     # Explicit paths keep pairing state and keys out of the default Sunshine
     # profile and out of this repository.
     {
@@ -51,12 +53,12 @@ if [[ ! -e "$config_dir/sunshine.conf" ]]; then
     } >> "$config_dir/sunshine.conf"
 fi
 if [[ ! -e "$config_dir/apps.json" ]]; then
-    cp "$repo_dir/configs/sunshine-ipad/apps.json" "$config_dir/apps.json"
+    cp "$repo_dir/configs/sunshine-$device/apps.json" "$config_dir/apps.json"
 fi
 chmod 600 "$config_dir/sunshine.conf" "$config_dir/apps.json"
 
 hypr_dir="${XDG_CONFIG_HOME:-$HOME/.config}/hypr"
-[[ -r "$hypr_dir/ipad.lua" ]] || {
+[[ -r "$hypr_dir/$device.lua" ]] || {
     printf 'Expected the dotfiles Hyprland config at %s.\n' "$hypr_dir" >&2; exit 1;
 }
 printf 'Configured. Start with: %s on\n' "$target"
