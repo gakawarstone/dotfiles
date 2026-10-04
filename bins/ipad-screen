@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/sunshine-ipad"
+lua_config="${XDG_CONFIG_HOME:-$HOME/.config}/hypr/ipad.lua"
+unit=ipad-screen.service
+
+fail() { printf '%s\n' "$*" >&2; exit 1; }
+has_screen() { hyprctl monitors -j | jq -e 'any(.[]; .name == "IPAD")' >/dev/null; }
+
+remove_screen() {
+    has_screen || return 0
+    local fallback fallback_lua workspace
+    fallback=$(hyprctl monitors -j | jq -r '
+        [.[] | select(.name != "IPAD")]
+        | (map(select(.name == "HDMI-A-1"))[0] // .[0]).name // empty')
+    [[ -n "$fallback" ]] || fail "No physical monitor available; keeping IPAD."
+    fallback_lua=$(jq -nr --arg name "$fallback" '$name | @json')
+    while IFS= read -r workspace; do
+        hyprctl eval "hl.dispatch(hl.dsp.workspace.move({ workspace = $workspace, monitor = $fallback_lua }))" >/dev/null
+    done < <(hyprctl workspaces -j | jq -r '.[] | select(.monitor == "IPAD") | .name | @json')
+    # Removing the output also relocates any windows created during cleanup.
+    hyprctl output remove IPAD >/dev/null
+    ! has_screen || fail "Could not remove IPAD."
+}
+
+case "${1:-status}" in
+    on)
+        command -v sunshine >/dev/null || fail "Install first: bash ~/dotfiles/scripts/install_ipad_screen.sh"
+        [[ -r "$config_dir/sunshine.conf" && -r "$lua_config" ]] || fail "Run install_ipad_screen.sh first."
+        [[ -n "${WAYLAND_DISPLAY:-}" ]] || fail "Run this command inside your Hyprland session."
+        if systemctl --user is-active --quiet "$unit" && has_screen; then
+            printf 'iPad screen is already on.\n'
+            exit 0
+        fi
+        if pgrep -x sunshine >/dev/null; then
+            fail "Another Sunshine is running. Stop it before starting ipad-screen."
+        fi
+        lua_path=$(jq -nr --arg path "$lua_config" '$path | @json')
+        hyprctl eval "dofile($lua_path)" >/dev/null
+        created=false
+        if ! has_screen; then
+            hyprctl output create headless IPAD >/dev/null
+            created=true
+        fi
+        has_screen || fail "Hyprland did not create IPAD."
+        # Reattach workspace 5 if it was moved back to a physical monitor on off.
+        if hyprctl workspaces -j | jq -e 'any(.[]; .name == "5")' >/dev/null; then
+            hyprctl eval 'hl.dispatch(hl.dsp.workspace.move({ workspace = "5", monitor = "IPAD" }))' >/dev/null
+        fi
+        if ! systemd-run --user --quiet --collect --unit="$unit" --property=Type=exec \
+            --setenv="WAYLAND_DISPLAY=$WAYLAND_DISPLAY" \
+            --setenv="DISPLAY=${DISPLAY:-}" \
+            --setenv="XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-Hyprland}" \
+            --setenv="XDG_SESSION_TYPE=wayland" \
+            --setenv="HYPRLAND_INSTANCE_SIGNATURE=${HYPRLAND_INSTANCE_SIGNATURE:-}" \
+            "$(command -v sunshine)" "$config_dir/sunshine.conf"; then
+            if "$created"; then remove_screen; fi
+            fail "Sunshine did not start. Check: journalctl --user -u $unit -n 50"
+        fi
+        sleep 1
+        if ! systemctl --user is-active --quiet "$unit"; then
+            if "$created"; then remove_screen; fi
+            fail "Sunshine exited. Check: journalctl --user -u $unit -n 50"
+        fi
+        printf 'IPAD: 2360x1640, 60 Hz, scale 2, workspace 5.\nSetup: https://localhost:47990\n'
+        ip -4 route get 1.1.1.1 2>/dev/null | awk '{for (i=1;i<=NF;i++) if ($i=="src") print "Moonlight host: " $(i+1)}' || true
+        ;;
+    off)
+        if systemctl --user is-active --quiet "$unit"; then
+            systemctl --user stop "$unit"
+        fi
+        remove_screen
+        printf 'iPad screen is off.\n'
+        ;;
+    status)
+        if has_screen; then
+            hyprctl monitors -j | jq '.[] | select(.name == "IPAD") | {name, width, height, refreshRate, scale, x, y, activeWorkspace}'
+        else
+            printf 'IPAD monitor: off\n'
+        fi
+        if systemctl --user is-active --quiet "$unit"; then
+            printf 'Sunshine: running\n'
+        else
+            printf 'Sunshine: stopped\n'
+        fi
+        ;;
+    logs) journalctl --user -u "$unit" -n 80 --no-pager ;;
+    *) fail "Usage: ipad-screen [on|off|status|logs]" ;;
+esac

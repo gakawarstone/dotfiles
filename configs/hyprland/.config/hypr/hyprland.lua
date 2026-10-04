@@ -19,6 +19,7 @@ hl.monitor({
 
 require("autostart")
 require("workspaces")
+require("ipad")
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")

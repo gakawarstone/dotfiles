@@ -24,6 +24,7 @@ ShellRoot {
             id: window
             required property var modelData
             screen: modelData
+            visible: modelData.name !== "IPAD"
 
             WlrLayershell.layer: WlrLayershell.Bottom
 
