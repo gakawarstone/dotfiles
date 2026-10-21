@@ -36,6 +36,7 @@ Rectangle {
 
             NetworkSpeed {}
             CodexUsage {}
+            HsflVpn {}
             LanMouse {}
             Pomodoro {
                 pomoState: root.pomoState
