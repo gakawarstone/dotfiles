@@ -65,10 +65,12 @@ def _install_config(
     except subprocess.CalledProcessError as error:
         stderr = error.stderr or ""
         if not adopt and "--adopt" in stderr:
-            print("There is config for", config.name)
-            if input("Rewrite it (y/n)") == "y":
-                _install_config(config, configs_dir, target_dir, adopt=True)
-                return
+            print(
+                f"Conflicting files for {config.name} were left unchanged. "
+                "Resolve the conflict manually before retrying. "
+                "Stow --adopt replaces repository files with the existing target files.",
+                file=sys.stderr,
+            )
 
         if stderr:
             print(
