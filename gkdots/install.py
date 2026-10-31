@@ -5,7 +5,6 @@ from pathlib import Path
 
 from config import INCLUDED_BINS, BIN_FILES_PATH, INCLUDED_CONFIGS
 from datatypes import BinFileLinkingInfo, ConfigDirLinkingInfo
-from prepare import DEFAULT_PREPARERS
 
 
 def _run_cmd(
@@ -102,9 +101,8 @@ def install_configs(
     target_dir=Path.home(),
 ):
     for config in included_configs:
-        prepare = config.prepare or DEFAULT_PREPARERS.get(config.name)
-        if prepare:
-            prepare(configs_dir / config.name)
+        if config.prepare:
+            config.prepare(configs_dir / config.name)
         _install_config(config, configs_dir, target_dir)
 
 

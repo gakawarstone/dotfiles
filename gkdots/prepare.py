@@ -18,7 +18,3 @@ def prepare_foot(package_dir: Path):
     theme = config_dir / "theme.ini"
     if not theme.exists() and not theme.is_symlink():
         theme.symlink_to("mocha.ini")
-
-
-# Keep existing local config.py files working without requiring edits.
-DEFAULT_PREPARERS = {"alacritty": prepare_alacritty, "foot": prepare_foot}

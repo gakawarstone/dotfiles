@@ -34,7 +34,9 @@ A modular and automated configuration management system for Linux (Arch-based), 
    `theme.ini` does not exist; an existing theme selection is preserved.
    Any `ConfigDirLinkingInfo` can also specify `prepare=...`, a function that
    receives the package directory as a `Path` and runs before Stow. See
-   `gkdots/prepare.py` for examples.
+   `gkdots/prepare.py` for examples. Existing `gkdots/config.py` files need
+   the Alacritty and Foot `prepare` entries and imports from `config.def.py`
+   to enable their automatic preparation.
 
 ## 📂 Project Structure
 
