@@ -26,6 +26,11 @@ if [ -z "$NUM_PAGES" ] || [ -z "$OUTPUT_FILE" ]; then
     exit 1
 fi
 
+if [[ ! "$NUM_PAGES" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Number of pages must be a positive integer" >&2
+    exit 1
+fi
+
 # Grid dimensions (A4 at 150 dpi)
 WIDTH=1240
 HEIGHT=1754
@@ -46,19 +51,23 @@ if [ "$BLANK" = false ]; then
     done
 fi
 
+# Keep intermediate files separate from the caller's working directory.
+tmp_dir=$(mktemp -d) || exit 1
+trap 'rm -rf -- "$tmp_dir"' EXIT
+pages=()
+
 # Generate pages
 for ((p=1; p<=NUM_PAGES; p++)); do
+    page="$tmp_dir/page_$p.png"
     if [ "$BLANK" = true ]; then
-        magick -size ${WIDTH}x${HEIGHT} xc:white page_$p.png
+        magick -size ${WIDTH}x${HEIGHT} xc:white "$page" || exit 1
     else
-        magick -size ${WIDTH}x${HEIGHT} xc:white -stroke "#cccccc" -strokewidth 1 -draw "$lines" page_$p.png
+        magick -size ${WIDTH}x${HEIGHT} xc:white -stroke "#cccccc" -strokewidth 1 -draw "$lines" "$page" || exit 1
     fi
+    pages+=("$page")
 done
 
 # Combine into a single PDF
-magick page_*.png "$OUTPUT_FILE"
-
-# Clean up temporary PNGs
-rm page_*.png
+magick "${pages[@]}" "$OUTPUT_FILE" || exit 1
 
 echo "Created $OUTPUT_FILE with $NUM_PAGES pages."
