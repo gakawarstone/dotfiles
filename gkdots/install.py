@@ -101,6 +101,8 @@ def install_configs(
     target_dir=Path.home(),
 ):
     for config in included_configs:
+        if config.prepare:
+            config.prepare(configs_dir / config.name)
         _install_config(config, configs_dir, target_dir)
 
 

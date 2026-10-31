@@ -26,6 +26,18 @@ A modular and automated configuration management system for Linux (Arch-based), 
    make install
    ```
 
+   When Alacritty or Foot is included, installation builds its missing config
+   with `uvx` (from `uv`) using `main.env`. Set `JINJA_ENV=laptop` when
+   running `make install` to use the laptop profile. Existing generated configs
+   are left unchanged; rebuild them with `make` in the terminal's config
+   directory to change profiles. Foot defaults to the Mocha theme if its
+   `theme.ini` does not exist; an existing theme selection is preserved.
+   Any `ConfigDirLinkingInfo` can also specify `prepare=...`, a function that
+   receives the package directory as a `Path` and runs before Stow. See
+   `gkdots/prepare.py` for examples. Existing `gkdots/config.py` files need
+   the Alacritty and Foot `prepare` entries and imports from `config.def.py`
+   to enable their automatic preparation.
+
 ## 📂 Project Structure
 
 - `configs/`: Dotfiles organized by application (e.g., `alacritty/`, `fish/`, `tmux/`). Managed via GNU Stow.

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from datatypes import BinFileLinkingInfo, ConfigDirLinkingInfo
+from prepare import prepare_alacritty, prepare_foot
 
 
 BIN_FILES_PATH = Path("~/.local/bin/").expanduser()
@@ -19,14 +20,14 @@ INCLUDED_BINS = [
 
 INCLUDED_CONFIGS = [
     ConfigDirLinkingInfo("tmux"),
-    ConfigDirLinkingInfo("alacritty"),
+    ConfigDirLinkingInfo("alacritty", prepare=prepare_alacritty),
     ConfigDirLinkingInfo("bat"),
     ConfigDirLinkingInfo("dunst"),
     # ConfigDirLinkingInfo("wal"),
     ConfigDirLinkingInfo("fish"),
     ConfigDirLinkingInfo("quickshell"),
     # ConfigDirLinkingInfo("yazi"),
-    ConfigDirLinkingInfo("foot"),
+    ConfigDirLinkingInfo("foot", prepare=prepare_foot),
     ConfigDirLinkingInfo("okular"),
     ConfigDirLinkingInfo("codex"),
 ]
