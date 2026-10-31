@@ -8,8 +8,8 @@ fi
 REPO_DIR="$1"
 
 echo cd "$REPO_DIR"
-cd "$REPO_DIR"
-git fetch && git pull
+cd "$REPO_DIR" || exit $?
+git fetch && git pull || exit $?
 git add .
 git commit -m "Auto-commit: $(date +'%Y-%m-%d %H:%M:%S')"
 git push
