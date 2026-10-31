@@ -8,6 +8,8 @@ PopupWindow {
     id: popup
 
     property var anchorItem
+    property bool available: false
+    property string detail: "No Codex usage snapshot"
     property string statusColor: "muted"
     property int primaryUsed: 0
     property int primaryLeft: 0
@@ -70,6 +72,7 @@ PopupWindow {
             }
 
             ColumnLayout {
+                visible: popup.available
                 Layout.fillWidth: true
                 spacing: 6
 
@@ -199,6 +202,16 @@ PopupWindow {
                         font.family: popup.popupFont
                     }
                 }
+            }
+
+            Text {
+                visible: !popup.available
+                Layout.fillWidth: true
+                text: popup.detail
+                color: Theme.overlay2
+                font.pixelSize: 14
+                font.family: popup.popupFont
+                wrapMode: Text.Wrap
             }
         }
     }
