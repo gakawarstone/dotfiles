@@ -5,6 +5,7 @@ from pathlib import Path
 
 from config import INCLUDED_BINS, BIN_FILES_PATH, INCLUDED_CONFIGS
 from datatypes import BinFileLinkingInfo, ConfigDirLinkingInfo
+from prepare import DEFAULT_PREPARERS
 
 
 def _run_cmd(
@@ -95,31 +96,15 @@ def install_bins(
         _link_bin_file(file_path, target_path)
 
 
-def _prepare_terminal_config(name: str, configs_dir: Path):
-    if name not in ("alacritty", "foot"):
-        return
-
-    config_path = configs_dir / name / ".config" / name
-    extension = "toml" if name == "alacritty" else "ini"
-    output = config_path / f"{name}.{extension}"
-    if not output.exists() and not output.is_symlink():
-        _run_cmd(["make", "build"], config_path)
-
-    if name != "foot":
-        return
-
-    theme = config_path / "theme.ini"
-    if not theme.exists() and not theme.is_symlink():
-        theme.symlink_to("mocha.ini")
-
-
 def install_configs(
     included_configs: list[ConfigDirLinkingInfo] = INCLUDED_CONFIGS,
     configs_dir: Path = Path("configs/"),
     target_dir=Path.home(),
 ):
     for config in included_configs:
-        _prepare_terminal_config(config.name, configs_dir)
+        prepare = config.prepare or DEFAULT_PREPARERS.get(config.name)
+        if prepare:
+            prepare(configs_dir / config.name)
         _install_config(config, configs_dir, target_dir)
 
 

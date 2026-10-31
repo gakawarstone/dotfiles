@@ -1,4 +1,5 @@
-from typing import NamedTuple
+from pathlib import Path
+from typing import Callable, NamedTuple
 
 
 class BinFileLinkingInfo(NamedTuple):
@@ -8,3 +9,4 @@ class BinFileLinkingInfo(NamedTuple):
 
 class ConfigDirLinkingInfo(NamedTuple):
     name: str
+    prepare: Callable[[Path], None] | None = None

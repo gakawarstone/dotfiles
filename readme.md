@@ -32,6 +32,9 @@ A modular and automated configuration management system for Linux (Arch-based), 
    are left unchanged; rebuild them with `make` in the terminal's config
    directory to change profiles. Foot defaults to the Mocha theme if its
    `theme.ini` does not exist; an existing theme selection is preserved.
+   Any `ConfigDirLinkingInfo` can also specify `prepare=...`, a function that
+   receives the package directory as a `Path` and runs before Stow. See
+   `gkdots/prepare.py` for examples.
 
 ## 📂 Project Structure
 
