@@ -27,7 +27,8 @@ def get_events_today():
     for component in cal.walk():
         if component.name == "VEVENT":
             dtstart = component.get("dtstart").dt
-            category = component.get("categories").cats[0]
+            categories = component.get("categories")
+            category = categories.cats[0] if categories and categories.cats else None
             location = component.get("location")
             try:
                 dtend = component.get("dtend").dt
@@ -43,6 +44,7 @@ def get_events_today():
                     events_today.append(
                         {
                             "summary": summary,
+                            "category": category,
                             "all_day": True,
                             "start": dtstart,
                             "end": dtend,
@@ -83,7 +85,8 @@ def format_output(event: dict) -> str:
     summary = summary.split("- (")[0]
     summary = summary.split("(")[0].strip()
     summary = summary.replace("Vorlesung", "")
-    return f"{start_time} {event['location']} {event['category']}: {summary}"
+    category = f"{event['category']}: " if event.get("category") else ""
+    return f"{start_time} {event['location']} {category}{summary}"
 
 
 if __name__ == "__main__":
