@@ -26,6 +26,13 @@ A modular and automated configuration management system for Linux (Arch-based), 
    make install
    ```
 
+   When Alacritty or Foot is included, installation builds its missing config
+   with `uvx` (from `uv`) using `main.env`. Set `JINJA_ENV=laptop` when
+   running `make install` to use the laptop profile. Existing generated configs
+   are left unchanged; rebuild them with `make` in the terminal's config
+   directory to change profiles. Foot defaults to the Mocha theme if its
+   `theme.ini` does not exist; an existing theme selection is preserved.
+
 ## 📂 Project Structure
 
 - `configs/`: Dotfiles organized by application (e.g., `alacritty/`, `fish/`, `tmux/`). Managed via GNU Stow.

@@ -101,6 +101,15 @@ def install_configs(
     target_dir=Path.home(),
 ):
     for config in included_configs:
+        if config.name in ("alacritty", "foot"):
+            config_path = configs_dir / config.name / ".config" / config.name
+            output = config_path / f"{config.name}.{'toml' if config.name == 'alacritty' else 'ini'}"
+            if not output.exists() and not output.is_symlink():
+                _run_cmd(["make", "build"], config_path)
+            if config.name == "foot":
+                theme = config_path / "theme.ini"
+                if not theme.exists() and not theme.is_symlink():
+                    theme.symlink_to("mocha.ini")
         _install_config(config, configs_dir, target_dir)
 
 
