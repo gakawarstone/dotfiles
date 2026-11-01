@@ -38,10 +38,15 @@ ShellRoot {
             color: "transparent"
 
             Bar {
+                id: bar
                 anchors.fill: parent
                 screen: modelData
                 pomoState: globalPomoState
                 notificationController: notificationCenter
+
+                Component.onCompleted: {
+                    if (window.visible) notificationCenter.registerAnchor(bar, modelData)
+                }
             }
         }
     }
