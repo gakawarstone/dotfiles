@@ -14,7 +14,7 @@ A modular and automated configuration management system for Linux (Arch-based), 
    ```bash
    sudo pacman -S --needed base-devel
    ```
-   Then install other dependencies via:
+   Then install Python, Stow, wget, and uv (which provides `uvx`) via:
    ```bash
    make init
    ```
@@ -61,4 +61,4 @@ A modular and automated configuration management system for Linux (Arch-based), 
 
 ## ⚠️ Warning
 
-This setup is primarily designed for **Arch Linux**. The `make init` command uses `pacman` and requires `base-devel` (for `make`). If you are on another distribution, ensure you have `stow`, `python`, and `make` installed manually.
+This setup is primarily designed for **Arch Linux**. The `make init` command uses `pacman` and requires `base-devel` (for `make`). If you are on another distribution, install `stow`, `python`, `make`, and `uv` (which provides `uvx`) manually.
