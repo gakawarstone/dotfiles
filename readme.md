@@ -59,6 +59,9 @@ A modular and automated configuration management system for Linux (Arch-based), 
 - **Adding a binary**: Add the script to `bins/` and update `INCLUDED_BINS` in `gkdots/config.py`.
 - **Cleaning up**: Use `make clean` to remove downloaded fonts.
 
+For the PS5 PRO launcher, local wake-up, and the patched Chiaki-ng Flatpak,
+see [PS5 PRO setup](configs/ps5-pro/README.md).
+
 ## ⚠️ Warning
 
 This setup is primarily designed for **Arch Linux**. The `make init` command uses `pacman` and requires `base-devel` (for `make`). If you are on another distribution, ensure you have `stow`, `python`, and `make` installed manually.
