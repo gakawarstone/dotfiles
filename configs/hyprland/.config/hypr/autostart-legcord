@@ -1,0 +1,25 @@
+#!/bin/sh
+
+legcord &
+
+# Allow up to 30 seconds for both windows to appear.
+for attempt in $(seq 1 300); do
+	clients=$(hyprctl clients -j) || exit 1
+	legcord_address=$(printf '%s\n' "$clients" | jq -r '
+		if any(.[]; .class == "org.mozilla.Thunderbird") then
+			[.[] | select(.class == "legcord" and .title == "Discord - Legcord") | .address][0] // empty
+		else empty end
+	') || exit 1
+
+	if [ -n "$legcord_address" ]; then
+		hyprctl dispatch "hl.dsp.focus({window = 'address:$legcord_address'})"
+		hyprctl dispatch "hl.dsp.window.move({into_group = 'r'})"
+		hyprctl dispatch "hl.dsp.focus({workspace = 3})"
+		exit
+	fi
+
+	sleep 0.1
+done
+
+echo 'autostart-legcord: timed out waiting for Thunderbird and Legcord' >&2
+exit 1
