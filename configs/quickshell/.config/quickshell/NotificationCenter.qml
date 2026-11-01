@@ -16,8 +16,10 @@ Scope {
     readonly property int historyCount: historyModel.count
 
     function registerAnchor(anchorItem, screen) {
-        if (!activeAnchor) activeAnchor = anchorItem
-        if (!activeScreen && screen) activeScreen = screen
+        if (!activeAnchor) {
+            activeAnchor = anchorItem
+            if (screen) activeScreen = screen
+        }
     }
 
     function toggle(anchorItem, screen) {

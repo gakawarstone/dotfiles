@@ -34,22 +34,23 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
-            NetworkSpeed {}
+            // NetworkSpeed {}
             CodexUsage {}
+            Wifi {}
             HsflVpn {}
-            LanMouse {}
-            Pomodoro {
-                pomoState: root.pomoState
-            }
+            // LanMouse {}
+            // Pomodoro {
+            //     pomoState: root.pomoState
+            // }
             Volume {}
             Microphone {}
             Bluetooth {}
             Battery {}
             KeyboardLayout {}
-            NotificationIndicator {
-                notificationCenter: root.notificationController
-                screen: root.screen
-            }
+            // NotificationIndicator {
+            //     notificationCenter: root.notificationController
+            //     screen: root.screen
+            // }
         }
     }
 
