@@ -8,6 +8,7 @@ BIN_FILES_PATH = Path("~/.local/bin/").expanduser()
 
 # TODO: all posibble configs commented
 INCLUDED_BINS = [
+    BinFileLinkingInfo("ps5-pro", "ps5-pro"),
     # BinFileLinkingInfo("daily", "daily"),
     # BinFileLinkingInfo("vivaldi.hidpi", "browser"),
     # BinFileLinkingInfo("tg.ignore_qt_scaling", "tg"),
@@ -30,4 +31,5 @@ INCLUDED_CONFIGS = [
     ConfigDirLinkingInfo("foot", prepare=prepare_foot),
     ConfigDirLinkingInfo("okular"),
     ConfigDirLinkingInfo("codex"),
+    ConfigDirLinkingInfo("ps5-pro"),
 ]

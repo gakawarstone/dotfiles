@@ -1,0 +1,67 @@
+#!/usr/bin/python3
+"""Wake the locally paired PS5 before opening Chiaki-ng."""
+
+import configparser
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import time
+
+APP = "io.github.streetpea.Chiaki4deck"
+HOST = os.environ.get("PS5_PRO_HOST", "192.168.178.60")
+FLATPAK = ["/usr/bin/flatpak", "run", "--user", "--branch=master"]
+CLI = FLATPAK + ["--command=chiaki-cli", APP]
+CONFIG = Path.home() / ".var/app" / APP / "config/Chiaki/Chiaki.conf"
+
+
+def run(args, timeout=8):
+    return subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+
+
+def state():
+    result = run(CLI + ["discover", "--host=" + HOST, "--timeout=1"])
+    match = re.search(r"State:\s+(ready|standby)\b", result.stdout)
+    return match[1] if match else None
+
+
+def registration_key():
+    config = configparser.ConfigParser(interpolation=None, strict=False)
+    config.read(CONFIG)
+    match = re.match(
+        r"@ByteArray\(([0-9a-fA-F]{8})(?:\\0|\))",
+        config["registered_hosts"]["1\\rp_regist_key"],
+    )
+    if not match:
+        raise ValueError("Saved registration key has an unexpected format")
+    return match[1]
+
+
+def wake():
+    if state() != "standby":
+        return
+    key = registration_key()
+    run(CLI + ["wakeup", "--ps5", "--host=" + HOST, "--registkey=" + key])
+    deadline = time.monotonic() + 35
+    while time.monotonic() < deadline:
+        time.sleep(2)
+        if state() == "ready":
+            return
+    notify = Path("/usr/bin/notify-send")
+    if notify.exists():
+        run([str(notify), "PS5 PRO", "Wake-up was not confirmed. Opening Remote Play."])
+
+
+if __name__ == "__main__":
+    if "--check" in sys.argv:
+        registration_key()
+        print("Pairing configuration is valid.")
+        print("Console:", HOST, "State:", state() or "not discovered")
+        raise SystemExit(0)
+    try:
+        wake()
+    except (OSError, ValueError, KeyError, configparser.Error, subprocess.TimeoutExpired):
+        # Keep the app available when away from home or when local wake fails.
+        pass
+    os.execv(FLATPAK[0], FLATPAK + [APP])

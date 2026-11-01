@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=PS5 PRO
+Comment=Wake your PS5 and open PlayStation Remote Play
+Exec=ps5-pro
+Icon=ps5-pro
+Categories=Game;
+X-Flatpak-RenamedFrom=chiaking.desktop;
+X-Flatpak=io.github.streetpea.Chiaki4deck
+Keywords=PS5;PS5 PRO;PlayStation;Sony;Chiaki;Remote Play;
+Terminal=false
