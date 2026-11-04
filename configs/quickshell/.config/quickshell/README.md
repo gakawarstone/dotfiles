@@ -29,3 +29,35 @@ verified without them. NetworkManager manages the VPN routes and DNS.
 
 Sources: [university VPN instructions](https://hs-flensburg.de/studium/service/IT-services/vpn)
 and [OpenConnect authentication with NetworkManager](https://www.infradead.org/openconnect/nonroot.html).
+
+# Bar components by host
+
+`BarComponents.js` selects which bar components to load for each Linux
+hostname. The hostname comes from `/proc/sys/kernel/hostname` (also printed by
+`hostname`). Add an entry to `hosts` using the actual hostname from each
+machine. For example, replace the placeholders below with your own hostnames
+and preferred components:
+
+```js
+var hosts = {
+    "your-desktop-hostname": { Wifi: true, NetworkSpeed: false },
+    "your-laptop-hostname": { Wifi: true, LanMouse: false }
+};
+```
+
+Each entry overrides only the listed components. The `defaults` table lists
+all available names and preserves the existing bar: all entries are enabled
+except `Wifi`. An unknown hostname, or a hostname that cannot be read, uses
+those defaults. Component positions stay fixed as in `Bar.qml`. Disabled bar
+components are not instantiated, but shared services such as the notification
+center and Pomodoro timer remain available. Restart Quickshell after changing
+this file. This works with the existing Arch startup commands and does not
+require a Nix configuration.
+
+To test the host selection, run Qt 6's QML test runner from this directory:
+
+```sh
+QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner -input tests/tst_barcomponents.qml
+```
+
+The test runner's path may differ on other distributions.
