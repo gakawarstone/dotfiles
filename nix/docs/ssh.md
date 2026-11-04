@@ -3,6 +3,7 @@
 Oracle connection details are stored as an encrypted SSH configuration block in
 `secrets/ssh-oracle.cfg`. The file uses the personal and laptop recipients from
 `.sops.yaml`.
+These paths are relative to `~/dotfiles/nix`.
 
 `home/gws/secrets.nix` decrypts it to `/run/secrets/ssh-oracle`, owned by `gws`
 with mode `0600`. Home Manager includes that path in `~/.ssh/config` through
@@ -18,9 +19,11 @@ ssh oracle
 Edit the encrypted connection details using the repository's tool shell:
 
 ```sh
-nix develop --command sops --input-type binary --output-type binary secrets/ssh-oracle.cfg
-make check
-make switch CONFIGURATION=gklaptop
+cd ~/dotfiles/nix
+nix develop .. --command sops --input-type binary --output-type binary secrets/ssh-oracle.cfg
+cd ..
+make -C nix check
+make -C nix switch CONFIGURATION=gklaptop
 ```
 
 The SSH private key referenced by the encrypted configuration must be restored

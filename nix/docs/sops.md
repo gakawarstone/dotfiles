@@ -4,6 +4,9 @@ Secrets live encrypted under `secrets/` and are decrypted at activation
 into `/run/secrets/`. Never put plaintext secrets in `.nix` files — anything
 in the Nix store is world-readable.
 
+Run SOPS commands from `~/dotfiles/nix` so `.sops.yaml` and the `secrets/`
+paths refer to this directory. The flake is in the parent repository root.
+
 ## Layout
 
 - `~/.config/sops/age/keys.txt` — personal age key, used for editing. Never commit.
@@ -40,7 +43,7 @@ Path for use in other config: `config.sops.secrets.wakatime.path`.
 
 Apply and verify:
 
-    sudo nixos-rebuild switch --flake .#gklaptop
+    sudo nixos-rebuild switch --flake ..#gklaptop
 
 The decrypted file is owned by `gws`, readable only by that user, and is not
 copied into the Nix store.

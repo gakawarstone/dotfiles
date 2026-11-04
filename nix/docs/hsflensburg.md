@@ -1,24 +1,25 @@
 # HS Flensburg on gklaptop
 
-The VPN setup is maintained in the Nix and dotfiles repositories.
+The VPN setup is maintained in this repository. Nix paths below are relative
+to `~/dotfiles/nix`.
 `modules/system/base.nix` installs OpenConnect, its NetworkManager plugin,
 and the MTU hook. `modules/desktop/hyprland.nix` provides the panel's runtime
-commands. The separate `~/dotfiles` checkout contains the Quickshell panel,
+commands. The same `~/dotfiles` checkout contains the Quickshell panel,
 VPN helper, and its regression tests.
 
-On a fresh installation, restore the dotfiles checkout using
+On a fresh installation, restore the repository checkout using
 [the dotfiles guide](dotfiles.md), then apply this configuration:
 
 ```sh
-cd ~/nix
-sudo nixos-rebuild switch --flake .#gklaptop
+cd ~/dotfiles
+make -C nix switch CONFIGURATION=gklaptop
 ```
 
 Then connect from the HSFL panel to `vpn.hs-flensburg.de` using the
 `HSFL-Studierende` group. The helper creates or repairs the NetworkManager
 profile; credentials are entered interactively on each login.
 
-The Quickshell VPN panel lives in the separate `~/dotfiles` checkout. Its
+The Quickshell VPN panel lives in the `~/dotfiles` checkout. Its
 helper must recognize the NixOS plugin path,
 `/run/current-system/sw/lib/NetworkManager/VPN/nm-openconnect-service.name`.
 `modules/desktop/hyprland.nix` puts Nix-provided `nmcli`, OpenConnect, Python,
@@ -58,8 +59,10 @@ store. Git commits still record the selected author name and email.
 To rotate the GitLab token, edit the encrypted file and rebuild:
 
 ```sh
+cd ~/dotfiles/nix
 nix shell nixpkgs#sops -c sops secrets/gitlab-hs-flensburg.json
-sudo nixos-rebuild switch --flake .#gklaptop
+cd ..
+make -C nix switch CONFIGURATION=gklaptop
 ```
 
 The JSON file contains `username` and `token` fields. For GitLab personal

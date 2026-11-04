@@ -4,13 +4,14 @@ The laptop imports `modules/services/eduroam.nix` and installs the encrypted Net
 profile from `secrets/eduroam.nmconnection.cfg`. The CA certificate is also
 encrypted under `secrets/`. NixOS decrypts them at activation; the helper
 decrypts the profile in memory when saving or deploying credentials.
+These paths are relative to `~/dotfiles/nix`.
 
 ## Save the login and password
 
 Run this in a terminal:
 
 ```sh
-cd ~/nix
+cd ~/dotfiles/nix
 python3 scripts/eduroam.py save
 ```
 
@@ -34,7 +35,7 @@ can read it for the user-owned profile.
 ## Connect and diagnose in range
 
 ```sh
-cd ~/nix
+cd ~/dotfiles/nix
 python3 scripts/eduroam.py test
 ```
 

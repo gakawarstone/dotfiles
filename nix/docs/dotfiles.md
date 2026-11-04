@@ -1,13 +1,15 @@
 # Laptop dotfiles
 
-The laptop deliberately uses an editable checkout at `~/dotfiles`. Nix pins the
-Neovim configuration through the `nvim` flake input, but does not pin the separate
-dotfiles checkout. A Nix rebuild does not fetch or update that checkout.
+The laptop deliberately uses an editable checkout of this repository at
+`~/dotfiles`. Nix pins the Neovim configuration through the `nvim` flake input;
+Herdr and the scripts listed below use the working checkout directly. A Nix
+rebuild does not fetch or update it.
 
-`home/gws/editor.nix` patches the pinned Neovim source to select the official
-JetBrains Kotlin server installed by Nix. This makes a normal `make switch`
-include the Kotlin migration without overriding the input to a local checkout.
-Remove `home/gws/nvim-kotlin.patch` and the source override when the `nvim` input
+`nix/home/gws/editor.nix` patches the pinned Neovim source to select the official
+JetBrains Kotlin server installed by Nix. Running `make -C nix switch` from the
+repository root includes the Kotlin migration without overriding the input to a
+local checkout.
+Remove `nix/home/gws/nvim-kotlin.patch` and the source override when the `nvim` input
 is updated to a revision that includes the migration. Completion remains manual:
 press `Ctrl-Space` in insert mode to show suggestions.
 
@@ -16,7 +18,7 @@ Nix-provided Java 21 so it works with Gradle 8 projects and avoids incompatible
 downloaded JDKs. An explicit `com.jetbrains.ls.imports.gradle.java.home` in
 `IJ_JAVA_OPTIONS` can override the default for other projects.
 
-For user `gws`, clone it before starting the desktop:
+For user `gws`, clone this repository before starting the desktop:
 
 ```sh
 git clone git@github.com:gakawarstone/dotfiles.git ~/dotfiles
@@ -36,11 +38,11 @@ Required paths used directly by this configuration:
 | `bins/screen` | Personal `screen` screenshot wrapper |
 | `bins/toggle_theme` | Personal `toggle_theme` wrapper |
 
-`home/gws/dotfiles.nix` manages the Herdr link. `home/gws/desktop.nix` installs the
+`nix/home/gws/dotfiles.nix` manages the Herdr link. `nix/home/gws/desktop.nix` installs the
 shell wrappers with their runtime dependencies. Changes to these dotfiles take
 effect without rebuilding NixOS. Keep the checkout available at this location;
 the Herdr link is otherwise dangling and the wrappers cannot run their scripts.
 
-Other desktop configuration managed by the dotfiles repository must be installed
-using that repository's setup instructions. This Nix repository only manages
-the links and wrappers listed above. The VM does not depend on this checkout.
+Other desktop configuration in this repository must be installed using the
+root README's setup instructions. The Nix configuration manages only the links
+and wrappers listed above. The VM does not depend on this checkout.
