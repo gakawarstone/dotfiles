@@ -1,4 +1,4 @@
 git:
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: gkpager --mode lazygit
+      command: gkpager --mode lazygit
