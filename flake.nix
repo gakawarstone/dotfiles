@@ -52,12 +52,12 @@
               nixpkgs.hostPlatform = system;
               nixpkgs.overlays = [ self.overlays.default ];
             }
-            (./hosts + "/${host}")
+            (./nix/hosts + "/${host}")
           ];
         };
     in
     {
-      overlays.default = import ./overlays { inherit inputs; };
+      overlays.default = import ./nix/overlays { inherit inputs; };
       packages.${system} = localPackages // {
         inherit (pkgs) nixos-rebuild;
       };
@@ -74,7 +74,7 @@
           python314
         ];
       };
-      checks.${system} = import ./checks {
+      checks.${system} = import ./nix/checks {
         inherit pkgs;
         source = self;
         packages = localPackages;
