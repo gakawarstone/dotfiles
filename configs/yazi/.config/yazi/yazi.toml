@@ -17,9 +17,13 @@ feh  = [
 zen = [
   { run = 'zen-browser "$@"', desc = "zen-browser", block = false, for = "unix" }
 ]
+portproton = [
+  { run = 'portproton "$@"', desc = "PortProton", for = "unix" }
+]
 
 [open]
 rules = [
+  { name = "*.exe", use = "portproton" },
   { mime = "text/*", use = "nvim" },
   { mime = "inode/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
