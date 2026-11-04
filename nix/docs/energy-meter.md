@@ -6,8 +6,8 @@ grants the `wheel` group read access to package-level RAPL energy counters.
 Do not run `~/dotfiles/packages/energy-meter/install.sh` on NixOS: that
 installer expects Arch paths and would install a competing user service.
 
-Apply the laptop configuration with `make switch CONFIGURATION=gklaptop`, then
-check the sampler:
+From the repository root, apply the laptop configuration with
+`make -C nix switch CONFIGURATION=gklaptop`, then check the sampler:
 
 ```sh
 systemctl --user status omarchy-energy.service
