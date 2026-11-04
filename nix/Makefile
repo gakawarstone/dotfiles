@@ -6,16 +6,16 @@ BUILD_OPTIONS_gklaptop := --max-jobs 2 --cores 2
 BUILD_OPTIONS := $(BUILD_OPTIONS_$(CONFIGURATION))
 
 check: fmt-check
-	nix flake check --no-build --no-update-lock-file
+	cd .. && nix flake check --no-build --no-update-lock-file
 
 check-build:
-	nix flake check --no-update-lock-file $(BUILD_OPTIONS)
+	cd .. && nix flake check --no-update-lock-file $(BUILD_OPTIONS)
 
 fmt:
-	nix fmt --no-update-lock-file
+	cd .. && nix fmt --no-update-lock-file
 
 fmt-check:
-	nix build --no-link --no-update-lock-file .#checks.x86_64-linux.formatting
+	cd .. && nix build --no-link --no-update-lock-file .#checks.x86_64-linux.formatting
 
 verify-host:
 	@test -f "$(HARDWARE_CONFIG)" || { \
@@ -29,20 +29,20 @@ verify-host:
 	fi
 
 build: verify-host
-	nix build --no-update-lock-file ".#nixosConfigurations.$(CONFIGURATION).config.system.build.toplevel" $(BUILD_OPTIONS)
+	cd .. && nix build --no-update-lock-file ".#nixosConfigurations.$(CONFIGURATION).config.system.build.toplevel" $(BUILD_OPTIONS)
 
 test: verify-host
-	sudo nixos-rebuild test --flake ".#$(CONFIGURATION)" $(BUILD_OPTIONS)
+	cd .. && sudo nixos-rebuild test --flake ".#$(CONFIGURATION)" $(BUILD_OPTIONS)
 
 clean:
 	sudo nix-collect-garbage --delete-old
 	sudo nix store optimise
 
 switch: verify-host
-	sudo nixos-rebuild switch --flake ".#$(CONFIGURATION)" $(BUILD_OPTIONS)
+	cd .. && sudo nixos-rebuild switch --flake ".#$(CONFIGURATION)" $(BUILD_OPTIONS)
 
 switch-install-bootloader: verify-host
-	sudo nixos-rebuild switch --install-bootloader --flake ".#$(CONFIGURATION)" $(BUILD_OPTIONS)
+	cd .. && sudo nixos-rebuild switch --install-bootloader --flake ".#$(CONFIGURATION)" $(BUILD_OPTIONS)
 
 update:
-	nix flake update
+	cd .. && nix flake update
