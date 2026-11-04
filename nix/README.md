@@ -160,7 +160,7 @@ Java 24 comes from the separately locked `nixpkgs-java24` input (NixOS 25.05),
 because current Nixpkgs removed it after end of life. That input supplies only
 the Java 24 SDK; the rest of the system stays on the main package inputs.
 
-Feature guides: [dotfiles](docs/dotfiles.md), [SOPS](docs/sops.md),
+Feature guides: [dotfiles](docs/dotfiles.md), [shared skills](docs/shared-skills.md), [SOPS](docs/sops.md),
 [HS Flensburg Git](docs/hsflensburg.md), [eduroam](docs/eduroam.md),
 [SSH](docs/ssh.md), [password store](docs/pass.md), and
 [Energy Meter](docs/energy-meter.md).
