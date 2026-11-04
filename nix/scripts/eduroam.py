@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Update and test the eduroam profile managed by ~/nix."""
+"""Update and test the eduroam profile managed by this repository."""
 
 import argparse
 import getpass
@@ -15,6 +15,7 @@ from datetime import datetime
 
 
 ROOT = Path(__file__).resolve().parent.parent
+FLAKE_ROOT = ROOT.parent
 SECRET = ROOT / "secrets/eduroam.nmconnection.cfg"
 CERT_SECRET = ROOT / "secrets/eduroam-ca-cert.cfg"
 UUID = "4010325c-14b4-47eb-af63-9518522eaa62"
@@ -32,7 +33,7 @@ def sops_command():
         return ["sops"]
     if not shutil.which("nix"):
         raise SetupError("Install sops or nix before saving credentials.")
-    return ["nix", "shell", "--inputs-from", str(ROOT), "nixpkgs#sops", "-c", "sops"]
+    return ["nix", "shell", "--inputs-from", str(FLAKE_ROOT), "nixpkgs#sops", "-c", "sops"]
 
 
 def run_sops(*args, data=None):
@@ -114,7 +115,7 @@ def write_encrypted(data):
 def deploy(data):
     certificate = decrypted_certificate()
     if subprocess.run(["sudo", "-v"]).returncode:
-        raise SetupError("sudo authentication failed; encrypted credentials were saved in ~/nix.")
+        raise SetupError(f"sudo authentication failed; encrypted credentials were saved in {ROOT}.")
     cert_command = (
         "set -eu; umask 077; "
         f"install -d -m 0755 {CERT_DIR}; "
@@ -124,7 +125,7 @@ def deploy(data):
         f"mv -f \"$temporary\" {CERT}"
     )
     if subprocess.run(["sudo", "-n", "sh", "-c", cert_command], input=certificate).returncode:
-        raise SetupError("Could not deploy the CA certificate. Encrypted credentials remain saved in ~/nix.")
+        raise SetupError(f"Could not deploy the CA certificate. Encrypted credentials remain saved in {ROOT}.")
     # The plaintext travels only through stdin and a root-owned 0600 temporary file.
     command = (
         "set -eu; umask 077; "
@@ -136,7 +137,7 @@ def deploy(data):
     )
     result = subprocess.run(["sudo", "-n", "sh", "-c", command], input=data)
     if result.returncode:
-        raise SetupError("Could not deploy the profile. Encrypted credentials remain saved in ~/nix.")
+        raise SetupError(f"Could not deploy the profile. Encrypted credentials remain saved in {ROOT}.")
     print("Encrypted credentials saved and NetworkManager profile reloaded.")
 
 
@@ -170,7 +171,7 @@ def save_credentials():
         raise SetupError("Passwords did not match; nothing was changed.")
     data = update_profile(decrypted_profile(), identity, password)
     write_encrypted(data)
-    print("Encrypted credentials saved in ~/nix.")
+    print(f"Encrypted credentials saved in {ROOT}.")
     deploy(data)
 
 
@@ -233,8 +234,8 @@ def test_connection(interface_arg):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("save", help="prompt for credentials, encrypt them in ~/nix, and deploy")
-    commands.add_parser("deploy", help="deploy the encrypted profile already in ~/nix")
+    commands.add_parser("save", help="prompt for credentials, encrypt them in nix/secrets, and deploy")
+    commands.add_parser("deploy", help="deploy the encrypted profile already in nix/secrets")
     test = commands.add_parser("test", help="connect and report the result when eduroam is in range")
     test.add_argument("--interface", help="Wi-Fi interface (auto-detected by default)")
     args = parser.parse_args()
