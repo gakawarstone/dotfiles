@@ -61,6 +61,19 @@
 - Также есть неотслеживаемые skill `wizard`, desktop-файл Foot и две заметки задач. Резервная копия Hyprland и Python `__pycache__` требуют отдельной оценки, а не автоматического переноса.
 - Помимо перечисленного, исходная копия содержит игнорируемые локальные настройки, сгенерированные файлы и сборочные результаты. Их назначение и необходимость переноса нужно уточнять по мере работы.
 
+## Карта конфигураций
+
+Это группировка по назначению, а не подтверждение использования. Пока известно: skills нужны обеим машинам, PS5 — только ПК, Alacritty относится к legacy. Foot, Neovim, skills и Quickshell обсуждаются отдельно.
+
+- Оболочка и рабочий стол: `fish`, `hyprland`, `niri`, `quickshell`, `waybar`, `dunst`, `wofi`, `x11`, `wal`, `gtk3`, `gtk4`, `fontsconfig`.
+- Инструменты и редакторы: `agents`, `bat`, `codex`, `delta`, `herdr`, `ideavim`, `lazygit`, `nvim`, `opencode`, `pi`, `ranger`, `starship`, `tmux`, `yazi`.
+- Приложения: `androidstudio`, `okular`, `qutebrowser`, `thunderbird`, `zathura`, `zen`.
+- Терминалы: `alacritty`, `foot`, `kitty`.
+- Устройства: `ps5-pro`, `sunshine-ipad`, `sunshine-iphone`.
+- Скрипты `bins/`: `autocommit`, `battery_notify`, `call_mode`, `daily`, `gengrid`, `gestern`, `get_wifi_ssid`, `ipad-screen`, `iphone-screen`, `lock`, `ps5-pro`, `save_wifi_ssid`, `screen`, `stay`, `tg.ignore_qt_scaling`, `tgsend`, `toggle_theme`, `tt`, `vivaldi.hidpi`, `wal`, `webcam`.
+
+В NixOS Home Manager уже управляет Herdr, Neovim и Git; пакеты других приложений могут быть установлены без управления их конфигами. Наличие элемента в шаблоне Arch или пакета в Nix не доказывает, что он используется. Назначение остальных элементов по машинам и их статус ещё нужно обсудить.
+
 ## Выполнено
 
 - Проведена первичная инвентаризация обеих копий и worktree, включая неотслеживаемые и часть игнорируемых файлов.
