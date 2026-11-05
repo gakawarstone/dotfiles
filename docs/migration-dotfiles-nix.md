@@ -28,6 +28,7 @@
 - `delta` относится к legacy; вместо него пользователь использует свой `gkpager`.
 - Herdr используется на обеих машинах.
 - Hyprland используется на обеих машинах.
+- `okular` используется на обеих машинах.
 - `kitty` относится к legacy; файлы пока сохраняются.
 - `niri` относится к legacy; файлы пока сохраняются.
 - `waybar` относится к legacy; файлы пока сохраняются.
@@ -89,7 +90,7 @@
 
 ## Карта конфигураций
 
-Это группировка по назначению, а не подтверждение использования. Пока известно: Hyprland, fish, bat, lazygit, yazi, starship, codex, opencode, Herdr и skills нужны обеим машинам, PS5 — только ПК, Alacritty, kitty, niri, waybar, dunst, wofi, x11, wal, tmux, pi, ranger, delta и androidstudio относятся к legacy. Foot, Neovim, skills и Quickshell обсуждаются отдельно.
+Это группировка по назначению, а не подтверждение использования. Пока известно: Hyprland, fish, bat, lazygit, yazi, starship, codex, opencode, Herdr, okular и skills нужны обеим машинам, PS5 — только ПК, Alacritty, kitty, niri, waybar, dunst, wofi, x11, wal, tmux, pi, ranger, delta и androidstudio относятся к legacy. Foot, Neovim, skills и Quickshell обсуждаются отдельно.
 
 - Оболочка и рабочий стол: `fish`, `hyprland`, `niri`, `quickshell`, `waybar`, `dunst`, `wofi`, `x11`, `wal`, `gtk3`, `gtk4`, `fontsconfig`.
 - Инструменты и редакторы: `agents`, `bat`, `codex`, `delta`, `herdr`, `ideavim`, `lazygit`, `nvim`, `opencode`, `pi`, `ranger`, `starship`, `tmux`, `yazi`.
