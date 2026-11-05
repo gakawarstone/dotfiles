@@ -5,6 +5,7 @@
     ./development.nix
     ./editor.nix
     ./dotfiles.nix
+    ./fish.nix
     ./energy-meter.nix
     ./git.nix
     ./ssh.nix

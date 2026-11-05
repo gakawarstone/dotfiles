@@ -24,7 +24,8 @@ INCLUDED_CONFIGS = [
     ConfigDirLinkingInfo("bat"),
     ConfigDirLinkingInfo("dunst"),
     # ConfigDirLinkingInfo("wal"),
-    ConfigDirLinkingInfo("fish"),
+    # Fish is managed by Home Manager after migration.
+    # ConfigDirLinkingInfo("fish"),
     ConfigDirLinkingInfo("quickshell"),
     # ConfigDirLinkingInfo("yazi"),
     ConfigDirLinkingInfo("foot", prepare=prepare_foot),

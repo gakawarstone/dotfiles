@@ -8,8 +8,6 @@
       helium
       telegram-desktop
       zed-editor
-      starship
-      zoxide
       yazi
       gkpager
       klartext
