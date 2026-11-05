@@ -1,8 +1,8 @@
-set -x PATH /home/gws/.local/bin $PATH
-set -x PATH /home/gws/.cargo/bin $PATH
-set -x PATH /home/gws/.npm-global/bin $PATH
-set -x PATH /home/gws/.bun/bin $PATH
-set -x PATH /home/gws/.dotnet/tools $PATH
+set -x PATH $HOME/.local/bin $PATH
+set -x PATH $HOME/.cargo/bin $PATH
+set -x PATH $HOME/.npm-global/bin $PATH
+set -x PATH $HOME/.bun/bin $PATH
+set -x PATH $HOME/.dotnet/tools $PATH
 
 set fish_greeting
 
