@@ -32,40 +32,18 @@ and [OpenConnect authentication with NetworkManager](https://www.infradead.org/o
 
 # Bar components by host
 
-`BarComponents.qml` selects which bar components to load for each Linux
-hostname. The hostname comes from `/proc/sys/kernel/hostname` (also printed by
-`hostname`). Add a QML `State` for each machine to the `states` list. For
-example, replace the placeholders below with your own hostnames and preferred
-components:
+The `show` properties at the top of `Bar.qml` control the bar components.
+They use the Linux hostname from `/proc/sys/kernel/hostname` (also printed by
+`hostname`). To select different components, replace a property's value with
+an expression using `hostname`. For example, substitute your actual hostnames:
 
 ```qml
-states: [
-    State {
-        name: "desktop"
-        when: root.hostname === "your-desktop-hostname"
-        PropertyChanges { target: root; wifi: true; networkSpeed: false }
-    },
-    State {
-        name: "laptop"
-        when: root.hostname === "your-laptop-hostname"
-        PropertyChanges { target: root; wifi: true; lanMouse: false }
-    }
-]
+property bool showWifi: hostname === "your-laptop-hostname"
+property bool showLanMouse: hostname !== "your-laptop-hostname"
+property bool showNetworkSpeed: hostname !== "your-desktop-hostname"
 ```
 
-Each state overrides only the listed properties. The boolean properties in
-`BarComponents.qml` list all available components and preserve the existing
-bar: all are enabled except `wifi`. If no state matches, including when the
-hostname cannot be read, those defaults apply. Component positions stay fixed
-as in `Bar.qml`. Disabled bar components are not instantiated, but shared
-services such as the notification center and Pomodoro timer remain available.
-Restart Quickshell after changing this file. This works with the existing Arch
-startup commands and does not require a Nix configuration.
-
-To test the host selection, run Qt 6's QML test runner from this directory:
-
-```sh
-QT_QPA_PLATFORM=offscreen /usr/lib/qt6/bin/qmltestrunner -input tests/tst_barcomponents.qml
-```
-
-The test runner's path may differ on other distributions.
+The checked-in defaults preserve the existing bar: all components are enabled
+except Wi-Fi. Disabled components are not instantiated. Shared services such
+as the notification center and Pomodoro timer remain available. Component
+positions stay fixed. Restart Quickshell after changing these properties.
