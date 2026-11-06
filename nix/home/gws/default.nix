@@ -4,6 +4,7 @@
     ./packages.nix
     ./development.nix
     ./editor.nix
+    ./ideavim.nix
     ./dotfiles.nix
     ./fish.nix
     ./energy-meter.nix
