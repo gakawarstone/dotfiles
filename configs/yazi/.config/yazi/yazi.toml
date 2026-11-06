@@ -23,7 +23,7 @@ portproton = [
 
 [open]
 rules = [
-  { name = "*.exe", use = "portproton" },
+  { name = "*.exe", url = "*.exe", use = "portproton" },
   { mime = "text/*", use = "nvim" },
   { mime = "inode/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
