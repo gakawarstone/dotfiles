@@ -14,8 +14,8 @@ open = [
 feh  = [
 	{ run = 'feh --scale-down "$@"', desc = "Open" },
 ]
-zen = [
-  { run = 'zen-browser "$@"', desc = "zen-browser", block = false, for = "unix" }
+browser = [
+  { run = 'gtk-launch "$(xdg-settings get default-web-browser)" "$@"', desc = "Browser", block = false, for = "unix" }
 ]
 portproton = [
   { run = 'portproton "$@"', desc = "PortProton", for = "unix" }
@@ -28,7 +28,7 @@ rules = [
   { mime = "inode/*", use = "nvim" },
   { mime = "application/pdf", use = "zathura" },
   { mime = "application/pdf", use = "okular" },
-  { mime = "application/pdf", use = "zen" },
+  { mime = "application/pdf", use = "browser" },
   { mime = "image/jpeg", use = "feh" },
   { mime = "image/png", use = "feh" },
   { mime = "*", use = "open" },
