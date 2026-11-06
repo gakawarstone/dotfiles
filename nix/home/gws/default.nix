@@ -3,6 +3,7 @@
   imports = [
     ./bat.nix
     ./lazygit.nix
+    ./yazi.nix
     ./packages.nix
     ./development.nix
     ./editor.nix
