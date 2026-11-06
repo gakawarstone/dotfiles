@@ -2,6 +2,7 @@
 {
   imports = [
     ./bat.nix
+    ./lazygit.nix
     ./packages.nix
     ./development.nix
     ./editor.nix
