@@ -1,12 +1,9 @@
 { lib, pkgs, ... }:
 let
-  names = [
-    "grilling"
-    "improve-codebase-architecture"
-    "report-relay"
-    "to-tasks"
-    "typst"
-  ];
+  # Only directories in skills/ are active; skills-disabled/ is never scanned.
+  names = builtins.attrNames (
+    lib.filterAttrs (_: type: type == "directory") (builtins.readDir skills)
+  );
   skills = ../../../configs/agents/.agents/skills;
 in
 {
@@ -21,7 +18,9 @@ in
   );
 
   # Do not let Stow's folded directory links or HM's backup policy move local skills.
-  home.activation.checkSharedSkillTargets = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
-    ${pkgs.bash}/bin/bash ${./check-shared-skill-targets.sh} ${lib.escapeShellArgs names}
-  '';
+  home.activation.checkSharedSkillTargets = lib.mkIf (names != [ ]) (
+    lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+      ${pkgs.bash}/bin/bash ${./check-shared-skill-targets.sh} ${lib.escapeShellArgs names}
+    ''
+  );
 }
