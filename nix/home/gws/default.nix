@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./bat.nix
     ./packages.nix
     ./development.nix
     ./editor.nix
