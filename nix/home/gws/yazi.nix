@@ -11,6 +11,7 @@ let
 in
 {
   home.packages = [
+    pkgs.feh
     pkgs.gtk3
     pkgs.xdg-utils
   ];
