@@ -5,6 +5,7 @@
     ./lazygit.nix
     ./yazi.nix
     ./zathura.nix
+    ./okular.nix
     ./packages.nix
     ./development.nix
     ./editor.nix
