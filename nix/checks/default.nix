@@ -3,6 +3,7 @@
   source,
   packages,
   hosts,
+  homes,
 }:
 packages
 // {
@@ -11,6 +12,15 @@ packages
   host-evaluation = builtins.deepSeq (builtins.mapAttrs (
     _: host: host.config.system.build.toplevel.drvPath
   ) hosts) (pkgs.runCommand "host-evaluation" { } ''touch "$out"'');
+
+  home-evaluation = builtins.deepSeq (builtins.mapAttrs (
+    _: home: home.activationPackage.drvPath
+  ) homes) (pkgs.runCommand "home-evaluation" { } ''touch "$out"'');
+
+  shared-skill-targets = pkgs.runCommand "shared-skill-targets" { } ''
+    bash ${source}/nix/tests/shared-skill-targets.sh
+    touch "$out"
+  '';
 
   formatting =
     pkgs.runCommand "nix-formatting"
