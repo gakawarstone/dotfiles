@@ -4,6 +4,7 @@
     ./bat.nix
     ./lazygit.nix
     ./yazi.nix
+    ./zathura.nix
     ./packages.nix
     ./development.nix
     ./editor.nix
