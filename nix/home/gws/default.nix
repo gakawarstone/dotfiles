@@ -6,6 +6,7 @@
     ./yazi.nix
     ./zathura.nix
     ./okular.nix
+    ./opencode.nix
     ./packages.nix
     ./development.nix
     ./editor.nix
