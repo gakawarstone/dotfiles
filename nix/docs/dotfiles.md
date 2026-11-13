@@ -44,5 +44,6 @@ effect without rebuilding NixOS. Keep the checkout available at this location;
 the Herdr link is otherwise dangling and the wrappers cannot run their scripts.
 
 Other desktop configuration in this repository must be installed using the
-root README's setup instructions. The Nix configuration manages only the links
-and wrappers listed above. The VM does not depend on this checkout.
+root README's setup instructions. Home Manager also supports the shared agent skills described in
+the [shared skills guide](shared-skills.md). The Nix configuration manages the
+links and wrappers listed above. The VM does not depend on this checkout.

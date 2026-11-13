@@ -13,6 +13,7 @@
     ./ideavim.nix
     ./dotfiles.nix
     ./fish.nix
+    ./shared-skills.nix
     ./energy-meter.nix
     ./git.nix
     ./ssh.nix

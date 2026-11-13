@@ -60,6 +60,7 @@
       overlays.default = import ./nix/overlays { inherit inputs; };
       packages.${system} = localPackages // {
         inherit (pkgs) nixos-rebuild;
+        home-manager = inputs.home-manager.packages.${system}.default;
       };
       formatter.${system} = pkgs.nixfmt-tree;
       devShells.${system}.default = pkgs.mkShellNoCC {
@@ -79,6 +80,18 @@
         source = self;
         packages = localPackages;
         hosts = self.nixosConfigurations;
+        homes = self.homeConfigurations;
+      };
+      homeConfigurations."gws@arch" = inputs.home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [
+          ./nix/home/gws/shared-skills.nix
+          {
+            home.username = "gws";
+            home.homeDirectory = "/home/gws";
+            home.stateVersion = "26.05";
+          }
+        ];
       };
       nixosConfigurations = {
         gklaptop = mkHost "gklaptop";
