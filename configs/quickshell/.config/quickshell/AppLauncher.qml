@@ -70,7 +70,7 @@ Scope {
         { id: "setup.hyprland", parent: "setup", kind: "action", icon: "", label: "Hyprland", description: "Edit hyprland.lua", command: "foot -e nvim ~/.config/hypr/hyprland.lua" },
         { id: "setup.quickshell", parent: "setup", kind: "action", icon: "󰖯", label: "Quickshell", description: "Edit the shell configuration", command: "foot -e nvim ~/.config/quickshell/shell.qml" },
 
-        { id: "system.lock", parent: "system", kind: "action", icon: "", label: "Lock", description: "Lock the session", command: "lock" },
+        { id: "system.lock", parent: "system", kind: "action", icon: "", label: "Lock", description: "Lock the session", command: "swaylock --daemonize --color 1e1e2e" },
         { id: "system.suspend", parent: "system", kind: "action", icon: "󰒲", label: "Suspend", description: "Suspend the computer", command: "systemctl suspend" },
         { id: "system.logout", parent: "system", kind: "action", icon: "󰍃", label: "Log out", description: "Exit Hyprland", command: "hyprctl dispatch exit" }
     ]
