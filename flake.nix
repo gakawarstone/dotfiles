@@ -95,10 +95,16 @@
           ./nix/home/gws/arch-okular.nix
           ./nix/home/gws/arch-fish.nix
           ./nix/home/gws/arch-gtk4.nix
+          ./nix/home/gws/ideavim.nix
+          ./nix/home/gws/idea-plugins.nix
           {
             home.username = "gws";
             home.homeDirectory = "/home/gws";
             home.stateVersion = "26.05";
+            dotfiles.ideaPlugins = {
+              ideaVim = true;
+              catppuccin = true;
+            };
           }
         ];
       };
