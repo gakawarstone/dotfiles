@@ -35,10 +35,14 @@ Required paths used directly by this configuration:
 | Path under `~/dotfiles` | Consumer |
 | --- | --- |
 | `configs/herdr/.config/herdr` | Home Manager symlink for the Herdr configuration |
+| `configs/hyprland/.config/hypr` | Home Manager symlink for the Hyprland configuration |
 | `bins/screen` | Personal `screen` screenshot wrapper |
 | `bins/toggle_theme` | Personal `toggle_theme` wrapper |
 
-`nix/home/gws/dotfiles.nix` manages the Herdr link. `nix/home/gws/desktop.nix` installs the
+`nix/home/gws/dotfiles.nix` manages the Herdr and Hyprland links. Before activation,
+inspect `~/.config/hypr` and preserve any existing configuration or Stow link;
+Home Manager needs to take ownership of that path. The checkout must contain
+the laptop profile before enabling this link. `nix/home/gws/desktop.nix` installs the
 shell wrappers with their runtime dependencies. Changes to these dotfiles take
 effect without rebuilding NixOS. Keep the checkout available at this location;
 the Herdr link is otherwise dangling and the wrappers cannot run their scripts.

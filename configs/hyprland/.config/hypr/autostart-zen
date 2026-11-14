@@ -1,0 +1,41 @@
+#!/bin/sh
+
+zen-browser &
+
+# Allow up to 30 seconds for each window to appear.
+old_addresses=
+for attempt in $(seq 1 300); do
+	clients=$(hyprctl clients -j) || exit 1
+	old_addresses=$(printf '%s\n' "$clients" | jq -r '.[] | select(.class == "zen") | .address') || exit 1
+	[ -n "$old_addresses" ] && break
+	sleep 0.1
+done
+
+if [ -z "$old_addresses" ]; then
+	echo 'autostart-zen: timed out waiting for the first Zen window' >&2
+	exit 1
+fi
+
+zen-browser --new-window || exit 1
+
+for attempt in $(seq 1 300); do
+	clients=$(hyprctl clients -j) || exit 1
+	new_address=$(printf '%s\n' "$clients" | jq -r --arg old "$old_addresses" '
+		[.[] | select(.class == "zen") as $client
+		| select(($old | split("\n") | index($client.address)) == null)
+		| $client.address][0] // empty
+	') || exit 1
+
+	if [ -n "$new_address" ]; then
+		hyprctl dispatch "hl.dsp.focus({window = 'address:$new_address'})"
+		hyprctl dispatch "hl.dsp.window.move({out_of_group = true})"
+		hyprctl dispatch "hl.dsp.window.move({workspace = 4})"
+		hyprctl dispatch "hl.dsp.focus({workspace = 3})"
+		exit
+	fi
+
+	sleep 0.1
+done
+
+echo 'autostart-zen: timed out waiting for the second Zen window' >&2
+exit 1
