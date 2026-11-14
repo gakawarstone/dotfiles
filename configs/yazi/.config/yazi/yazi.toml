@@ -20,7 +20,6 @@ browser = [
 portproton = [
   { run = 'portproton "$@"', desc = "PortProton", for = "unix" }
 ]
-
 [open]
 rules = [
   { name = "*.exe", url = "*.exe", use = "portproton" },
@@ -33,15 +32,3 @@ rules = [
   { mime = "image/png", use = "feh" },
   { mime = "*", use = "open" },
 ]
-
-[[plugin.prepend_fetchers]]
-id    = "git"
-url   = "*"
-run   = "git"
-group = "git"
-
-[[plugin.prepend_fetchers]]
-id    = "git"
-url   = "*/"
-run   = "git"
-group = "git"

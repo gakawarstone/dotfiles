@@ -9,6 +9,9 @@
       telegram-desktop
       zed-editor
       yazi
+      feh
+      gtk3
+      xdg-utils
       zathura
       gkpager
       klartext
