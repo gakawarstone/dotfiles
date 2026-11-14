@@ -22,6 +22,20 @@ packages
     touch "$out"
   '';
 
+  mutable-config-targets =
+    pkgs.runCommand "mutable-config-targets"
+      {
+        nativeBuildInputs = [
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.python3
+        ];
+      }
+      ''
+        python3 -B ${source}/tests/test_mutable_config_ownership.py
+        touch "$out"
+      '';
+
   formatting =
     pkgs.runCommand "nix-formatting"
       {
