@@ -86,6 +86,7 @@
         inherit pkgs;
         modules = [
           ./nix/home/gws/shared-skills.nix
+          ./nix/home/gws/arch-bat.nix
           {
             home.username = "gws";
             home.homeDirectory = "/home/gws";
