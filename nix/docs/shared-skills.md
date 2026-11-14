@@ -17,8 +17,10 @@ the new generation. Home Manager removes its own old link on activation; it does
 not remove an independently installed copy.
 
 `unslop` remains a locally installed skill, outside this configuration. Neither
-its existing files nor its `~/.codex/skills` link are managed here. Other local
-skills, including `wizard`, are also outside this configuration. A copy already
+its existing files nor its `~/.codex/skills` link are managed here. On the PC,
+Home Manager retains the local `wizard` link to its existing untracked source in
+`~/dotfiles`; this is separate from shared skills and does not install it on the
+laptop. Other local skills are outside this configuration. A copy already
 installed by another mechanism can remain discoverable even when its repository
 version is disabled. Inspect each machine separately and preserve local content
 before changing those copies. This change does not disable them on a running system.
