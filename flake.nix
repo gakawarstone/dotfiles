@@ -103,6 +103,7 @@
           ./nix/home/gws/arch-webcam.nix
           ./nix/home/gws/arch-stay.nix
           ./nix/home/gws/arch-ps5.nix
+          ./nix/home/gws/arch-xdg-links.nix
           ./nix/home/gws/ideavim.nix
           ./nix/home/gws/idea-plugins.nix
           {
