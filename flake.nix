@@ -94,6 +94,7 @@
           ./nix/home/gws/arch-yazi.nix
           ./nix/home/gws/arch-okular.nix
           ./nix/home/gws/arch-fish.nix
+          ./nix/home/gws/arch-gtk4.nix
           {
             home.username = "gws";
             home.homeDirectory = "/home/gws";
