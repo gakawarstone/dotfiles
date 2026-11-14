@@ -5,31 +5,41 @@
 
 capture_wayland() {
     local path=~/Images/screenshot.png
+    local selection geometry
 
     if [ "$1" = "root" ]; then
-        grim -t png "$path"
+        grim -t png "$path" || return 1
     elif [ "$1" = "area" ]; then
         if ! command -v slurp >/dev/null; then
             echo "Error: slurp is required for area selection in Wayland"
             return 1
         fi
-        grim -t png -g "$(slurp | awk '{
+        selection=$(slurp) || return 1
+        [ -n "$selection" ] || return 1
+        geometry=$(printf '%s\n' "$selection" | awk '{
             split($1, a, ",");
             split($2, b, "x");
             printf "%d,%d %dx%d", a[1]+1, a[2]+1, b[1]-2, b[2]-2
-        }')" "$path"
+        }') || return 1
+        grim -t png -g "$geometry" "$path" || return 1
+    else
+        echo "Usage: screen root|area" >&2
+        return 2
     fi
     wl-copy < "$path"
 }
 
 capture_x11() {
     if [ "$1" = "root" ]; then
-        xwd -root -out ~/Images/screenshot.xwd
+        xwd -root -out ~/Images/screenshot.xwd || return 1
     elif [ "$1" = "area" ]; then
-        import ~/Images/screenshot.xwd
+        import ~/Images/screenshot.xwd || return 1
+    else
+        echo "Usage: screen root|area" >&2
+        return 2
     fi
-    convert ~/Images/screenshot.xwd ~/Images/screenshot.jpg
-    rm ~/Images/screenshot.xwd
+    convert ~/Images/screenshot.xwd ~/Images/screenshot.jpg || return 1
+    rm ~/Images/screenshot.xwd || return 1
     xclip -sel clipboard -t image/jpg < ~/Images/screenshot.jpg
 }
 
