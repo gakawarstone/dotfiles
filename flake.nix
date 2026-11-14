@@ -108,6 +108,7 @@
           ./nix/home/gws/arch-local-wizard.nix
           ./nix/home/gws/arch-hyprland.nix
           ./nix/home/gws/arch-foot.nix
+          ./nix/home/gws/arch-quickshell.nix
           ./nix/home/gws/ideavim.nix
           ./nix/home/gws/idea-plugins.nix
           {
