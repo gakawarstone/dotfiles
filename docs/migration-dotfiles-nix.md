@@ -51,7 +51,7 @@
 - `zen` используется на ПК.
 - `sunshine-ipad` и `sunshine-iphone` используются на ПК.
 - Скрипты `screen` и `toggle_theme` используются на обеих машинах. На ПК оба переданы Home Manager из `bins/`, соответствующие записи установщика отключены. Резервные копии: `~/.local/state/dotfiles-backups/screen-handoff-o50mir9r/` и `~/.local/state/dotfiles-backups/toggle-theme-handoff-3d4orx9a/`. Установленные скрипты проверены с подставными командами; текущая тема не переключалась.
-- Скрипты `ipad-screen` и `iphone-screen` нужны только на ПК вместе с конфигурациями Sunshine.
+- Скрипты `ipad-screen` и `iphone-screen` нужны только на ПК вместе с конфигурациями Sunshine. На ПК Home Manager управляет ссылками на существующие редактируемые файлы в `~/dotfiles/bins`: разрешённые пути остаются совместимыми с установщиком и взаимным вызовом скриптов. Команда статуса проверена с подставными командами; запуск Sunshine и мониторов не проверялся. Резервная копия прежних ссылок — `~/.local/state/dotfiles-backups/mobile-screen-handoff-r3e09dh4/`.
 - Скрипт `battery_notify` относится к legacy; файл пока сохраняется.
 - Скрипт `call_mode` относится к legacy; файл пока сохраняется.
 - Скрипт `autocommit` не используется и отнесён к legacy; файл пока сохраняется.
