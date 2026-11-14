@@ -63,7 +63,15 @@ nix eval --raw --no-update-lock-file '.#nixosConfigurations.gklaptop.config.syst
 bash nix/tests/shared-skill-targets.sh
 ```
 
-`gws@arch` is intentionally minimal: it manages only active shared skills and uses
+Git-backed flakes include tracked files only. During migration, if new modules
+are still untracked, use `path:.` instead of `.` in these flake references. The
+bat configuration is a Nix store snapshot of `configs/bat/.config/bat/config`;
+edits to that file take effect after applying a new Home Manager generation.
+
+`gws@arch` is intentionally minimal: it manages active shared skills, the bat,
+lazygit, zathura, OpenCode, Starship, Yazi, fish and GTK 4 configurations, Okular color schemes,
+IdeaVim, and the IDEA plugins described in
+[idea-plugins.md](idea-plugins.md). It uses
 `/home/gws` and Home Manager state version `26.05`. It does not install the
 laptop's apps, secrets, or desktop configuration. Before adopting it, inspect any
 existing standalone Home Manager configuration and generation on the PC. If one
