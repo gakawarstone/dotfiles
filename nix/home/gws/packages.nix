@@ -13,6 +13,7 @@
       gtk3
       xdg-utils
       zathura
+      kdePackages.okular
       gkpager
       klartext
       chatgpt-linux
