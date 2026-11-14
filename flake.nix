@@ -90,6 +90,7 @@
           ./nix/home/gws/arch-lazygit.nix
           ./nix/home/gws/arch-zathura.nix
           ./nix/home/gws/arch-opencode.nix
+          ./nix/home/gws/arch-starship.nix
           {
             home.username = "gws";
             home.homeDirectory = "/home/gws";

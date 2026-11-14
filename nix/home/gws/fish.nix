@@ -12,6 +12,5 @@
       source = ../../../configs/fish/.config/fish;
       recursive = true;
     };
-    "starship.toml".source = ../../../configs/starship/.config/starship.toml;
   };
 }

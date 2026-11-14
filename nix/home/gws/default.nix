@@ -14,6 +14,7 @@
     ./ideavim.nix
     ./dotfiles.nix
     ./fish.nix
+    ./starship.nix
     ./shared-skills.nix
     ./energy-meter.nix
     ./git.nix
