@@ -93,6 +93,7 @@
           ./nix/home/gws/arch-starship.nix
           ./nix/home/gws/arch-yazi.nix
           ./nix/home/gws/arch-okular.nix
+          ./nix/home/gws/arch-fish.nix
           {
             home.username = "gws";
             home.homeDirectory = "/home/gws";
