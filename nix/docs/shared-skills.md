@@ -69,7 +69,7 @@ bat configuration is a Nix store snapshot of `configs/bat/.config/bat/config`;
 edits to that file take effect after applying a new Home Manager generation.
 
 `gws@arch` is intentionally minimal: it manages active shared skills, the bat,
-lazygit, zathura, OpenCode, Starship, Yazi, fish, GTK 4 and Herdr configurations, Okular color schemes, the screen script,
+lazygit, zathura, OpenCode, Starship, Yazi, fish, GTK 4 and Herdr configurations, Okular color schemes, the screen and theme scripts,
 IdeaVim, and the IDEA plugins described in
 [idea-plugins.md](idea-plugins.md). It uses
 `/home/gws` and Home Manager state version `26.05`. It does not install the

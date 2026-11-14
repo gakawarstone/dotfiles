@@ -97,6 +97,7 @@
           ./nix/home/gws/arch-gtk4.nix
           ./nix/home/gws/arch-herdr.nix
           ./nix/home/gws/arch-screen.nix
+          ./nix/home/gws/arch-toggle-theme.nix
           ./nix/home/gws/ideavim.nix
           ./nix/home/gws/idea-plugins.nix
           {
