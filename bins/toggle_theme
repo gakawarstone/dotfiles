@@ -57,20 +57,29 @@ sync_portal_preference() {
 
 TARGET=$(detect_target_from_portal || detect_target_from_symlink)
 
+# Only replace theme links. A regular file may contain local settings.
+for path in "$HYPR_DIR/theme.conf" "$HYPR_DIR/hyprpaper.conf" \
+            "$FOOT_DIR/theme.ini" "$QUICKSHELL_DIR/Theme.qml"; do
+    if [ -d "$path" ] || { [ -e "$path" ] && [ ! -L "$path" ]; }; then
+        echo "Cannot replace non-symlink: $path" >&2
+        exit 1
+    fi
+done
+
 echo "Switching theme to: $TARGET"
 
 if [[ "$TARGET" == "mocha" ]]; then
     # Swap symlinks in dotfiles repo
-    ln -sf mocha.conf "$HYPR_DIR/theme.conf"
-    ln -sf mocha_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf"
-    ln -sf mocha.ini "$FOOT_DIR/theme.ini"
-    ln -sf Mocha.qml "$QUICKSHELL_DIR/Theme.qml"
+    ln -sf mocha.conf "$HYPR_DIR/theme.conf" || exit 1
+    ln -sf mocha_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf" || exit 1
+    ln -sf mocha.ini "$FOOT_DIR/theme.ini" || exit 1
+    ln -sf Mocha.qml "$QUICKSHELL_DIR/Theme.qml" || exit 1
 else
     # Swap symlinks in dotfiles repo
-    ln -sf latte.conf "$HYPR_DIR/theme.conf"
-    ln -sf latte_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf"
-    ln -sf latte.ini "$FOOT_DIR/theme.ini"
-    ln -sf Latte.qml "$QUICKSHELL_DIR/Theme.qml"
+    ln -sf latte.conf "$HYPR_DIR/theme.conf" || exit 1
+    ln -sf latte_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf" || exit 1
+    ln -sf latte.ini "$FOOT_DIR/theme.ini" || exit 1
+    ln -sf Latte.qml "$QUICKSHELL_DIR/Theme.qml" || exit 1
 fi
 
 sync_portal_preference

@@ -25,6 +25,7 @@ let
     runtimeInputs = with pkgs; [
       coreutils
       glib
+      kdePackages.kconfig
       procps
     ];
     text = ''
