@@ -95,6 +95,7 @@
           ./nix/home/gws/arch-okular.nix
           ./nix/home/gws/arch-fish.nix
           ./nix/home/gws/arch-gtk4.nix
+          ./nix/home/gws/arch-herdr.nix
           ./nix/home/gws/ideavim.nix
           ./nix/home/gws/idea-plugins.nix
           {
