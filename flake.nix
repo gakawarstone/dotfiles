@@ -87,6 +87,7 @@
         modules = [
           ./nix/home/gws/shared-skills.nix
           ./nix/home/gws/arch-bat.nix
+          ./nix/home/gws/arch-lazygit.nix
           {
             home.username = "gws";
             home.homeDirectory = "/home/gws";
