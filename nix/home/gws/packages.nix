@@ -9,6 +9,7 @@
       telegram-desktop
       zed-editor
       yazi
+      zathura
       gkpager
       klartext
       chatgpt-linux
