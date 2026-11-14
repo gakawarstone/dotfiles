@@ -1,10 +1,8 @@
-{ pkgs, ... }:
+{ ... }:
 let
   sourceDir = ../../../configs/opencode/.config/opencode;
 in
 {
-  home.packages = [ pkgs.wakatime-cli ];
-
   xdg.configFile = {
     "opencode/opencode.json".source = sourceDir + /opencode.json;
     "opencode/plugins/herdr-agent.js".source = sourceDir + /plugins/herdr-agent.js;
