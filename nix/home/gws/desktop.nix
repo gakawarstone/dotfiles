@@ -17,7 +17,7 @@ let
       wl-clipboard
     ];
     text = ''
-      exec ${pkgs.bash}/bin/bash "$HOME/dotfiles/bins/screen" "$@"
+      exec ${pkgs.bash}/bin/bash ${../../../bins/screen} "$@"
     '';
   };
   toggleTheme = pkgs.writeShellApplication {
