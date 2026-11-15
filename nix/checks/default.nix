@@ -36,6 +36,20 @@ packages
         touch "$out"
       '';
 
+  thunderbird-policy =
+    pkgs.runCommand "thunderbird-policy"
+      {
+        nativeBuildInputs = [
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.python3
+        ];
+      }
+      ''
+        python3 -B ${source}/tests/test_thunderbird_policy.py
+        touch "$out"
+      '';
+
   formatting =
     pkgs.runCommand "nix-formatting"
       {
