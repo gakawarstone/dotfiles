@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Foot (directory)
+GenericName=Terminal
+Comment=Open a terminal in the selected directory
+Exec=foot --working-directory %f
+Icon=foot
+Terminal=false
+NoDisplay=true
+Categories=System;TerminalEmulator;
+MimeType=inode/directory;

@@ -15,7 +15,7 @@ in
     ".local/share/icons/hicolor/180x180/apps/chatgpt.png".source =
       source + /.local/share/icons/hicolor/180x180/apps/chatgpt.png;
     ".local/share/applications/foot-directory.desktop".source =
-      config.lib.file.mkOutOfStoreSymlink "${home}/dotfiles/configs/xdg/.local/share/applications/foot-directory.desktop";
+      source + /.local/share/applications/foot-directory.desktop;
   };
   home.activation.checkXdgLinksOwnership = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
     ${pkgs.bash}/bin/bash ${./check-xdg-links.sh} ${lib.escapeShellArg home}

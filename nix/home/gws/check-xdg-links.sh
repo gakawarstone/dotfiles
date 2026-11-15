@@ -7,13 +7,6 @@ for relative in \
     .local/share/applications/foot-directory.desktop \
     .local/share/icons/hicolor/180x180/apps/chatgpt.png; do
     target="$home/$relative"
-    if [ "$relative" = .local/share/applications/foot-directory.desktop ]; then
-        source="$home/dotfiles/configs/xdg/$relative"
-        if [ ! -f "$source" ]; then
-            echo "xdg: source missing: $source" >&2
-            exit 1
-        fi
-    fi
     if [ -L "$(dirname "$target")" ]; then
         echo "xdg: preserve the linked parent directory of $target" >&2
         exit 1
