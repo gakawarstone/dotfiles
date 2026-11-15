@@ -105,7 +105,6 @@
           ./nix/home/gws/arch-ps5.nix
           ./nix/home/gws/arch-xdg-links.nix
           ./nix/home/gws/arch-lock.nix
-          ./nix/home/gws/arch-local-wizard.nix
           ./nix/home/gws/arch-hyprland.nix
           ./nix/home/gws/arch-foot.nix
           ./nix/home/gws/arch-quickshell.nix
