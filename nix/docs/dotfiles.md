@@ -36,16 +36,16 @@ Required paths used directly by this configuration:
 | --- | --- |
 | `configs/herdr/.config/herdr` | Home Manager symlink for the Herdr configuration |
 | `configs/hyprland/.config/hypr` | Home Manager symlink for the Hyprland configuration |
-| `bins/toggle_theme` | Personal `toggle_theme` wrapper |
+| `configs/foot/.config/foot` | Mutable theme link used by `toggle_theme` |
+| `configs/quickshell/.config/quickshell` | Mutable theme link used by `toggle_theme` |
 
 `nix/home/gws/dotfiles.nix` manages the Herdr and Hyprland links. Before activation,
 inspect `~/.config/hypr` and preserve any existing configuration or Stow link;
 Home Manager needs to take ownership of that path. The checkout must contain
 the laptop profile before enabling this link. `nix/home/gws/desktop.nix` installs the
-shell wrappers with their runtime dependencies. The `screen` wrapper uses the
-repository snapshot and changes require a rebuild; `toggle_theme` still uses the
-checkout. Keep the checkout available at this location;
-the Herdr link is otherwise dangling and the wrappers cannot run their scripts.
+shell wrappers with their runtime dependencies. `screen`, `toggle_theme` and its
+Okular helper use repository snapshots, so changes require a rebuild. Keep the
+checkout available at this location for the mutable configurations and themes.
 
 Other desktop configuration in this repository must be installed using the
 root README's setup instructions. Home Manager also supports the shared agent skills described in

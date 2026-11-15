@@ -20,6 +20,13 @@ let
       exec ${pkgs.bash}/bin/bash ${../../../bins/screen} "$@"
     '';
   };
+  syncOkularTheme = pkgs.writeShellApplication {
+    name = "sync_okular_theme";
+    runtimeInputs = [ pkgs.kdePackages.kconfig ];
+    text = ''
+      exec ${pkgs.bash}/bin/bash ${../../../scripts/sync_okular_theme.sh} "$@"
+    '';
+  };
   toggleTheme = pkgs.writeShellApplication {
     name = "toggle_theme";
     runtimeInputs = with pkgs; [
@@ -27,9 +34,10 @@ let
       glib
       kdePackages.kconfig
       procps
+      syncOkularTheme
     ];
     text = ''
-      exec ${pkgs.bash}/bin/bash "$HOME/dotfiles/bins/toggle_theme" "$@"
+      exec ${pkgs.bash}/bin/bash ${../../../bins/toggle_theme} "$@"
     '';
   };
 in
