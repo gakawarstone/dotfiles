@@ -50,8 +50,8 @@ packages
         touch "$out"
       '';
 
-  sunshine-iphone-sync =
-    pkgs.runCommand "sunshine-iphone-sync"
+  sunshine-config-sync =
+    pkgs.runCommand "sunshine-config-sync"
       {
         nativeBuildInputs = [
           pkgs.bash
@@ -61,7 +61,7 @@ packages
         ];
       }
       ''
-        python3 -B ${source}/tests/test_sunshine_iphone_sync.py
+        python3 -B ${source}/tests/test_sunshine_config_sync.py
         touch "$out"
       '';
 
