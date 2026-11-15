@@ -15,18 +15,18 @@ Rectangle {
     // Set these properties per host using hostname. See README.md.
     property bool showWorkspaces: true
     property bool showMedia: true
-    property bool showNetworkSpeed: true
+    property bool showNetworkSpeed: hostname !== "archlinux"
     property bool showCodexUsage: true
-    property bool showWifi: false
+    property bool showWifi: hostname === "archlinux"
     property bool showHsflVpn: true
-    property bool showLanMouse: true
-    property bool showPomodoro: true
+    property bool showLanMouse: hostname !== "archlinux"
+    property bool showPomodoro: hostname !== "archlinux"
     property bool showVolume: true
     property bool showMicrophone: true
     property bool showBluetooth: true
     property bool showBattery: true
     property bool showKeyboardLayout: true
-    property bool showNotificationIndicator: true
+    property bool showNotificationIndicator: hostname !== "archlinux"
 
     RowLayout {
         anchors.fill: parent

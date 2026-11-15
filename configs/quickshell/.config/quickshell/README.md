@@ -43,8 +43,10 @@ property bool showLanMouse: hostname !== "your-laptop-hostname"
 property bool showNetworkSpeed: hostname !== "your-desktop-hostname"
 ```
 
-The checked-in defaults preserve the existing bar: all components are enabled
-except Wi-Fi. Hidden components are still instantiated and may run background
-processes. Shared services such as the notification center and Pomodoro timer
-remain available. Component positions stay fixed. Restart Quickshell after
-changing these properties.
+On `archlinux` the checked-in settings preserve the current PC bar: Wi-Fi is
+visible, while network speed, LanMouse, Pomodoro and the notification indicator
+are hidden. Other hosts retain the existing defaults: all components are enabled
+except Wi-Fi; the laptop's final selection is still undecided. Hidden components
+are still instantiated and may run background processes. Shared services such as
+the notification center and Pomodoro timer remain available. Component positions
+stay fixed. Restart Quickshell after changing these properties.
