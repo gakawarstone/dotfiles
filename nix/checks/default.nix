@@ -50,6 +50,21 @@ packages
         touch "$out"
       '';
 
+  sunshine-iphone-sync =
+    pkgs.runCommand "sunshine-iphone-sync"
+      {
+        nativeBuildInputs = [
+          pkgs.bash
+          pkgs.coreutils
+          pkgs.diffutils
+          pkgs.python3
+        ];
+      }
+      ''
+        python3 -B ${source}/tests/test_sunshine_iphone_sync.py
+        touch "$out"
+      '';
+
   formatting =
     pkgs.runCommand "nix-formatting"
       {
