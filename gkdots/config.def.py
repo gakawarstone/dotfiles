@@ -22,7 +22,7 @@ INCLUDED_CONFIGS = [
     # ConfigDirLinkingInfo("tmux"),  # Legacy; preserved but not installed
     ConfigDirLinkingInfo("alacritty", prepare=prepare_alacritty),
     ConfigDirLinkingInfo("bat"),
-    ConfigDirLinkingInfo("dunst"),
+    # ConfigDirLinkingInfo("dunst"),  # Legacy; preserved but not installed
     # ConfigDirLinkingInfo("wal"),
     ConfigDirLinkingInfo("fish"),
     ConfigDirLinkingInfo("quickshell"),
