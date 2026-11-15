@@ -28,7 +28,7 @@
 - `opencode` используется на обеих машинах.
 - Общая конфигурация OpenCode и три плагина (`herdr-agent`, `herdr-pane-title`, `wakatime`) подключены через Home Manager на обеих машинах. На Arch OpenCode и WakaTime CLI остаются вне Nix, локальная запись Stow отключена, остальные файлы OpenCode сохранены. Резервная копия: `~/.local/state/dotfiles-backups/opencode-handoff-a34rgpu1/`. Загрузка и настройка плагинов проверены в изоляции; реальная отправка WakaTime не проверялась.
 - `pi` относится к legacy; файлы пока сохраняются.
-- `ranger` относится к legacy; вместо него используется `yazi`.
+- `ranger` относится к legacy; вместо него используется `yazi`. Из локального выбора старого установщика ranger исключён, в общем шаблоне его уже не было. Существующие файлы и ссылка сохранены; резервная копия выбора — `~/.local/state/dotfiles-backups/ranger-legacy-_m4mlg7z/`.
 - `delta` относится к legacy; вместо него пользователь использует свой `gkpager`.
 - Herdr используется на обеих машинах. На ПК Home Manager управляет только `config.toml`, сохраняя редактируемый источник в `~/dotfiles/configs/herdr/.config/herdr/config.toml`; приложение остаётся вне Nix. Локальная запись Stow отключена, файлы сеансов и сокеты сохранены. `herdr config check` прошёл; резервная копия — `~/.local/state/dotfiles-backups/herdr-handoff-e4_z6rer/`.
 - Hyprland используется на обеих машинах. На ПК Home Manager управляет ссылкой `~/.config/hypr` на существующий изменяемый каталог в `~/dotfiles`; локальные правки и ссылки тем сохранены, запись Stow отключена. Сеанс после передачи отвечает; новая конфигурация из ветки на ПК ещё не применялась. Резервная копия прежней ссылки и выбора Stow — `~/.local/state/dotfiles-backups/hyprland-handoff-uxscxn50/`.
