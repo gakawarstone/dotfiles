@@ -14,9 +14,16 @@ settings and add-on ID are unchanged.
 
 On NixOS, Home Manager installs the theme through Thunderbird's extension policy
 when the managed Thunderbird starts. It does not manage mail accounts or
-profiles. The theme can still be disabled in Thunderbird. On Arch, the module
-that installs Thunderbird with Nix is not enabled. A separate way to apply the
-theme policy to the Arch-installed Thunderbird is still needed.
+profiles. The theme can still be disabled in Thunderbird. On Arch, Home Manager
+provides the policy for the system Thunderbird without installing the program.
+After activating Home Manager, an administrator can link the policy once:
+
+```bash
+sudo ./scripts/install_thunderbird_policy.sh "$HOME/.local/share/thunderbird-dotfiles/policies.json"
+```
+
+The installer refuses to overwrite an existing system or distribution policy.
+Restart Thunderbird to apply the policy to its profile.
 
 ### Manual installation
 1. Open **Thunderbird**.
