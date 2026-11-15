@@ -19,10 +19,10 @@ INCLUDED_BINS = [
 ]
 
 INCLUDED_CONFIGS = [
-    ConfigDirLinkingInfo("tmux"),
-    ConfigDirLinkingInfo("alacritty", prepare=prepare_alacritty),
+    # ConfigDirLinkingInfo("tmux"),  # Legacy; preserved but not installed
+    # ConfigDirLinkingInfo("alacritty", prepare=prepare_alacritty),  # Legacy; preserved but not installed
     ConfigDirLinkingInfo("bat"),
-    ConfigDirLinkingInfo("dunst"),
+    # ConfigDirLinkingInfo("dunst"),  # Legacy; preserved but not installed
     # ConfigDirLinkingInfo("wal"),
     ConfigDirLinkingInfo("fish"),
     ConfigDirLinkingInfo("quickshell"),

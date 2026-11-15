@@ -60,6 +60,7 @@
       overlays.default = import ./nix/overlays { inherit inputs; };
       packages.${system} = localPackages // {
         inherit (pkgs) nixos-rebuild;
+        home-manager = inputs.home-manager.packages.${system}.default;
       };
       formatter.${system} = pkgs.nixfmt-tree;
       devShells.${system}.default = pkgs.mkShellNoCC {
@@ -79,6 +80,49 @@
         source = self;
         packages = localPackages;
         hosts = self.nixosConfigurations;
+        homes = self.homeConfigurations;
+      };
+      homeConfigurations."gws@arch" = inputs.home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        modules = [
+          ./nix/home/gws/shared-skills.nix
+          ./nix/home/gws/arch-bat.nix
+          ./nix/home/gws/arch-lazygit.nix
+          ./nix/home/gws/arch-zathura.nix
+          ./nix/home/gws/arch-opencode.nix
+          ./nix/home/gws/arch-starship.nix
+          ./nix/home/gws/arch-yazi.nix
+          ./nix/home/gws/arch-okular.nix
+          ./nix/home/gws/arch-fish.nix
+          ./nix/home/gws/arch-gtk4.nix
+          ./nix/home/gws/arch-herdr.nix
+          ./nix/home/gws/arch-screen.nix
+          ./nix/home/gws/arch-toggle-theme.nix
+          ./nix/home/gws/arch-tgsend.nix
+          ./nix/home/gws/arch-mobile-screen.nix
+          ./nix/home/gws/arch-webcam.nix
+          ./nix/home/gws/arch-stay.nix
+          ./nix/home/gws/arch-ps5.nix
+          ./nix/home/gws/arch-xdg-links.nix
+          ./nix/home/gws/arch-lock.nix
+          ./nix/home/gws/arch-hyprland.nix
+          ./nix/home/gws/arch-foot.nix
+          ./nix/home/gws/arch-quickshell.nix
+          ./nix/home/gws/arch-thunderbird-theme.nix
+          ./nix/home/gws/arch-sunshine.nix
+          ./nix/home/gws/arch-zen.nix
+          ./nix/home/gws/ideavim.nix
+          ./nix/home/gws/idea-plugins.nix
+          {
+            home.username = "gws";
+            home.homeDirectory = "/home/gws";
+            home.stateVersion = "26.05";
+            dotfiles.ideaPlugins = {
+              ideaVim = true;
+              catppuccin = true;
+            };
+          }
+        ];
       };
       nixosConfigurations = {
         gklaptop = mkHost "gklaptop";

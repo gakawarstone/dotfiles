@@ -35,14 +35,19 @@ Required paths used directly by this configuration:
 | Path under `~/dotfiles` | Consumer |
 | --- | --- |
 | `configs/herdr/.config/herdr` | Home Manager symlink for the Herdr configuration |
-| `bins/screen` | Personal `screen` screenshot wrapper |
-| `bins/toggle_theme` | Personal `toggle_theme` wrapper |
+| `configs/hyprland/.config/hypr` | Home Manager symlink for the Hyprland configuration |
+| `configs/foot/.config/foot` | Mutable theme link used by `toggle_theme` |
+| `configs/quickshell/.config/quickshell` | Mutable theme link used by `toggle_theme` |
 
-`nix/home/gws/dotfiles.nix` manages the Herdr link. `nix/home/gws/desktop.nix` installs the
-shell wrappers with their runtime dependencies. Changes to these dotfiles take
-effect without rebuilding NixOS. Keep the checkout available at this location;
-the Herdr link is otherwise dangling and the wrappers cannot run their scripts.
+`nix/home/gws/dotfiles.nix` manages the Herdr and Hyprland links. Before activation,
+inspect `~/.config/hypr` and preserve any existing configuration or Stow link;
+Home Manager needs to take ownership of that path. The checkout must contain
+the laptop profile before enabling this link. `nix/home/gws/desktop.nix` installs the
+shell wrappers with their runtime dependencies. `screen`, `toggle_theme` and its
+Okular helper use repository snapshots, so changes require a rebuild. Keep the
+checkout available at this location for the mutable configurations and themes.
 
 Other desktop configuration in this repository must be installed using the
-root README's setup instructions. The Nix configuration manages only the links
-and wrappers listed above. The VM does not depend on this checkout.
+root README's setup instructions. Home Manager also supports the shared agent skills described in
+the [shared skills guide](shared-skills.md). The Nix configuration manages the
+links and wrappers listed above. The VM does not depend on this checkout.

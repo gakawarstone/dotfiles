@@ -23,6 +23,7 @@
     elmPackages.elm-test
     jetbrains.idea
     opencode
+    wakatime-cli
     codex-bin
     herdr
     lazygit

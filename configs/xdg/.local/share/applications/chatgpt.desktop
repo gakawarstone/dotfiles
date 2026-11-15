@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=ChatGPT
+Comment=Open ChatGPT in a Helium window
+Exec=helium-browser --app=https://chatgpt.com
+Icon=chatgpt
+Terminal=false
+Categories=Network;

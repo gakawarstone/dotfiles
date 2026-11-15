@@ -3,24 +3,15 @@ local programs = require("programs")
 
 local mainMod = "SUPER"
 
-hl.monitor({
-    output = "HDMI-A-1",
-    mode = "2560x1440@75",
-    position = "2560x0",
-    scale = 1,
-})
-
-hl.monitor({
-    output = "DP-1",
-    mode = "2560x1440@165",
-    position = "0x0",
-    scale = 1,
-})
-
-require("autostart")
-require("workspaces")
-require("ipad")
-require("iphone")
+-- Unknown hosts use the shared settings without desktop-specific startup.
+local hostname_file = io.open("/proc/sys/kernel/hostname", "r")
+local hostname = hostname_file and hostname_file:read("*l")
+if hostname_file then hostname_file:close() end
+if hostname == "archlinux" then
+    require("hosts.pc")
+elseif hostname == "gklaptop" then
+    require("hosts.laptop")
+end
 
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
@@ -121,11 +112,6 @@ hl.gesture({
     fingers = 3,
     direction = "horizontal",
     action = "workspace",
-})
-
-hl.device({
-    name = "epic-mouse-v1",
-    sensitivity = -0.5,
 })
 
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("toggle_theme"))

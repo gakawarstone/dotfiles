@@ -1,11 +1,21 @@
 { ... }:
 {
   imports = [
+    ./bat.nix
+    ./lazygit.nix
+    ./yazi.nix
+    ./zathura.nix
+    ./okular.nix
+    ./thunderbird.nix
+    ./opencode.nix
     ./packages.nix
     ./development.nix
     ./editor.nix
+    ./ideavim.nix
     ./dotfiles.nix
     ./fish.nix
+    ./starship.nix
+    ./shared-skills.nix
     ./energy-meter.nix
     ./git.nix
     ./ssh.nix

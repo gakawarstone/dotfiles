@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Start T3 Code even if Herdr or a dependency fails to start.
+for attempt in $(seq 1 300); do
+	clients=$(hyprctl clients -j) || break
+	herdr_ready=$(printf '%s\n' "$clients" | jq -r 'any(.[]; .class == "herdr")') || break
+	[ "$herdr_ready" = true ] && break
+	sleep 0.1
+done
+
+exec t3code-nightly

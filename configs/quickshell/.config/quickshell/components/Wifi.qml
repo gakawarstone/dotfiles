@@ -24,7 +24,7 @@ MouseArea {
     Process {
         id: wifiInfo
         command: ["sh", "-c", "nmcli -t -f TYPE,STATE,CONNECTION device | grep -m 1 '^ethernet:connected' || nmcli -t -f active,ssid dev wifi | grep -m 1 '^yes'"]
-        running: true
+        running: root.visible
         stdout: StdioCollector { id: wifiCollector }
 
         onExited: exitCode => {
@@ -46,7 +46,7 @@ MouseArea {
 
     Timer {
         interval: 10000
-        running: true
+        running: root.visible
         repeat: true
         onTriggered: root.refresh()
     }

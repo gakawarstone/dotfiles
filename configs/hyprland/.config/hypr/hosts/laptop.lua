@@ -1,0 +1,1 @@
+-- The laptop does not start applications automatically.

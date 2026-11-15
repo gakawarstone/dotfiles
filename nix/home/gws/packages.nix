@@ -9,11 +9,15 @@
       telegram-desktop
       zed-editor
       yazi
+      feh
+      gtk3
+      xdg-utils
+      zathura
+      kdePackages.okular
       gkpager
       klartext
       chatgpt-linux
       tgsend
     ]
-    ++ lib.optionals (lib.hasAttr "legcord" pkgs) [ pkgs.legcord ]
-    ++ lib.optionals (lib.hasAttr "thunderbird" pkgs) [ pkgs.thunderbird ];
+    ++ lib.optionals (lib.hasAttr "legcord" pkgs) [ pkgs.legcord ];
 }

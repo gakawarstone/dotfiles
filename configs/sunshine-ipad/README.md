@@ -45,6 +45,12 @@ Scale 1.25 gives more desktop space; scale 2 gives larger text.
 The Sunshine profile, pairing state, and keys live in `~/.config/sunshine-ipad`.
 Logs are also available with `journalctl --user -u ipad-screen.service`.
 
+On Arch, Home Manager manages `sunshine.conf` and `apps.json` from this
+repository. They remain regular files for installer compatibility. Stop the
+`ipad-screen` service before applying changed settings. If a file has been
+edited outside Home Manager, activation stops so the edits can be reviewed;
+pairing state, credentials and logs remain outside Home Manager.
+
 The server uses `capture = wlr`, `encoder = nvenc`, and `output_name = IPAD`.
 The web UI accepts only local connections and UPnP is disabled. Both devices
 should be on the same LAN, with the iPad on 5/6 GHz Wi-Fi if available.

@@ -17,7 +17,14 @@ let
       wl-clipboard
     ];
     text = ''
-      exec ${pkgs.bash}/bin/bash "$HOME/dotfiles/bins/screen" "$@"
+      exec ${pkgs.bash}/bin/bash ${../../../bins/screen} "$@"
+    '';
+  };
+  syncOkularTheme = pkgs.writeShellApplication {
+    name = "sync_okular_theme";
+    runtimeInputs = [ pkgs.kdePackages.kconfig ];
+    text = ''
+      exec ${pkgs.bash}/bin/bash ${../../../scripts/sync_okular_theme.sh} "$@"
     '';
   };
   toggleTheme = pkgs.writeShellApplication {
@@ -25,10 +32,12 @@ let
     runtimeInputs = with pkgs; [
       coreutils
       glib
+      kdePackages.kconfig
       procps
+      syncOkularTheme
     ];
     text = ''
-      exec ${pkgs.bash}/bin/bash "$HOME/dotfiles/bins/toggle_theme" "$@"
+      exec ${pkgs.bash}/bin/bash ${../../../bins/toggle_theme} "$@"
     '';
   };
 in
