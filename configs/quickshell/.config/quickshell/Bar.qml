@@ -28,31 +28,25 @@ Rectangle {
     property bool showKeyboardLayout: true
     property bool showNotificationIndicator: true
 
-    // Wait for the hostname binding before starting components.
-    property bool componentsReady: false
-    Component.onCompleted: componentsReady = true
-
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: 25
         anchors.rightMargin: 25
         spacing: 15
 
-        Loader {
-            active: root.componentsReady && root.showWorkspaces
-            visible: active
+        Workspaces {
+            visible: root.showWorkspaces
             Layout.alignment: Qt.AlignLeft
-            sourceComponent: Workspaces { screen: root.screen }
+            screen: root.screen
         }
 
         Item {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
 
-            Loader {
+            Media {
                 anchors.centerIn: parent
-                active: root.componentsReady && root.showMedia
-                sourceComponent: Media {}
+                visible: root.showMedia && player !== null
             }
         }
 
@@ -60,79 +54,24 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
-            Loader {
-                active: root.componentsReady && root.showNetworkSpeed
-                visible: active
-                sourceComponent: NetworkSpeed {}
+            NetworkSpeed { visible: root.showNetworkSpeed }
+            CodexUsage { visible: root.showCodexUsage }
+            Wifi { visible: root.showWifi }
+            HsflVpn { visible: root.showHsflVpn }
+            LanMouse { visible: root.showLanMouse }
+            Pomodoro {
+                visible: root.showPomodoro
+                pomoState: root.pomoState
             }
-            Loader {
-                active: root.componentsReady && root.showCodexUsage
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: CodexUsage {}
-            }
-            Loader {
-                active: root.componentsReady && root.showWifi
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: Wifi {}
-            }
-            Loader {
-                active: root.componentsReady && root.showHsflVpn
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: HsflVpn {}
-            }
-            Loader {
-                active: root.componentsReady && root.showLanMouse
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: LanMouse {}
-            }
-            Loader {
-                active: root.componentsReady && root.showPomodoro
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: Pomodoro { pomoState: root.pomoState }
-            }
-            Loader {
-                active: root.componentsReady && root.showVolume
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: Volume {}
-            }
-            Loader {
-                active: root.componentsReady && root.showMicrophone
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: Microphone {}
-            }
-            Loader {
-                active: root.componentsReady && root.showBluetooth
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: Bluetooth {}
-            }
-            Loader {
-                active: root.componentsReady && root.showBattery
-                visible: active && UPower.displayDevice && UPower.displayDevice.isLaptopBattery
-                sourceComponent: Battery {}
-            }
-            Loader {
-                active: root.componentsReady && root.showKeyboardLayout
-                visible: active
-                Layout.fillHeight: true
-                Layout.preferredWidth: item ? item.Layout.preferredWidth : 0
-                sourceComponent: KeyboardLayout {}
-            }
-            Loader {
-                active: root.componentsReady && root.showNotificationIndicator
-                visible: active
-                Layout.fillHeight: true
-                sourceComponent: NotificationIndicator {
-                    notificationCenter: root.notificationController
-                    screen: root.screen
-                }
+            Volume { visible: root.showVolume }
+            Microphone { visible: root.showMicrophone }
+            Bluetooth { visible: root.showBluetooth }
+            Battery { visible: root.showBattery && UPower.displayDevice && UPower.displayDevice.isLaptopBattery }
+            KeyboardLayout { visible: root.showKeyboardLayout }
+            NotificationIndicator {
+                visible: root.showNotificationIndicator
+                notificationCenter: root.notificationController
+                screen: root.screen
             }
         }
     }

@@ -44,6 +44,7 @@ property bool showNetworkSpeed: hostname !== "your-desktop-hostname"
 ```
 
 The checked-in defaults preserve the existing bar: all components are enabled
-except Wi-Fi. Disabled components are not instantiated. Shared services such
-as the notification center and Pomodoro timer remain available. Component
-positions stay fixed. Restart Quickshell after changing these properties.
+except Wi-Fi. Hidden components are still instantiated and may run background
+processes. Shared services such as the notification center and Pomodoro timer
+remain available. Component positions stay fixed. Restart Quickshell after
+changing these properties.
