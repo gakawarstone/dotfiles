@@ -57,6 +57,19 @@ class ToggleThemeTests(unittest.TestCase):
         self.assertEqual(os.readlink(self.hypr / "theme.conf"), "mocha.conf")
         self.assertEqual(os.readlink(self.foot / "theme.ini"), "mocha.conf")
 
+    def test_uses_managed_okular_helper_when_available(self):
+        marker = Path(self.env["HOME"]) / "managed-theme"
+        self.command(self.bin / "sync_okular_theme", f'printf "%s" "$1" > "{marker}"')
+        self.assertEqual(self.run_toggle().returncode, 0)
+        self.assertEqual(marker.read_text(), "latte")
+
+    def test_falls_back_to_checkout_helper(self):
+        marker = Path(self.env["HOME"]) / "checkout-theme"
+        helper = Path(self.env["HOME"]) / "dotfiles/scripts/sync_okular_theme.sh"
+        self.command(helper, f'printf "%s" "$1" > "{marker}"')
+        self.assertEqual(self.run_toggle().returncode, 0)
+        self.assertEqual(marker.read_text(), "latte")
+
 
 if __name__ == "__main__":
     unittest.main()
