@@ -28,11 +28,13 @@ packages
         nativeBuildInputs = [
           pkgs.bash
           pkgs.coreutils
+          pkgs.gawk
           pkgs.python3
         ];
       }
       ''
         python3 -B ${source}/tests/test_mutable_config_ownership.py
+        python3 -B ${source}/tests/test_zen_ownership.py
         touch "$out"
       '';
 

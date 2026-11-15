@@ -110,6 +110,7 @@
           ./nix/home/gws/arch-quickshell.nix
           ./nix/home/gws/arch-thunderbird-theme.nix
           ./nix/home/gws/arch-sunshine.nix
+          ./nix/home/gws/arch-zen.nix
           ./nix/home/gws/ideavim.nix
           ./nix/home/gws/idea-plugins.nix
           {
