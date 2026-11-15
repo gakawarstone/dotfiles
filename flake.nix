@@ -86,6 +86,7 @@
         inherit pkgs;
         modules = [
           ./nix/home/gws/shared-skills.nix
+          ./nix/home/gws/codex.nix
           ./nix/home/gws/arch-bat.nix
           ./nix/home/gws/arch-lazygit.nix
           ./nix/home/gws/arch-zathura.nix

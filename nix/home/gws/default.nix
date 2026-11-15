@@ -16,6 +16,7 @@
     ./fish.nix
     ./starship.nix
     ./shared-skills.nix
+    ./codex.nix
     ./energy-meter.nix
     ./git.nix
     ./ssh.nix
