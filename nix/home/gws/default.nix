@@ -15,6 +15,7 @@
     ./dotfiles.nix
     ./fish.nix
     ./starship.nix
+    ./stay.nix
     ./shared-skills.nix
     ./codex.nix
     ./energy-meter.nix
