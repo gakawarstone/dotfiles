@@ -54,24 +54,36 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
-            NetworkSpeed { visible: root.showNetworkSpeed }
+            Loader {
+                active: root.showNetworkSpeed
+                visible: active
+                sourceComponent: NetworkSpeed {}
+            }
             CodexUsage { visible: root.showCodexUsage }
             Wifi { visible: root.showWifi }
             HsflVpn { visible: root.showHsflVpn }
-            LanMouse { visible: root.showLanMouse }
-            Pomodoro {
-                visible: root.showPomodoro
-                pomoState: root.pomoState
+            Loader {
+                active: root.showLanMouse
+                visible: active
+                sourceComponent: LanMouse {}
+            }
+            Loader {
+                active: root.showPomodoro
+                visible: active
+                sourceComponent: Pomodoro { pomoState: root.pomoState }
             }
             Volume { visible: root.showVolume }
             Microphone { visible: root.showMicrophone }
             Bluetooth { visible: root.showBluetooth }
             Battery { visible: root.showBattery && UPower.displayDevice && UPower.displayDevice.isLaptopBattery }
             KeyboardLayout { visible: root.showKeyboardLayout }
-            NotificationIndicator {
-                visible: root.showNotificationIndicator
-                notificationCenter: root.notificationController
-                screen: root.screen
+            Loader {
+                active: root.showNotificationIndicator
+                visible: active
+                sourceComponent: NotificationIndicator {
+                    notificationCenter: root.notificationController
+                    screen: root.screen
+                }
             }
         }
     }
