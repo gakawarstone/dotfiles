@@ -67,7 +67,9 @@ for path in "$HYPR_DIR/theme.conf" "$HYPR_DIR/hyprpaper.conf" \
 done
 
 # The helper validates its own state before changing the GTK palette.
-if command -v sync_gtk_theme >/dev/null 2>&1; then
+if [ -e "$HOME/.local/bin/sync_gtk_theme" ] || [ -L "$HOME/.local/bin/sync_gtk_theme" ]; then
+    "$HOME/.local/bin/sync_gtk_theme" "$TARGET" || exit 1
+elif command -v sync_gtk_theme >/dev/null 2>&1; then
     sync_gtk_theme "$TARGET" || exit 1
 fi
 

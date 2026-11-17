@@ -73,7 +73,9 @@ class ToggleThemeTests(unittest.TestCase):
 
     def test_switches_gtk_and_preserves_conflicting_state(self):
         home = Path(self.env["HOME"])
-        (self.bin / "sync_gtk_theme").symlink_to(GTK_HELPER)
+        local_bin = home / ".local/bin"
+        local_bin.mkdir(parents=True)
+        (local_bin / "sync_gtk_theme").symlink_to(GTK_HELPER)
         palettes = home / ".local/share/dotfiles-gtk"
         palettes.mkdir(parents=True)
         for theme in ("mocha", "latte"):
@@ -86,6 +88,13 @@ class ToggleThemeTests(unittest.TestCase):
         self.assertNotEqual(self.run_toggle().returncode, 0)
         self.assertEqual(current.read_text(), "local")
         self.assertEqual(os.readlink(self.hypr / "theme.conf"), "latte.conf")
+
+    def test_broken_managed_gtk_helper_stops_switch(self):
+        local_bin = Path(self.env["HOME"]) / ".local/bin"
+        local_bin.mkdir(parents=True)
+        (local_bin / "sync_gtk_theme").symlink_to("missing")
+        self.assertNotEqual(self.run_toggle().returncode, 0)
+        self.assertEqual(os.readlink(self.hypr / "theme.conf"), "mocha.conf")
 
 
 if __name__ == "__main__":
