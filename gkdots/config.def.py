@@ -25,7 +25,7 @@ INCLUDED_CONFIGS = [
     # ConfigDirLinkingInfo("dunst"),  # Legacy; preserved but not installed
     # ConfigDirLinkingInfo("wal"),
     # ConfigDirLinkingInfo("fish"),  # Managed by Home Manager
-    ConfigDirLinkingInfo("quickshell"),
+    # ConfigDirLinkingInfo("quickshell"),  # Managed by Home Manager
     # ConfigDirLinkingInfo("yazi"),
     ConfigDirLinkingInfo("foot", prepare=prepare_foot),
     ConfigDirLinkingInfo("okular"),
