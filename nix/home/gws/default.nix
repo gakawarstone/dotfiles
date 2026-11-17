@@ -15,6 +15,7 @@
     ./dotfiles.nix
     ./fish.nix
     ./gtk3.nix
+    ./arch-gtk4.nix
     ./starship.nix
     ./stay.nix
     ./shared-skills.nix

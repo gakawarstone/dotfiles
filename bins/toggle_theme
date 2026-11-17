@@ -66,6 +66,11 @@ for path in "$HYPR_DIR/theme.conf" "$HYPR_DIR/hyprpaper.conf" \
     fi
 done
 
+# The helper validates its own state before changing the GTK palette.
+if command -v sync_gtk_theme >/dev/null 2>&1; then
+    sync_gtk_theme "$TARGET" || exit 1
+fi
+
 echo "Switching theme to: $TARGET"
 
 if [[ "$TARGET" == "mocha" ]]; then

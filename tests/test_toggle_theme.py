@@ -6,6 +6,7 @@ import unittest
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "bins/toggle_theme"
+GTK_HELPER = Path(__file__).resolve().parents[1] / "scripts/sync_gtk_theme.sh"
 
 
 class ToggleThemeTests(unittest.TestCase):
@@ -69,6 +70,22 @@ class ToggleThemeTests(unittest.TestCase):
         self.command(helper, f'printf "%s" "$1" > "{marker}"')
         self.assertEqual(self.run_toggle().returncode, 0)
         self.assertEqual(marker.read_text(), "latte")
+
+    def test_switches_gtk_and_preserves_conflicting_state(self):
+        home = Path(self.env["HOME"])
+        (self.bin / "sync_gtk_theme").symlink_to(GTK_HELPER)
+        palettes = home / ".local/share/dotfiles-gtk"
+        palettes.mkdir(parents=True)
+        for theme in ("mocha", "latte"):
+            (palettes / f"{theme}.css").write_text(theme)
+        self.assertEqual(self.run_toggle().returncode, 0)
+        current = home / ".local/state/dotfiles-gtk/current.css"
+        self.assertEqual(current.read_text(), "latte")
+        current.unlink()
+        current.write_text("local")
+        self.assertNotEqual(self.run_toggle().returncode, 0)
+        self.assertEqual(current.read_text(), "local")
+        self.assertEqual(os.readlink(self.hypr / "theme.conf"), "latte.conf")
 
 
 if __name__ == "__main__":
