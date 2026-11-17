@@ -41,6 +41,32 @@ class MutableDirectoryOwnershipTests(unittest.TestCase):
                 self.assertNotEqual(check(), 0)
 
 
+class GtkOwnershipTests(unittest.TestCase):
+    def test_preserves_local_files_and_accepts_managed_links(self):
+        for version, names in (("3", ("gtk.css",)), ("4", ("gtk.css", "gtk-dark.css"))):
+            with self.subTest(version=version), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                directory = root / f"gtk-{version}.0"
+                directory.mkdir()
+                script = SCRIPTS / ("check-gtk3-target.sh" if version == "3" else "check-gtk4-targets.sh")
+                def check():
+                    return subprocess.run(["bash", str(script), str(directory)], capture_output=True).returncode
+                self.assertEqual(check(), 0)
+                for name in names:
+                    target = directory / name
+                    target.write_text("local CSS")
+                    self.assertNotEqual(check(), 0)
+                    self.assertEqual(target.read_text(), "local CSS")
+                    target.unlink()
+                    target.symlink_to(f"/nix/store/test-home-manager-files/.config/gtk-{version}.0/{name}")
+                self.assertEqual(check(), 0)
+                for name in names:
+                    (directory / name).unlink()
+                directory.rmdir()
+                directory.symlink_to(root, target_is_directory=True)
+                self.assertNotEqual(check(), 0)
+
+
 class HerdrOwnershipTests(unittest.TestCase):
     def test_runtime_files_and_unmanaged_config_are_preserved(self):
         with tempfile.TemporaryDirectory() as tmp:
