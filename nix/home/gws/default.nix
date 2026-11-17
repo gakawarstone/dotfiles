@@ -14,6 +14,7 @@
     ./ideavim.nix
     ./dotfiles.nix
     ./fish.nix
+    ./gtk3.nix
     ./starship.nix
     ./stay.nix
     ./shared-skills.nix

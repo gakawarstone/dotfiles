@@ -96,6 +96,7 @@
           ./nix/home/gws/arch-okular.nix
           ./nix/home/gws/arch-fish.nix
           ./nix/home/gws/arch-gtk4.nix
+          ./nix/home/gws/gtk3.nix
           ./nix/home/gws/arch-herdr.nix
           ./nix/home/gws/arch-screen.nix
           ./nix/home/gws/arch-toggle-theme.nix
