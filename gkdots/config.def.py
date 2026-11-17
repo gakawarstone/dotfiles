@@ -29,5 +29,5 @@ INCLUDED_CONFIGS = [
     # ConfigDirLinkingInfo("yazi"),
     ConfigDirLinkingInfo("foot", prepare=prepare_foot),
     ConfigDirLinkingInfo("okular"),
-    ConfigDirLinkingInfo("codex"),
+    # ConfigDirLinkingInfo("codex"),  # Managed by Home Manager
 ]
