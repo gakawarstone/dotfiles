@@ -21,7 +21,10 @@ JINJA_ENV=laptop make
 - `Makefile`: Build script to generate `foot.ini`.
 
 ## Installation
-Managed by `gkdots`. The `configs/foot` directory is stowed to your home directory, placing the config at `~/.config/foot/`.
+Home Manager links this directory to `~/.config/foot`. Before activation, run
+`make prepare-foot` from the dotfiles root to generate missing `foot.ini` and
+the default `theme.ini` link. Set `JINJA_ENV=laptop` for the laptop profile.
+Existing files and links are preserved.
 
 ## Debugging
 To see startup logs and debug configuration issues, run `foot` with the `info` log level from another terminal:

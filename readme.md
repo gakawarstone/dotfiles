@@ -26,12 +26,11 @@ A modular and automated configuration management system for Linux (Arch-based), 
    make install
    ```
 
-   When Alacritty or Foot is included, installation builds its missing config
-   with `uvx` (from `uv`) using `main.env`. Set `JINJA_ENV=laptop` when
-   running `make install` to use the laptop profile. Existing generated configs
-   are left unchanged; rebuild them with `make` in the terminal's config
-   directory to change profiles. Foot defaults to the Mocha theme if its
-   `theme.ini` does not exist; an existing theme selection is preserved.
+   Foot is managed by Home Manager. Before activating it, run `make prepare-foot`
+   to build the missing config with `uvx` (from `uv`) and create the default
+   Mocha theme link. Set `JINJA_ENV=laptop` for the laptop profile. Existing
+   configs and theme links are preserved. If Alacritty or Foot is explicitly
+   selected for Stow, its `prepare` function still builds missing files.
    Any `ConfigDirLinkingInfo` can also specify `prepare=...`, a function that
    receives the package directory as a `Path` and runs before Stow. See
    `gkdots/prepare.py` for examples. Existing `gkdots/config.py` files need

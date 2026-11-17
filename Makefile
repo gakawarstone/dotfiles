@@ -5,6 +5,10 @@ install:
 	fi
 	python ./gkdots/install.py
 
+.PHONY: prepare-foot
+prepare-foot:
+	PYTHONPATH=gkdots python -c 'from pathlib import Path; from prepare import prepare_foot; prepare_foot(Path("configs/foot"))'
+
 .PHONY: fonts
 fonts:
 	sh ./scripts/build_fonts.sh

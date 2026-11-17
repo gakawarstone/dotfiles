@@ -27,7 +27,7 @@ INCLUDED_CONFIGS = [
     # ConfigDirLinkingInfo("fish"),  # Managed by Home Manager
     # ConfigDirLinkingInfo("quickshell"),  # Managed by Home Manager
     # ConfigDirLinkingInfo("yazi"),
-    ConfigDirLinkingInfo("foot", prepare=prepare_foot),
+    # ConfigDirLinkingInfo("foot", prepare=prepare_foot),  # Managed by Home Manager
     # ConfigDirLinkingInfo("okular"),  # Managed by Home Manager
     # ConfigDirLinkingInfo("codex"),  # Managed by Home Manager
 ]
