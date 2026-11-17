@@ -164,3 +164,7 @@ hl.bind("switch:off:Lid Switch", hl.dsp.exec_cmd(programs.lockscreen), { locked 
 
 require("scrolling")
 require("groups")
+
+if hostname == "archlinux" then
+    hl.bind("CTRL + SHIFT + 2", hl.dsp.global("com.t3tools.T3Code:capture-window"))
+end

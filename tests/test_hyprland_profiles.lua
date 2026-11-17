@@ -31,7 +31,36 @@ local env = setmetatable({
 }, { __index = _G })
 assert(loadfile(root .. "hosts/pc.lua", "t", env))()
 assert(required.autostart and required.workspaces and required.ipad and required.iphone)
+assert(required["hosts.pc-window-rules"])
 required = {}
 assert(loadfile(root .. "hosts/laptop.lua", "t", env))()
 assert(next(required) == nil, "laptop profile must not load autostart")
+
+for _, case in ipairs({ { "archlinux", 6 }, { "gklaptop", 100 } }) do
+    local groupbar
+    local group_env = setmetatable({
+        io = { open = function()
+            return { read = function() return case[1] end, close = function() end }
+        end },
+        require = function() return {} end,
+        hl = {
+            config = function(config) groupbar = config.group.groupbar end,
+            bind = function() end,
+            dsp = {
+                group = { toggle = function() end, next = function() end, prev = function() end, lock_active = function() end },
+                window = { move = function() end },
+            },
+        },
+    }, { __index = _G })
+    assert(loadfile(root .. "groups.lua", "t", group_env))()
+    assert(groupbar.priority == case[2], case[1])
+end
+
+local rules = {}
+local rules_env = setmetatable({
+    hl = { window_rule = function(rule) rules[rule.name] = rule end },
+}, { __index = _G })
+assert(loadfile(root .. "hosts/pc-window-rules.lua", "t", rules_env))()
+assert(rules["rdr2-fullscreen"].fullscreen)
+assert(source:find('hl.bind%("CTRL %+ SHIFT %+ 2"'))
 print("Hyprland profile tests passed")
