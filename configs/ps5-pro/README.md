@@ -29,10 +29,9 @@ bash ~/dotfiles/scripts/install_ps5_pro.sh --configure-only
 ```
 
 Existing files at those destinations are backed up before linking. This setup
-is intended for the PC and is not enabled by default in `gkdots`. On Arch,
-Home Manager can manage the three links to files in `~/dotfiles`; the installer
-recognizes those links and can still install Chiaki separately. Do not stow this
-package: it would also link its README into the home directory. The desktop
+is intended for the PC. On Arch, Home Manager manages the three links to files
+in `~/dotfiles`, and `scripts/install_ps5_pro.sh` recognizes those links and
+can still install Chiaki separately. The desktop
 session needs `~/.local/bin` on `PATH` for the application entry.
 
 Search for **PS5 PRO** in the application launcher. Press **Ctrl+Q** in Chiaki

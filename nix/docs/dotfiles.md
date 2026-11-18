@@ -64,11 +64,10 @@ Before the first activation on each machine:
 1. Check whether `~/.codex` itself is a symlink and inspect the existing
    `~/.codex/AGENTS.md`. Preserve any existing file or link and its contents;
    do not replace the entire `.codex` directory.
-2. On Arch, check the active local `gkdots/config.py` and remove or comment out
-   its `ConfigDirLinkingInfo("codex")` entry before using Home Manager for this
-   path. The repository's default Stow selection remains available for setups
-   that have not migrated. Do not run Stow for Codex against the same target
-   after the handoff.
+2. Ensure no Stow-based installer still manages `~/.codex/AGENTS.md`. The
+   repository no longer ships one; an old checkout may keep a retired local
+   `gkdots/config.py` on disk — leave it unused. Do not run Stow for Codex
+   against the same target after the handoff.
 3. After preserving any existing target, make `~/.codex/AGENTS.md` available for
    Home Manager. If `.codex` is a directory symlink, unfold it carefully while
    preserving its contents and other links. Home Manager's pre-activation check

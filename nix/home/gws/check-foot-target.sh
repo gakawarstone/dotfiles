@@ -4,7 +4,7 @@ set -eu
 target=$1
 source=$2
 if [ ! -d "$source" ] || [ ! -f "$source/theme.ini" ]; then
-    echo "foot: theme link is missing in $source" >&2
+    echo "foot: theme link is missing in $source (create it with: ln -sfn mocha.ini '$source/theme.ini')" >&2
     exit 1
 fi
 if [ -L "$target" ]; then

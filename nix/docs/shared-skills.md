@@ -36,11 +36,11 @@ skills, not other dotfiles. Herdr keeps its editable out-of-store link.
    symlinks and their destinations. Compare any existing skill with the tracked
    version; preserve local changes elsewhere before moving anything. Never delete
    a local skill merely to make activation succeed.
-2. Check the machine's actual `gkdots/config.py` and other installers. If they
-   install `agents` or the target, stop them managing that path before handing it
-   to Home Manager. The tracked default does not enable `agents`, but the local
-   selection may differ. Do not run Stow's `-D` on the package after Home Manager
-   takes ownership: it could remove or interfere with links.
+2. The repository no longer ships a Stow-based installer. An old checkout may
+   still contain a retired local `gkdots/config.py`; leave it unused and skip
+   any Stow-based installation for `agents` or the skill before handing the
+   path to Home Manager. Do not run Stow's `-D` on the package after Home
+   Manager takes ownership: it could remove or interfere with links.
 3. Stow may have made `~/.agents` or `~/.agents/skills` a single symlink into a
    checkout. Unfold it manually into real directories while preserving every
    unrelated entry and destination. Move each conflicting target to a safe backup

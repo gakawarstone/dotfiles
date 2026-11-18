@@ -25,8 +25,8 @@ Home Manager renders `foot.ini` from `foot.j2.ini`; the font size is selected
 per host in the Nix configuration (`dotfiles.foot.font-size`). It links
 `~/.config/foot/theme.ini` to this directory, where `bins/toggle_theme` swaps
 the theme. Before activating on a new machine, create the missing `theme.ini`
-link with `make prepare-foot` from the dotfiles root. Existing theme links are
-preserved.
+link with `ln -sfn mocha.ini theme.ini` from this directory. Existing theme
+links are preserved.
 
 ## Debugging
 To see startup logs and debug configuration issues, run `foot` with the `info` log level from another terminal:
