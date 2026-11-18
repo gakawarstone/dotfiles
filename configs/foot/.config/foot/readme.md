@@ -21,10 +21,12 @@ JINJA_ENV=laptop make
 - `Makefile`: Build script to generate `foot.ini`.
 
 ## Installation
-Home Manager links this directory to `~/.config/foot`. Before activation, run
-`make prepare-foot` from the dotfiles root to generate missing `foot.ini` and
-the default `theme.ini` link. Set `JINJA_ENV=laptop` for the laptop profile.
-Existing files and links are preserved.
+Home Manager renders `foot.ini` from `foot.j2.ini`; the font size is selected
+per host in the Nix configuration (`dotfiles.foot.font-size`). It links
+`~/.config/foot/theme.ini` to this directory, where `bins/toggle_theme` swaps
+the theme. Before activating on a new machine, create the missing `theme.ini`
+link with `make prepare-foot` from the dotfiles root. Existing theme links are
+preserved.
 
 ## Debugging
 To see startup logs and debug configuration issues, run `foot` with the `info` log level from another terminal:

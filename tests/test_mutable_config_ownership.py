@@ -6,7 +6,6 @@ import unittest
 
 SCRIPTS = Path(__file__).resolve().parents[1] / "nix/home/gws"
 CONFIGS = (
-    ("foot", ("foot.ini", "theme.ini")),
     ("hypr", ("hyprland.lua",)),
     ("quickshell", ("shell.qml",)),
 )
@@ -39,6 +38,45 @@ class MutableDirectoryOwnershipTests(unittest.TestCase):
                 self.assertEqual(check(), 0)
                 (source / files[-1]).unlink()
                 self.assertNotEqual(check(), 0)
+
+
+class FootOwnershipTests(unittest.TestCase):
+    def test_requires_theme_and_accepts_managed_entries(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "checkout"
+            source.mkdir()
+            theme = source / "theme.ini"
+            theme.write_text("# mocha\n")
+            target = root / "foot"
+            script = SCRIPTS / "check-foot-target.sh"
+
+            def check():
+                return subprocess.run(["bash", str(script), str(target), str(source)], capture_output=True).returncode
+
+            self.assertEqual(check(), 0)
+            theme.unlink()
+            self.assertNotEqual(check(), 0)
+            theme.write_text("# mocha\n")
+            target.symlink_to(source, target_is_directory=True)
+            self.assertNotEqual(check(), 0)
+            target.unlink()
+            target.write_text("regular file")
+            self.assertNotEqual(check(), 0)
+            target.unlink()
+            target.mkdir()
+            self.assertEqual(check(), 0)
+            (target / "foot.ini").symlink_to("/nix/store/test-home-manager-files/.config/foot/foot.ini")
+            self.assertNotEqual(check(), 0)
+            (target / "foot.ini").unlink()
+            (target / "theme.ini").symlink_to(theme)
+            self.assertEqual(check(), 0)
+            (target / "foot.ini").symlink_to("/nix/store/test-home-manager-files/.config/foot/foot.ini")
+            self.assertEqual(check(), 0)
+            (target / "theme.ini").unlink()
+            (target / "theme.ini").write_text("# local theme\n")
+            self.assertNotEqual(check(), 0)
+            self.assertEqual((target / "theme.ini").read_text(), "# local theme\n")
 
 
 class MimeappsOwnershipTests(unittest.TestCase):

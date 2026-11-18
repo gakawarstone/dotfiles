@@ -26,10 +26,11 @@ A modular and automated configuration management system for Linux (Arch-based), 
    make install
    ```
 
-   Foot is managed by Home Manager. Before activating it, run `make prepare-foot`
-   to build the missing config with `uvx` (from `uv`) and create the default
-   Mocha theme link. Set `JINJA_ENV=laptop` for the laptop profile. Existing
-   configs and theme links are preserved. If Alacritty or Foot is explicitly
+   Foot's `foot.ini` is rendered from `configs/foot/.config/foot/foot.j2.ini`
+   by Home Manager; the font size is selected per host in the Nix
+   configuration. On a new machine, create the default theme link with
+   `make prepare-foot` (it no longer builds `foot.ini`); an existing theme
+   selection is preserved. If Alacritty or Foot is explicitly
    selected for Stow, its `prepare` function still builds missing files.
    Any `ConfigDirLinkingInfo` can also specify `prepare=...`, a function that
    receives the package directory as a `Path` and runs before Stow. See
