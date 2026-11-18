@@ -1,8 +1,8 @@
-set -x PATH /home/gws/.local/bin $PATH
-set -x PATH /home/gws/.cargo/bin $PATH
-set -x PATH /home/gws/.npm-global/bin $PATH
-set -x PATH /home/gws/.bun/bin $PATH
-set -x PATH /home/gws/.dotnet/tools $PATH
+set -x PATH $HOME/.local/bin $PATH
+set -x PATH $HOME/.cargo/bin $PATH
+set -x PATH $HOME/.npm-global/bin $PATH
+set -x PATH $HOME/.bun/bin $PATH
+set -x PATH $HOME/.dotnet/tools $PATH
 
 set fish_greeting
 
@@ -17,10 +17,9 @@ alias xo xdg-open
 alias lg lazygit
 alias oo opencode
 alias cluna "codex --model gpt-6-luna -c model_reasoning_effort=xhigh"
-alias csol "codex --model gpt-6-sol -c model_reasoning_effort=medium"
+alias csol "codex --model gpt-6.1-sol -c model_reasoning_effort=high"
 alias wgu "sudo wg-quick up wg0"
 alias wgd "sudo wg-quick down wg0"
-alias clip "xclip -selection clipboard"
 alias cat bat
 
 function a

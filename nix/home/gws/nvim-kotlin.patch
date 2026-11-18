@@ -1,0 +1,12 @@
+diff --git a/after/ftplugin/kotlin.lua b/after/ftplugin/kotlin.lua
+index cce099d..23d6912 100644
+--- a/after/ftplugin/kotlin.lua
++++ b/after/ftplugin/kotlin.lua
+@@ -1 +1 @@
+-require("plugins.mason").ensure_installed({ "kotlin-language-server", "ktlint" })
++require("plugins.mason").ensure_installed({ "kotlin-lsp", "ktlint" })
+@@ -3 +3,3 @@ require("plugins.mason").ensure_installed({ "kotlin-language-server", "ktlint" }
+-vim.lsp.enable("kotlin_language_server")
++-- The official server uses the IntelliJ launcher in current releases.
++vim.lsp.config("kotlin_lsp", { cmd = { "intellij-server", "--stdio" } })
++vim.lsp.enable("kotlin_lsp")
