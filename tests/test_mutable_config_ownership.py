@@ -41,6 +41,22 @@ class MutableDirectoryOwnershipTests(unittest.TestCase):
                 self.assertNotEqual(check(), 0)
 
 
+class MimeappsOwnershipTests(unittest.TestCase):
+    def test_preserves_existing_settings_and_accepts_managed_link(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "mimeapps.list"
+            script = SCRIPTS / "check-mimeapps-target.sh"
+            def check():
+                return subprocess.run(["bash", str(script), str(target)], capture_output=True).returncode
+            self.assertEqual(check(), 0)
+            target.write_text("local settings")
+            self.assertNotEqual(check(), 0)
+            self.assertEqual(target.read_text(), "local settings")
+            target.unlink()
+            target.symlink_to("/nix/store/test-home-manager-files/.config/mimeapps.list")
+            self.assertEqual(check(), 0)
+
+
 class GtkOwnershipTests(unittest.TestCase):
     def test_preserves_local_files_and_accepts_managed_links(self):
         for version, names in (("3", ("gtk.css",)), ("4", ("gtk.css", "gtk-dark.css"))):
