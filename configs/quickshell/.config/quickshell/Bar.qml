@@ -9,6 +9,8 @@ Rectangle {
     property var screen
     property var pomoState
     property var notificationController
+    property string hostname: ""
+    property bool showPs5: hostname === "archlinux"
 
     RowLayout {
         anchors.fill: parent
@@ -37,6 +39,11 @@ Rectangle {
             NetworkSpeed {}
             CodexUsage {}
             HsflVpn {}
+            Loader {
+                active: root.showPs5
+                visible: active
+                sourceComponent: Ps5Indicator {}
+            }
             LanMouse {}
             Pomodoro {
                 pomoState: root.pomoState

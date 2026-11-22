@@ -29,3 +29,15 @@ verified without them. NetworkManager manages the VPN routes and DNS.
 
 Sources: [university VPN instructions](https://hs-flensburg.de/studium/service/IT-services/vpn)
 and [OpenConnect authentication with NetworkManager](https://www.infradead.org/openconnect/nonroot.html).
+
+# PS5 Pro indicator
+
+On `archlinux`, the PlayStation logo is green when the console is on, orange in
+Rest Mode and gray when it does not respond. The bar checks the console over
+the local network every 15 seconds using Python 3. Click the logo to refresh
+immediately. Each status change after the first reading sends a desktop
+notification over D-Bus using `gdbus`. The border and status text match the logo's
+color for that state.
+The default console address is `192.168.178.60`. Set `PS5_PRO_HOST` in the desktop
+session to use another address.
+Set `showPs5` in `Bar.qml` to change which hosts display the indicator.

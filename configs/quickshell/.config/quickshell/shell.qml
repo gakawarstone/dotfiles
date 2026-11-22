@@ -1,11 +1,19 @@
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Io
 import QtQuick
 import "."
 import "./components"
 
 ShellRoot {
     id: shellRoot
+
+    FileView {
+        id: hostnameFile
+        path: "/proc/sys/kernel/hostname"
+        blockLoading: true
+        printErrors: false
+    }
 
     NotificationCenter {
         id: notificationCenter
@@ -40,6 +48,7 @@ ShellRoot {
             Bar {
                 anchors.fill: parent
                 screen: modelData
+                hostname: hostnameFile.text().trim()
                 pomoState: globalPomoState
                 notificationController: notificationCenter
             }

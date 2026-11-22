@@ -38,6 +38,12 @@ Scope {
         return Qt.formatTime(new Date(), "HH:mm")
     }
 
+    function ps5Accent(notification) {
+        const color = notification.hints["x-ps5-pro-accent"]
+        return notification.appName === "PS5 Pro" && typeof color === "string" && /^#[0-9a-f]{6}$/i.test(color)
+            ? color : ""
+    }
+
     function remember(notification) {
         const entry = {
             "notificationId": notification.id,
@@ -46,6 +52,7 @@ Scope {
             "image": notification.image || "",
             "summary": notification.summary || "Notification",
             "body": notification.body || "",
+            "ps5Accent": root.ps5Accent(notification),
             "urgency": notification.urgency,
             "timestamp": timestamp()
         }
@@ -133,6 +140,7 @@ Scope {
                     notificationImage: modelData.image
                     summary: modelData.summary
                     body: modelData.body
+                    ps5Accent: root.ps5Accent(modelData)
                     urgency: modelData.urgency
                     closeAction: function() { modelData.dismiss() }
 
@@ -248,6 +256,7 @@ Scope {
                         required property string image
                         required property string summary
                         required property string body
+                        required property string ps5Accent
                         required property string timestamp
                         required property int urgency
 
@@ -262,6 +271,7 @@ Scope {
                             notificationImage: historyDelegate.image
                             summary: historyDelegate.summary
                             body: historyDelegate.body
+                            ps5Accent: historyDelegate.ps5Accent
                             timestamp: historyDelegate.timestamp
                             urgency: historyDelegate.urgency
                             outlined: true

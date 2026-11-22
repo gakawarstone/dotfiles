@@ -11,13 +11,15 @@ Rectangle {
     property string notificationImage: ""
     property string summary: ""
     property string body: ""
+    property string ps5Accent: ""
     property string timestamp: ""
     property int urgency: 1
     property var closeAction
     property bool outlined: true
     property bool interactive: true
 
-    readonly property color accentColor: urgency === 2 ? Theme.red : (urgency === 0 ? Theme.overlay1 : Theme.mauve)
+    readonly property color accentColor: ps5Accent.length > 0 ? ps5Accent
+        : urgency === 2 ? Theme.red : (urgency === 0 ? Theme.overlay1 : Theme.mauve)
 
     implicitHeight: content.implicitHeight + 24
     color: interactive && mouseArea.containsMouse ? Theme.surface0 : (outlined ? Theme.base : "transparent")
@@ -131,7 +133,7 @@ Rectangle {
                 visible: root.body.length > 0
                 text: root.body
                 textFormat: Text.PlainText
-                color: Theme.subtext0
+                color: root.ps5Accent.length > 0 ? root.accentColor : Theme.subtext0
                 wrapMode: Text.Wrap
                 maximumLineCount: 4
                 elide: Text.ElideRight
