@@ -10,7 +10,12 @@ Rectangle {
     property var pomoState
     property var notificationController
     property string hostname: ""
+    property bool showNetworkSpeed: hostname !== "archlinux"
+    property bool showWifi: hostname === "archlinux"
     property bool showPs5: hostname === "archlinux"
+    property bool showLanMouse: hostname !== "archlinux"
+    property bool showPomodoro: hostname !== "archlinux"
+    property bool showNotificationIndicator: hostname !== "archlinux"
 
     RowLayout {
         anchors.fill: parent
@@ -36,26 +41,49 @@ Rectangle {
             Layout.alignment: Qt.AlignRight
             spacing: 15
 
-            NetworkSpeed {}
+            Loader {
+                active: root.showNetworkSpeed
+                visible: active
+                sourceComponent: NetworkSpeed {}
+            }
             CodexUsage {}
+            Loader {
+                Layout.fillHeight: true
+                active: root.showWifi
+                visible: active
+                sourceComponent: Wifi {}
+            }
             HsflVpn {}
             Loader {
                 active: root.showPs5
                 visible: active
                 sourceComponent: Ps5Indicator {}
             }
-            LanMouse {}
-            Pomodoro {
-                pomoState: root.pomoState
+            Loader {
+                Layout.fillHeight: true
+                active: root.showLanMouse
+                visible: active
+                sourceComponent: LanMouse {}
+            }
+            Loader {
+                Layout.fillHeight: true
+                active: root.showPomodoro
+                visible: active
+                sourceComponent: Pomodoro { pomoState: root.pomoState }
             }
             Volume {}
             Microphone {}
             Bluetooth {}
             Battery {}
             KeyboardLayout {}
-            NotificationIndicator {
-                notificationCenter: root.notificationController
-                screen: root.screen
+            Loader {
+                Layout.fillHeight: true
+                active: root.showNotificationIndicator
+                visible: active
+                sourceComponent: NotificationIndicator {
+                    notificationCenter: root.notificationController
+                    screen: root.screen
+                }
             }
         }
     }

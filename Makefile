@@ -13,4 +13,4 @@ clean:
 	rm -f fonts/*
 
 init:
-	sudo pacman -S --noconfirm python stow wget
+	sudo pacman -S --noconfirm python stow wget uv
