@@ -4,12 +4,16 @@
 """Launch a game on the paired PS5 Pro and connect with Chiaki-ng."""
 
 import argparse
+from contextlib import ExitStack
 import fcntl
 from functools import partial
 import os
 from pathlib import Path
+import re
+import shutil
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
 
 from cloud import CloudAuthorizationError, CloudError, SonyConsoleService
 from psnawp_api import PSNAWP
@@ -25,12 +29,13 @@ HOST = "192.168.178.60"
 CHIAKI = Path.home() / ".local/bin/chiaki-ng-framegen"
 
 
-def show_status(game, desktop_id, stage, message):
+def show_status(game, desktop_id, stage, message, *, progress_instance=None):
     print(message, file=sys.stderr, flush=True)
+    target = ["--id", progress_instance] if progress_instance else ["--config", "default"]
     try:
         result = subprocess.run(
             [
-                "/usr/bin/quickshell", "ipc", "call", "ps5-launch", "gameStatus",
+                "/usr/bin/quickshell", "ipc", *target, "call", "ps5-launch", "gameStatus",
                 game, desktop_id, stage, message,
             ],
             capture_output=True,
@@ -44,7 +49,30 @@ def show_status(game, desktop_id, stage, message):
         print("Quickshell launch window unavailable.", file=sys.stderr)
 
 
-def launch(game, title_id, profile, report):
+def chiaki_environment(config_home, profile, frame_generation):
+    # The installed wrapper appends chiaki-ng-framegen to XDG_CONFIG_HOME.
+    config_root = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+    source = config_root / "chiaki-ng-framegen/Chiaki"
+    destination = config_home / "chiaki-ng-framegen/Chiaki"
+    shutil.copytree(source, destination)
+
+    # Keep Qt's INI encoding for pairing data and unrelated settings intact.
+    profile_path = destination / f"Chiaki-{profile}.conf"
+    contents = profile_path.read_bytes()
+    setting = b"frame_generation=" + (b"true" if frame_generation == "on" else b"false")
+    section = re.search(rb"(?ms)^\[settings\]\r?\n(.*?)(?=^\[|\Z)", contents)
+    if section:
+        values, count = re.subn(rb"(?m)^frame_generation[ \t]*=[^\r\n]*", setting, section[1])
+        if not count:
+            values = setting + b"\n" + values
+        contents = contents[:section.start(1)] + values + contents[section.end(1):]
+    else:
+        contents = contents.rstrip(b"\r\n") + b"\n\n[settings]\n" + setting + b"\n"
+    profile_path.write_bytes(contents)
+    return {**os.environ, "XDG_CONFIG_HOME": str(config_home)}
+
+
+def launch(game, title_id, profile, report, chiaki_env=None):
     if not os.access(CHIAKI, os.X_OK):
         report("error", "Сборка Chiaki-ng с генерацией кадров недоступна.")
         return 1
@@ -97,6 +125,7 @@ def launch(game, title_id, profile, report):
             "--exit-app-on-stream-exit",
             "stream", CONSOLE, HOST,
         ],
+        env=chiaki_env,
         check=False,
     )
     if result.returncode != 0:
@@ -107,9 +136,12 @@ def launch(game, title_id, profile, report):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("game", nargs="?", choices=GAMES, default="gta-vi")
-    game_key = parser.parse_args().game
+    parser.add_argument("--frame-generation", choices=("on", "off"))
+    parser.add_argument("--progress-instance", help="Quickshell instance for launch progress")
+    args = parser.parse_args()
+    game_key = args.game
     game, title_id, profile = GAMES[game_key]
-    report = partial(show_status, game, f"{game_key}-ps5")
+    report = partial(show_status, game, f"{game_key}-ps5", progress_instance=args.progress_instance)
     runtime_dir = Path(os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}")
     with (runtime_dir / "gta-vi-ps5.lock").open("w") as lock:
         try:
@@ -119,7 +151,18 @@ def main():
             return 1
         try:
             report("checking", "Проверяю авторизацию и установленную игру.")
-            return launch(game, title_id, profile, report)
+            with ExitStack() as stack:
+                chiaki_env = None
+                if args.frame_generation is not None:
+                    config_home = Path(stack.enter_context(
+                        TemporaryDirectory(prefix="ps5-chiaki-", dir=runtime_dir)
+                    ))
+                    try:
+                        chiaki_env = chiaki_environment(config_home, profile, args.frame_generation)
+                    except OSError:
+                        report("error", f"Не удалось подготовить профиль Chiaki «{profile}».")
+                        return 1
+                return launch(game, title_id, profile, report, chiaki_env)
         except CloudAuthorizationError:
             report("error", "PSN отклонила авторизацию. Обнови вход для игровых ярлыков.")
         except CloudError as exc:
