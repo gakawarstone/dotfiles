@@ -18,7 +18,8 @@ ShellRoot {
         id: picker
 
         readonly property var games: [
-            { key: "gta-vi", title: "GTA VI" },
+            // The GTA VI shortcut artwork includes a narrow purple frame.
+            { key: "gta-vi", title: "GTA VI", coverScale: 1.055 },
             { key: "fc-27", title: "FC 27" },
             { key: "god-of-war-ragnarok", title: "God of War Ragnarök" },
             { key: "astros-playroom", title: "Astro’s Playroom" }
@@ -26,8 +27,8 @@ ShellRoot {
         title: "Запуск PS5 Pro"
         visible: true
         color: Theme.base
-        implicitWidth: 784
-        implicitHeight: 310
+        implicitWidth: 1008
+        implicitHeight: 358
         minimumSize: Qt.size(implicitWidth, implicitHeight)
         maximumSize: minimumSize
         onVisibleChanged: if (!visible) Qt.callLater(root.quitIfFinished)
@@ -120,35 +121,36 @@ ShellRoot {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         text: modelData.title
-                        padding: 8
+                        padding: 0
+                        horizontalPadding: 0
+                        background: null
                         hoverEnabled: true
                         onClicked: {
                             launcher.game = modelData;
                             launcher.running = true;
                         }
 
-                        background: Rectangle {
-                            radius: 10
-                            color: card.down ? Theme.surface1 : card.hovered ? Theme.surface0 : Theme.mantle
-                            border.color: card.hovered || card.visualFocus ? Theme.blue : Theme.surface0
-                        }
-
                         contentItem: ColumnLayout {
-                            spacing: 7
+                            spacing: 10
 
                             ClippingRectangle {
                                 Layout.fillWidth: true
-                                Layout.preferredWidth: 160
+                                Layout.preferredWidth: 232
                                 Layout.preferredHeight: Layout.preferredWidth
-                                radius: 6
+                                radius: 10
                                 color: Theme.surface0
+                                contentUnderBorder: true
+                                border.width: card.hovered || card.visualFocus ? 2 : 0
+                                border.color: Theme.blue
+                                opacity: card.down ? 0.85 : 1
 
                                 Image {
                                     id: cover
                                     anchors.fill: parent
                                     source: card.artworkIcon ? Quickshell.iconPath(card.artworkIcon) : ""
-                                    sourceSize: Qt.size(320, 320)
-                                    fillMode: Image.PreserveAspectFit
+                                    sourceSize: Qt.size(512, 512)
+                                    fillMode: Image.PreserveAspectCrop
+                                    scale: card.modelData.coverScale ?? 1
                                 }
 
                                 Image {
@@ -169,7 +171,7 @@ ShellRoot {
                                 wrapMode: Text.WordWrap
                                 horizontalAlignment: Text.AlignHCenter
                                 verticalAlignment: Text.AlignVCenter
-                                font.pixelSize: 14
+                                font.pixelSize: 15
                                 font.weight: Font.DemiBold
                                 color: Theme.text
                             }
