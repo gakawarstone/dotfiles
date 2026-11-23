@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Name=Игры PS5 Pro
+Name=PS5 Pro Games
 Comment=Выбор игры PS5 Pro и режима генерации кадров
 Exec=/bin/sh -c "exec /usr/bin/quickshell --path \\"\\${XDG_CONFIG_HOME:-\\$HOME/.config}/quickshell/ps5-games.qml\\""
 Icon=ps5-pro
