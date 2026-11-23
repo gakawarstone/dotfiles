@@ -16,7 +16,9 @@ Scope {
     property var navigationStack: []
     property var fileItems: []
     property string fileSearchQuery: ""
-    readonly property int rowHeight: searchField.text.length > 0 ? 68 : 58
+    readonly property int rowHeight: 68
+    readonly property string query: searchField.text.trim()
+    readonly property var searchVariants: queryVariants(query)
 
     // Mapping from the Russian keyboard layout to the US layout, so that
     // typing "кув" (what "red" produces on a Russian keyboard) also matches "red".
@@ -84,23 +86,22 @@ Scope {
             icon: app.icon,
             label: app.name,
             description: "Application",
+            subtitle: [app.genericName, app.comment].map(text => text.trim())
+                .find(text => text && text.toLowerCase() !== app.name.toLowerCase()),
             application: app
         }))
 
     readonly property var allItems: menuItems.concat(applicationItems, fileItems)
     readonly property var displayItems: {
-        const rawQuery = searchField.text.trim()
-
-        const variants = queryVariants(rawQuery)
         let items
 
-        if (rawQuery) {
+        if (query) {
             items = allItems.filter(item => {
                 if (!isDescendantOf(item, activeMenu))
                     return false
-                const hay = (item.label + " " + item.description + " " + pathFor(item)).toLowerCase()
+                const hay = [item.label, item.description, item.subtitle, pathFor(item)].join(" ").toLowerCase()
                 const hayTranslit = transliterate(hay, "cyr")
-                return variants.some(v => hay.includes(v) || hayTranslit.includes(v))
+                return searchVariants.some(v => hay.includes(v) || hayTranslit.includes(v))
             })
         } else {
             items = allItems.filter(item => item.parent === activeMenu)
@@ -108,10 +109,10 @@ Scope {
 
         // Prefer the Latin (transliterated) form for sorting when the query is Cyrillic,
         // e.g. "кув" should rank items starting with "red".
-        const sortQuery = variants.find(v => /^[a-z0-9]+$/i.test(v)) || rawQuery.toLowerCase()
+        const sortQuery = searchVariants.find(v => /^[a-z0-9]+$/i.test(v)) || query.toLowerCase()
 
         return items.sort((left, right) => {
-            if (!rawQuery && activeMenu !== "apps")
+            if (!query && activeMenu !== "apps")
                 return menuItems.indexOf(left) - menuItems.indexOf(right)
             if ((left.kind === "file") !== (right.kind === "file"))
                 return left.kind === "file" ? 1 : -1
@@ -162,7 +163,23 @@ Scope {
     function descriptionFor(item) {
         if (item.kind === "file")
             return item.path
-        return pathFor(item)
+        const description = item.subtitle ?? item.description
+        const path = query && activeMenu === "root" ? pathFor(item) : ""
+        return path ? path + " · " + description : description
+    }
+
+    function labelFor(label) {
+        const escape = text => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        if (!query)
+            return escape(label)
+        const lowerLabel = label.toLowerCase()
+        const match = searchVariants.find(variant => lowerLabel.includes(variant))
+        if (!match)
+            return escape(label)
+        const start = lowerLabel.indexOf(match)
+        const end = start + match.length
+        return escape(label.slice(0, start)) + '<font color="' + Theme.mauve + '"><u>'
+            + escape(label.slice(start, end)) + "</u></font>" + escape(label.slice(end))
     }
 
     function searchFiles() {
@@ -324,13 +341,24 @@ Scope {
         }
 
         Rectangle {
+            id: launcherPanel
+
+            readonly property int listInset: 12
+            readonly property int rowSpacing: 4
+            readonly property int chromeHeight: 4 + header.Layout.preferredHeight + footer.Layout.preferredHeight + 2 * listInset
+            readonly property int availableHeight: Math.max(0, parent.height - 32)
+            readonly property int rowsThatFit: Math.floor((availableHeight - chromeHeight + rowSpacing) / (root.rowHeight + rowSpacing))
+            readonly property int displayRows: Math.max(1, Math.min(10, rowsThatFit, root.displayItems.length))
+            readonly property color selectionFill: Qt.tint(Theme.base, Qt.rgba(Theme.mauve.r, Theme.mauve.g, Theme.mauve.b, 0.13))
+            readonly property color selectionBorder: Qt.tint(Theme.surface1, Qt.rgba(Theme.mauve.r, Theme.mauve.g, Theme.mauve.b, 0.44))
+            readonly property color iconFill: Qt.tint(Theme.mantle, Qt.rgba(Theme.mauve.r, Theme.mauve.g, Theme.mauve.b, 0.15))
+
             anchors.centerIn: parent
-            width: Math.min(450, parent.width - 40)
-            height: Math.min(600, 86 + Math.max(1, root.displayItems.length) * root.rowHeight + Math.max(0, root.displayItems.length - 1) * 4)
+            width: Math.min(640, Math.max(0, parent.width - 32))
+            height: Math.min(availableHeight, chromeHeight + displayRows * root.rowHeight + (displayRows - 1) * rowSpacing)
             color: Theme.base
-            border.color: Theme.text
-            border.width: 2
-            radius: 10
+            border.color: Theme.surface1
+            radius: 26
 
             MouseArea {
                 anchors.fill: parent
@@ -338,35 +366,68 @@ Scope {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 18
-                spacing: 8
+                anchors.margins: 1
+                spacing: 0
 
-                Item {
+                RowLayout {
+                    id: header
                     Layout.fillWidth: true
-                    Layout.preferredHeight: 42
+                    Layout.fillHeight: false
+                    Layout.leftMargin: 20
+                    Layout.rightMargin: 20
+                    Layout.preferredHeight: 80
+                    spacing: 14
+
+                    LauncherKeycap {
+                        id: backButton
+                        visible: root.activeMenu !== "root"
+                        Layout.preferredWidth: 40
+                        Layout.preferredHeight: 40
+                        text: "←"
+                        Accessible.role: Accessible.Button
+                        Accessible.name: "Back"
+                        Accessible.onPressAction: root.goBack()
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.goBack()
+                        }
+                    }
+
+                    Text {
+                        visible: !backButton.visible
+                        text: ""
+                        color: Theme.mauve
+                        font.family: "MonaspiceKr Nerd Font"
+                        font.pixelSize: 23
+                        Accessible.ignored: true
+                    }
 
                     TextInput {
                         id: searchField
-                        anchors.fill: parent
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         color: Theme.text
-                        selectionColor: Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.35)
+                        selectionColor: Theme.mauve
+                        selectedTextColor: Theme.base
                         clip: true
-                        font.family: "MonaspiceKr Nerd Font"
-                        font.pixelSize: 20
-                        font.weight: Font.Medium
+                        font.pixelSize: 23
                         verticalAlignment: TextInput.AlignVCenter
+                        Accessible.name: placeholder.text
                         onTextChanged: {
                             root.fileItems = []
                             fileSearchTimer.restart()
                         }
 
                         Text {
+                            id: placeholder
                             anchors.fill: parent
                             visible: searchField.text.length === 0
-                            text: root.activeMenu === "root" ? "Search apps and files..." : root.menuTitle() + "..."
-                            color: Theme.text
-                            opacity: 0.58
+                            text: root.activeMenu === "root" ? "Search apps and files…" : "Search " + root.menuTitle().toLowerCase() + "…"
+                            color: Theme.subtext0
                             font: searchField.font
+                            elide: Text.ElideRight
                             verticalAlignment: Text.AlignVCenter
                         }
 
@@ -385,14 +446,23 @@ Scope {
                             }
                         }
                     }
+
+                    LauncherKeycap { text: "Esc" }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                    color: Theme.surface1
                 }
 
                 ListView {
                     id: results
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    Layout.margins: launcherPanel.listInset
                     model: root.displayItems
-                    spacing: 4
+                    spacing: launcherPanel.rowSpacing
                     clip: true
                     currentIndex: root.selectedIndex
 
@@ -400,58 +470,74 @@ Scope {
                         id: result
                         required property var modelData
                         required property int index
+                        readonly property bool selected: index === root.selectedIndex
 
                         width: results.width
                         height: root.rowHeight
-                        color: index === root.selectedIndex ? Qt.rgba(Theme.text.r, Theme.text.g, Theme.text.b, 0.08) : "transparent"
-                        radius: 10
+                        color: selected ? launcherPanel.selectionFill : "transparent"
+                        border.width: selected ? 1 : 0
+                        border.color: launcherPanel.selectionBorder
+                        radius: 12
 
                         RowLayout {
                             anchors.fill: parent
-                            anchors.leftMargin: 10
-                            anchors.rightMargin: 10
-                            spacing: 6
+                            anchors.leftMargin: 12
+                            anchors.rightMargin: 12
+                            spacing: 14
 
-                            Item {
+                            Rectangle {
                                 id: resultIcon
+                                readonly property bool app: result.modelData.kind === "app"
                                 readonly property bool pdfFile: result.modelData.kind === "file" && /\.pdf$/i.test(result.modelData.path)
-                                Layout.preferredWidth: 36
-                                Layout.preferredHeight: 36
+                                Layout.preferredWidth: 52
+                                Layout.preferredHeight: 52
+                                radius: 13
+                                color: app ? "transparent" : launcherPanel.iconFill
 
-                                IconImage {
-                                    anchors.fill: parent
-                                    visible: result.modelData.kind === "app"
-                                    source: visible ? Quickshell.iconPath(result.modelData.icon, "application-x-executable") : ""
-                                    asynchronous: true
+                                ClippingRectangle {
+                                    id: appIcon
+                                    anchors.centerIn: parent
+                                    width: 48
+                                    height: 48
+                                    visible: resultIcon.app
+                                    radius: 13
+                                    color: "transparent"
+                                    border.width: 0
+
+                                    IconImage {
+                                        anchors.fill: parent
+                                        source: appIcon.visible ? Quickshell.iconPath(result.modelData.icon, "application-x-executable") : ""
+                                        asynchronous: true
+                                    }
                                 }
 
                                 Rectangle {
                                     anchors.centerIn: parent
-                                    width: 29
-                                    height: 34
+                                    width: 32
+                                    height: 38
                                     visible: resultIcon.pdfFile
                                     color: "transparent"
                                     border.color: Theme.mauve
-                                    border.width: 2
-                                    radius: 3
+                                    border.width: 1
+                                    radius: 4
 
                                     Text {
                                         anchors.centerIn: parent
                                         text: "PDF"
                                         color: Theme.mauve
                                         font.family: "MonaspiceKr Nerd Font"
-                                        font.pixelSize: 11
+                                        font.pixelSize: 13
                                         font.bold: true
                                     }
                                 }
 
                                 Text {
                                     anchors.fill: parent
-                                    visible: result.modelData.kind !== "app" && !resultIcon.pdfFile
+                                    visible: !resultIcon.app && !resultIcon.pdfFile
                                     text: result.modelData.icon
-                                    color: result.index === root.selectedIndex ? Theme.mauve : Theme.text
+                                    color: Theme.mauve
                                     font.family: "MonaspiceKr Nerd Font"
-                                    font.pixelSize: 28
+                                    font.pixelSize: 24
                                     horizontalAlignment: Text.AlignHCenter
                                     verticalAlignment: Text.AlignVCenter
                                 }
@@ -463,33 +549,35 @@ Scope {
 
                                 Text {
                                     Layout.fillWidth: true
-                                    text: result.modelData.label
-                                    color: result.index === root.selectedIndex ? Theme.mauve : Theme.text
+                                    text: root.labelFor(result.modelData.label)
+                                    textFormat: Text.StyledText
+                                    color: Theme.text
                                     elide: Text.ElideRight
-                                    font.family: "MonaspiceKr Nerd Font"
-                                    font.pixelSize: 18
-                                    font.weight: Font.Medium
+                                    font.pixelSize: 22
+                                    font.weight: Font.DemiBold
                                 }
 
                                 Text {
                                     Layout.fillWidth: true
                                     text: root.descriptionFor(result.modelData)
-                                    visible: searchField.text.length > 0 && text.length > 0
-                                    color: Theme.text
-                                    opacity: 0.52
+                                    textFormat: Text.PlainText
+                                    color: Theme.subtext0
                                     elide: Text.ElideRight
-                                    font.family: "MonaspiceKr Nerd Font"
-                                    font.pixelSize: 14
+                                    font.pixelSize: 17
                                 }
                             }
 
                             Text {
                                 visible: result.modelData.kind === "menu"
                                 text: "›"
-                                color: result.index === root.selectedIndex ? Theme.mauve : Theme.text
-                                opacity: 0.36
+                                color: result.selected ? Theme.mauve : Theme.subtext0
                                 font.family: "MonaspiceKr Nerd Font"
-                                font.pixelSize: 18
+                                font.pixelSize: 20
+                            }
+
+                            LauncherKeycap {
+                                visible: result.selected && result.modelData.kind !== "menu"
+                                text: "↵"
                             }
                         }
 
@@ -506,8 +594,65 @@ Scope {
                         anchors.centerIn: parent
                         visible: root.displayItems.length === 0
                         text: "No matches"
-                        color: Theme.overlay0
-                        font.family: "MonaspiceKr Nerd Font"
+                        color: Theme.subtext0
+                        font.pixelSize: 19
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 1
+                    color: Theme.surface1
+                }
+
+                RowLayout {
+                    id: footer
+                    Layout.fillWidth: true
+                    Layout.fillHeight: false
+                    Layout.leftMargin: 17
+                    Layout.rightMargin: 17
+                    Layout.preferredHeight: 50
+                    spacing: 7
+
+                    Text {
+                        text: "Go"
+                        color: root.activeMenu === "root" ? Theme.subtext0 : Theme.text
+                        font.pixelSize: 17
+                        Accessible.role: Accessible.Button
+                        Accessible.name: "Main menu"
+                        Accessible.onPressAction: root.show()
+
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.show()
+                        }
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: root.activeMenu !== "root" ? "› " + root.menuTitle() : root.query ? "› Search" : ""
+                        color: Theme.subtext0
+                        elide: Text.ElideRight
+                        font.pixelSize: 17
+                    }
+
+                    LauncherKeycap { text: "↑ ↓" }
+
+                    Text {
+                        text: "Select"
+                        color: Theme.subtext0
+                        font.pixelSize: 17
+                    }
+
+                    LauncherKeycap {
+                        Layout.leftMargin: 5
+                        text: "↵"
+                    }
+
+                    Text {
+                        text: "Open"
+                        color: Theme.subtext0
                         font.pixelSize: 17
                     }
                 }
