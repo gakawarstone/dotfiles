@@ -42,6 +42,8 @@ Scope {
     property bool open: false
     property var steamGames: null
     property var recent: ({})
+    property var confirmedGame: null
+    readonly property bool launchInProgress: confirmPoster.running || ps5Pending
     property string ps5Stage: ""
     property string ps5Message: ""
     readonly property bool ps5Pending: ["checking", "waiting", "connecting"].includes(ps5Stage)
@@ -55,7 +57,7 @@ Scope {
     onAvailableChanged: {
         if (available)
             show()
-        else if (!ps5Pending || !targetScreen)
+        else if (!launchInProgress || !targetScreen)
             open = false
     }
     Component.onCompleted: if (available) show()
@@ -63,10 +65,11 @@ Scope {
     function show(): void {
         if (!targetScreen || open)
             return
-        if (ps5Pending) {
+        if (launchInProgress) {
             open = true
             return
         }
+        resetPoster()
         setPs5Status("", "")
         recent = readHistory()
         steamGames = null
@@ -86,7 +89,7 @@ Scope {
     }
 
     function move(delta: int): void {
-        if (!games.length || ps5Pending)
+        if (!games.length || launchInProgress || collapsePoster.running)
             return
         setPs5Status("", "")
         list.currentIndex = (list.currentIndex + delta + games.length) % games.length
@@ -94,7 +97,7 @@ Scope {
 
     function launch(): void {
         const game = games[list.currentIndex]
-        if (!open || !game || focusMonitor.running || ps5Pending)
+        if (!open || !game || focusMonitor.running || launchInProgress || collapsePoster.running)
             return
         if (game.ps5Key && ps5Launch.running) {
             setPs5Status("busy", "Уже открыт сеанс PS5 Pro.")
@@ -102,26 +105,76 @@ Scope {
         }
         const updated = Object.assign({}, readHistory(), { [game.id]: Date.now() })
         history.setText(JSON.stringify(updated) + "\n")
+        confirmedGame = game
         if (game.ps5Key) {
             ps5Launch.game = game
             ps5Launch.existingStreams = ToplevelManager.toplevels.values
                 .filter(window => window.appId === "chiaki-ng-framegen")
             setPs5Status("checking", "Запускаю игру на PS5 Pro…")
-        } else {
-            open = false
         }
-        focusMonitor.game = game
-        focusMonitor.running = true
+        confirmPoster.restart()
+    }
+
+    function dispatchConfirmedGame(): void {
+        const game = confirmedGame
+        if (!game.ps5Key)
+            open = false
+        if (targetScreen) {
+            focusMonitor.game = game
+            focusMonitor.running = true
+        } else {
+            startGame(game)
+        }
+    }
+
+    function startGame(game): void {
+        if (game.ps5Key)
+            ps5Launch.running = true
+        else if (game.application)
+            game.application.execute()
+        else
+            Quickshell.execDetached(game.command)
+    }
+
+    function resetPoster(): void {
+        collapsePoster.stop()
+        preview.expansion = 0
+        confirmedGame = null
     }
 
     function setPs5Status(stage: string, message: string): void {
         ps5Message = message
         ps5Stage = stage
+        if ((stage === "error" || stage === "busy") && confirmedGame)
+            collapsePoster.restart()
     }
 
     function finishPs5Handoff(): void {
         open = false
         setPs5Status("", "")
+    }
+
+    SequentialAnimation {
+        id: confirmPoster
+        NumberAnimation {
+            target: preview
+            property: "expansion"
+            to: 1
+            duration: 420
+            easing.type: Easing.OutCubic
+        }
+        PauseAnimation { duration: root.confirmedGame?.ps5Key ? 0 : 150 }
+        ScriptAction { script: root.dispatchConfirmedGame() }
+    }
+
+    NumberAnimation {
+        id: collapsePoster
+        target: preview
+        property: "expansion"
+        to: 0
+        duration: 300
+        easing.type: Easing.InOutCubic
+        onFinished: root.confirmedGame = null
     }
 
     FileView {
@@ -153,14 +206,7 @@ Scope {
         property var game
         command: root.targetScreen ? ["hyprctl", "eval",
             "hl.dispatch(hl.dsp.focus({ monitor = " + JSON.stringify(root.targetScreen.name) + " }))"] : []
-        onExited: {
-            if (game.ps5Key)
-                ps5Launch.running = true
-            else if (game.application)
-                game.application.execute()
-            else
-                Quickshell.execDetached(game.command)
-        }
+        onExited: root.startGame(game)
     }
 
     Process {
@@ -232,57 +278,37 @@ Scope {
         }
 
         Item {
+            id: scene
             anchors.fill: parent
 
             ColumnLayout {
+                id: browser
                 anchors.fill: parent
+                opacity: 1 - preview.expansion
                 anchors.margins: Math.round(Math.min(parent.width, parent.height) * 0.05)
                 spacing: 28
 
-                RowLayout {
+                Text {
+                    id: heading
                     Layout.fillWidth: true
-
-                    Text {
-                        Layout.fillWidth: true
-                        text: "Игры"
-                        color: Theme.text
-                        font.pixelSize: 56
-                        font.weight: Font.DemiBold
-                    }
-
-                    Controls.Button {
-                        id: closeButton
-                        text: root.ps5Pending ? "Скрыть" : "Закрыть"
-                        font.pixelSize: 22
-                        horizontalPadding: 20
-                        verticalPadding: 12
-                        hoverEnabled: true
-                        onClicked: root.open = false
-
-                        contentItem: Text {
-                            text: closeButton.text
-                            font: closeButton.font
-                            color: closeButton.hovered ? Theme.text : Theme.subtext1
-                        }
-
-                        background: Rectangle {
-                            radius: 10
-                            color: closeButton.hovered ? Theme.surface0 : "transparent"
-                        }
-                    }
+                    text: "Игры"
+                    color: Theme.text
+                    font.pixelSize: 56
+                    font.weight: Font.DemiBold
                 }
 
                 RowLayout {
+                    id: gameRow
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     spacing: 36
 
                     ListView {
                         id: list
-                        Layout.preferredWidth: Math.min(620, parent.width * 0.36)
+                        Layout.preferredWidth: Math.min(620, browser.width * 0.36)
                         Layout.fillHeight: true
                         model: root.games
-                        enabled: !root.ps5Pending
+                        enabled: !root.launchInProgress && !collapsePoster.running
                         spacing: 8
                         clip: true
                         boundsBehavior: Flickable.StopAtBounds
@@ -335,108 +361,141 @@ Scope {
                         }
                     }
 
-                    Rectangle {
-                        id: preview
-                        readonly property var game: root.games[list.currentIndex]
+                    Item {
+                        id: previewSlot
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        visible: list.count > 0
-                        color: Theme.mantle
-                        clip: true
-
-                        Image {
-                            id: artwork
-                            anchors.fill: parent
-                            source: preview.game?.artwork || ""
-                            fillMode: Image.PreserveAspectCrop
-                            sourceSize.width: 1920
-                            asynchronous: true
-                        }
-
-                        Image {
-                            anchors.centerIn: parent
-                            width: Math.min(parent.width, parent.height) * 0.38
-                            height: width
-                            visible: artwork.status !== Image.Ready && source.toString() !== ""
-                            source: preview.game?.icon ? Quickshell.iconPath(preview.game.icon) : ""
-                            fillMode: Image.PreserveAspectFit
-                            asynchronous: true
-                        }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            gradient: Gradient {
-                                GradientStop { position: 0.40; color: "transparent" }
-                                GradientStop { position: 1; color: Theme.crust }
-                            }
-                        }
-
-                        Column {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            anchors.margins: 40
-                            spacing: 10
-
-                            Text {
-                                visible: text !== ""
-                                text: preview.game?.source || ""
-                                color: Theme.mauve
-                                font.pixelSize: 22
-                                font.weight: Font.Medium
-                            }
-
-                            Text {
-                                width: parent.width
-                                text: preview.game?.name || ""
-                                textFormat: Text.PlainText
-                                wrapMode: Text.WordWrap
-                                color: Theme.text
-                                font.pixelSize: 44
-                                font.weight: Font.DemiBold
-                            }
-
-                            Text {
-                                width: parent.width
-                                visible: root.ps5Message !== ""
-                                text: root.ps5Message
-                                textFormat: Text.PlainText
-                                wrapMode: Text.Wrap
-                                color: root.ps5Stage === "error" ? Theme.red : Theme.text
-                                font.pixelSize: 28
-                            }
-
-                            Rectangle {
-                                id: track
-                                visible: root.ps5Pending
-                                width: Math.min(parent.width, 320)
-                                height: 4
-                                radius: 2
-                                clip: true
-                                color: Theme.surface0
-
-                                Rectangle {
-                                    id: segment
-                                    height: track.height
-                                    width: track.width / 4
-                                    radius: track.radius
-                                    color: Theme.blue
-
-                                    SequentialAnimation on x {
-                                        running: root.open && track.visible
-                                        loops: Animation.Infinite
-                                        NumberAnimation { from: -segment.width; to: track.width; duration: 1350 }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
 
                 Text {
-                    text: root.ps5Pending ? "B  Скрыть" : "↑ ↓  Выбор       A  Запустить       B  Закрыть"
+                    text: "↑ ↓  Выбор       A  Запустить       B  Закрыть"
                     color: Theme.subtext1
                     font.pixelSize: 24
+                }
+            }
+
+            Rectangle {
+                id: preview
+                readonly property var game: root.confirmedGame ?? root.games[list.currentIndex]
+                property real expansion: 0
+                x: (browser.x + gameRow.x + previewSlot.x) * (1 - expansion)
+                y: (browser.y + gameRow.y + previewSlot.y) * (1 - expansion)
+                width: previewSlot.width + (scene.width - previewSlot.width) * expansion
+                height: previewSlot.height + (scene.height - previewSlot.height) * expansion
+                visible: !!game
+                color: Theme.mantle
+                clip: true
+
+                Image {
+                    id: artwork
+                    anchors.fill: parent
+                    source: preview.game?.artwork || ""
+                    fillMode: Image.PreserveAspectCrop
+                    sourceSize.width: 1920
+                    asynchronous: true
+                }
+
+                Image {
+                    anchors.centerIn: parent
+                    width: Math.min(parent.width, parent.height) * 0.38
+                    height: width
+                    visible: artwork.status !== Image.Ready && source.toString() !== ""
+                    source: preview.game?.icon ? Quickshell.iconPath(preview.game.icon) : ""
+                    fillMode: Image.PreserveAspectFit
+                    asynchronous: true
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    gradient: Gradient {
+                        GradientStop { position: 0.40; color: "transparent" }
+                        GradientStop { position: 1; color: Theme.crust }
+                    }
+                }
+
+                Column {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    anchors.margins: 40 + 32 * preview.expansion
+                    spacing: 10
+
+                    Text {
+                        visible: text !== ""
+                        text: preview.game?.source || ""
+                        color: Theme.mauve
+                        font.pixelSize: 22
+                        font.weight: Font.Medium
+                    }
+
+                    Text {
+                        width: parent.width
+                        text: preview.game?.name || ""
+                        textFormat: Text.PlainText
+                        wrapMode: Text.WordWrap
+                        color: Theme.text
+                        font.pixelSize: Math.round(44 + 18 * preview.expansion)
+                        font.weight: Font.DemiBold
+                    }
+
+                    Text {
+                        width: parent.width
+                        visible: text !== ""
+                        text: root.ps5Message || (confirmPoster.running && !root.confirmedGame?.ps5Key ? "Запускаю…" : "")
+                        textFormat: Text.PlainText
+                        wrapMode: Text.Wrap
+                        color: root.ps5Stage === "error" ? Theme.red : Theme.text
+                        font.pixelSize: 28
+                    }
+
+                    Rectangle {
+                        id: track
+                        visible: root.ps5Pending
+                        width: Math.min(parent.width, 320)
+                        height: 4
+                        radius: 2
+                        clip: true
+                        color: Theme.surface0
+
+                        Rectangle {
+                            id: segment
+                            height: track.height
+                            width: track.width / 4
+                            radius: track.radius
+                            color: Theme.blue
+
+                            SequentialAnimation on x {
+                                running: root.open && track.visible
+                                loops: Animation.Infinite
+                                NumberAnimation { from: -segment.width; to: track.width; duration: 1350 }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Controls.Button {
+                id: closeButton
+                anchors.right: parent.right
+                anchors.rightMargin: browser.anchors.margins
+                y: browser.y + (heading.height - height) / 2
+                text: root.launchInProgress ? "B  Скрыть" : "Закрыть"
+                font.pixelSize: 22
+                horizontalPadding: 20
+                verticalPadding: 12
+                hoverEnabled: true
+                onClicked: root.open = false
+
+                contentItem: Text {
+                    text: closeButton.text
+                    font: closeButton.font
+                    color: closeButton.hovered || preview.expansion > 0 ? Theme.text : Theme.subtext1
+                }
+
+                background: Rectangle {
+                    radius: 10
+                    color: closeButton.hovered ? Theme.surface0 : Qt.alpha(Theme.crust, 0.72 * preview.expansion)
                 }
             }
         }
