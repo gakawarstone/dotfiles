@@ -8,6 +8,14 @@ hl.window_rule({
 })
 
 hl.window_rule({
+    name = "ps5-launch-window",
+    match = { class = "^org\\.quickshell$", title = "^Запуск PS5 Pro$" },
+    float = true,
+    center = true,
+    group = "barred",
+})
+
+hl.window_rule({
     name = "smart-gaps-borders-tv1",
     match = { workspace = "w[tv1]" },
     border_size = 0,

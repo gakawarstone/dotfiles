@@ -21,6 +21,7 @@ ShellRoot {
 
     AppLauncher {}
     EnergyMeter {}
+    Ps5LaunchWindow {}
 
     Pomodoro.TimerLogic {
         id: globalPomoState
