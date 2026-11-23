@@ -9,9 +9,13 @@ FloatingWindow {
     id: root
 
     property string game: ""
+    property string desktopId: ""
     property string stage: "idle"
     property string message: ""
     readonly property bool pending: stage === "checking" || stage === "waiting" || stage === "connecting"
+    readonly property string gameIcon: desktopId
+        ? (DesktopEntries.applications.values.find(entry => entry.id === desktopId)?.icon ?? "")
+        : ""
 
     title: "Запуск PS5 Pro"
     visible: false
@@ -21,21 +25,29 @@ FloatingWindow {
     minimumSize: Qt.size(440, 200)
     maximumSize: minimumSize
 
+    function updateStatus(game: string, desktopId: string, stage: string, message: string): void {
+        if (stage === "busy" && root.pending) {
+            root.visible = true;
+            return;
+        }
+
+        const show = root.stage === "idle" || stage === "checking" || stage === "error" || stage === "busy";
+        root.game = game;
+        root.desktopId = desktopId;
+        root.stage = stage;
+        root.message = message;
+        if (show)
+            root.visible = true;
+    }
+
     IpcHandler {
         target: "ps5-launch"
-
         function status(game: string, stage: string, message: string): void {
-            if (stage === "busy" && root.pending) {
-                root.visible = true;
-                return;
-            }
+            root.updateStatus(game, "", stage, message);
+        }
 
-            const show = root.stage === "idle" || stage === "checking" || stage === "error" || stage === "busy";
-            root.game = game;
-            root.stage = stage;
-            root.message = message;
-            if (show)
-                root.visible = true;
+        function gameStatus(game: string, desktopId: string, stage: string, message: string): void {
+            root.updateStatus(game, desktopId, stage, message);
         }
     }
 
@@ -62,11 +74,25 @@ FloatingWindow {
             Layout.fillWidth: true
             spacing: 12
 
-            Image {
-                Layout.preferredWidth: 24
-                Layout.preferredHeight: 24
-                source: "components/playstation-mark.svg"
-                fillMode: Image.PreserveAspectFit
+            Item {
+                Layout.preferredWidth: artwork.status === Image.Ready ? 64 : 24
+                Layout.preferredHeight: Layout.preferredWidth
+
+                Image {
+                    id: artwork
+                    anchors.fill: parent
+                    source: root.gameIcon ? Quickshell.iconPath(root.gameIcon) : ""
+                    sourceSize: Qt.size(128, 128)
+                    fillMode: Image.PreserveAspectFit
+                    visible: status === Image.Ready
+                }
+
+                Image {
+                    anchors.fill: parent
+                    source: "components/playstation-mark.svg"
+                    fillMode: Image.PreserveAspectFit
+                    visible: !artwork.visible
+                }
             }
 
             Text {
