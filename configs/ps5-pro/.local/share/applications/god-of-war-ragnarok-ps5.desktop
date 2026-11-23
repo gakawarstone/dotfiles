@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=God of War Ragnarök
+GenericName=God of War Ragnarok for PS5 Pro
+Comment=Launch God of War Ragnarök on PS5 Pro and stream with frame generation
+Exec=ps5-game god-of-war-ragnarok
+Icon=god-of-war-ragnarok-ps5
+Terminal=false
+Categories=Game;ActionGame;
+Keywords=God of War;Ragnarok;Ragnarök;PS5;Chiaki;Remote Play;
+StartupNotify=false
+StartupWMClass=chiaki-ng-framegen
