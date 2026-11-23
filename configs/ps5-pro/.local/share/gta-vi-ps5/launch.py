@@ -29,13 +29,13 @@ HOST = "192.168.178.60"
 CHIAKI = Path.home() / ".local/bin/chiaki-ng-framegen"
 
 
-def show_status(game, desktop_id, stage, message, *, progress_instance=None):
+def show_status(game, desktop_id, stage, message, *, progress_instance=None, progress_target="ps5-launch"):
     print(message, file=sys.stderr, flush=True)
     target = ["--id", progress_instance] if progress_instance else ["--config", "default"]
     try:
         result = subprocess.run(
             [
-                "/usr/bin/quickshell", "ipc", *target, "call", "ps5-launch", "gameStatus",
+                "/usr/bin/quickshell", "ipc", *target, "call", progress_target, "gameStatus",
                 game, desktop_id, stage, message,
             ],
             capture_output=True,
@@ -138,10 +138,14 @@ def main():
     parser.add_argument("game", nargs="?", choices=GAMES, default="gta-vi")
     parser.add_argument("--frame-generation", choices=("on", "off"))
     parser.add_argument("--progress-instance", help="Quickshell instance for launch progress")
+    parser.add_argument("--progress-target", choices=("ps5-launch", "game-menu-ps5"), default="ps5-launch")
     args = parser.parse_args()
     game_key = args.game
     game, title_id, profile = GAMES[game_key]
-    report = partial(show_status, game, f"{game_key}-ps5", progress_instance=args.progress_instance)
+    report = partial(
+        show_status, game, f"{game_key}-ps5",
+        progress_instance=args.progress_instance, progress_target=args.progress_target,
+    )
     runtime_dir = Path(os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}")
     with (runtime_dir / "gta-vi-ps5.lock").open("w") as lock:
         try:
