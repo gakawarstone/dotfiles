@@ -27,7 +27,8 @@ Scope {
             id: app.id,
             name: app.name,
             source: app.id.endsWith("-ps5") ? "PS5 Pro" : "",
-            artwork: ps5Games.includes(app.id) ? Qt.resolvedUrl("artwork/ps5/" + app.id + ".jpg") : "",
+            artwork: app.id === "GTA3" ? Qt.resolvedUrl("artwork/gta3.jpg")
+                : ps5Games.includes(app.id) ? Qt.resolvedUrl("artwork/ps5/" + app.id + ".jpg") : "",
             ps5Key: ps5Games.includes(app.id) ? app.id.slice(0, -4) : "",
             icon: app.icon,
             application: app,
@@ -43,9 +44,13 @@ Scope {
     property var steamGames: null
     property var recent: ({})
     property var confirmedGame: null
-    readonly property bool launchInProgress: confirmPoster.running || ps5Pending || steamPending
+    readonly property bool launchInProgress: confirmPoster.running || ps5Pending || steamPending || gta3Pending
     property bool steamPending: false
     property string steamMessage: ""
+    property bool gta3Pending: false
+    property string gta3Message: ""
+    readonly property var gta3Window: gta3Pending ? ToplevelManager.toplevels.values.find(window =>
+        !window.parent && /^Grand Theft Auto III\s+[–-]\s+The Definitive Edition$/i.test(window.title.trim())) ?? null : null
     property string ps5Stage: ""
     property string ps5Message: ""
     readonly property bool ps5Pending: ["checking", "waiting", "connecting"].includes(ps5Stage)
@@ -63,10 +68,8 @@ Scope {
             open = false
     }
     onTargetScreenChanged: {
-        if (!targetScreen && steamPending) {
-            cancelSteamWait()
-            open = false
-        }
+        if (!targetScreen)
+            close()
     }
     Component.onCompleted: if (available) show()
 
@@ -79,6 +82,7 @@ Scope {
         }
         resetPoster()
         steamMessage = ""
+        gta3Message = ""
         setPs5Status("", "")
         recent = readHistory()
         steamGames = null
@@ -101,6 +105,7 @@ Scope {
         if (!games.length || launchInProgress || collapsePoster.running)
             return
         steamMessage = ""
+        gta3Message = ""
         setPs5Status("", "")
         list.currentIndex = (list.currentIndex + delta + games.length) % games.length
     }
@@ -110,6 +115,7 @@ Scope {
         if (!open || !game || focusMonitor.running || steamLaunch.running || launchInProgress || collapsePoster.running)
             return
         steamMessage = ""
+        gta3Message = ""
         if (game.ps5Key && ps5Launch.running) {
             setPs5Status("busy", "Игра на PS5 Pro уже запускается или открыта.")
             return
@@ -125,6 +131,9 @@ Scope {
         } else if (game.steamAppId) {
             steamMessage = "Жду окно игры Steam…"
             steamPending = true
+        } else if (game.id === "GTA3") {
+            gta3Message = "Запускаю GTA3…"
+            gta3Pending = true
         }
         confirmPoster.restart()
     }
@@ -136,7 +145,7 @@ Scope {
                 game.steamAppId, targetScreen.name, ...game.command])
             return
         }
-        if (!game.ps5Key)
+        if (!game.ps5Key && !gta3Pending)
             open = false
         if (targetScreen) {
             focusMonitor.game = game
@@ -147,7 +156,14 @@ Scope {
     }
 
     function startGame(game): void {
-        if (game.ps5Key)
+        if (game.id === "GTA3") {
+            if (!gta3Pending)
+                return
+            gta3Handoff.coldLaunch = !gta3Window
+            if (gta3Handoff.coldLaunch)
+                game.application.execute()
+            gta3Handoff.start()
+        } else if (game.ps5Key)
             ps5Launch.running = true
         else if (game.application)
             game.application.execute()
@@ -181,11 +197,97 @@ Scope {
         collapsePoster.restart()
     }
 
+    function finishGta3Wait(message: string): void {
+        gta3Pending = false
+        gta3Message = message
+        confirmPoster.stop()
+        gta3Handoff.stop()
+        if (open)
+            collapsePoster.restart()
+    }
+
+    function close(): void {
+        open = false
+        if (steamPending)
+            cancelSteamWait()
+        if (gta3Pending)
+            finishGta3Wait("")
+    }
+
     function back(): void {
         if (steamPending)
             cancelSteamWait()
+        else if (gta3Pending)
+            finishGta3Wait("")
         else
             open = false
+    }
+
+    Timer {
+        id: gta3Handoff
+        interval: 250
+        repeat: true
+        property bool coldLaunch: false
+        property int checks: 0
+        property double captureAfter: 0
+        property int visibleFrames: 0
+        readonly property var activeGame: running ? root.gta3Window : null
+        readonly property bool fullscreenReady: activeGame?.fullscreen === true
+            && activeGame.screens.includes(root.targetScreen)
+        onActiveGameChanged: {
+            // Avoid screen copies while GTA3 allocates its initial GPU resources.
+            captureAfter = Date.now() + 3500
+            resetFrames()
+        }
+        onFullscreenReadyChanged: resetFrames()
+        onRunningChanged: if (running) checks = 0
+
+        function resetFrames(): void {
+            visibleFrames = 0
+            gta3Capture.captureSource = null
+            gta3Frame.clearSample()
+        }
+
+        onTriggered: {
+            const frameReady = !coldLaunch || visibleFrames >= 2
+            if (fullscreenReady && activeGame.activated && frameReady) {
+                root.open = false
+                root.finishGta3Wait("")
+                return
+            }
+            if (++checks >= 180) {
+                root.finishGta3Wait(activeGame && !frameReady ? "Заставка GTA3 не появилась. Можно повторить запуск."
+                    : "GTA3 не открылась на весь экран. Можно повторить запуск.")
+                return
+            }
+            if (!activeGame)
+                return
+
+            if (!activeGame.activated)
+                activeGame.activate()
+            if (frameReady) {
+                // Resizing the still-loading game can stall the compositor.
+                if (!fullscreenReady)
+                    activeGame.fullscreenOn(root.targetScreen)
+                return
+            }
+            if (Date.now() < captureAfter)
+                return
+
+            if (!gta3Capture.hasContent) {
+                // Hyprland can reject capture while the game's first buffer is being prepared.
+                gta3Capture.captureSource = null
+                gta3Capture.captureSource = activeGame
+            } else {
+                const game = activeGame
+                const fullscreen = fullscreenReady
+                gta3Capture.grabToImage(result => {
+                    if (activeGame === game && fullscreenReady === fullscreen)
+                        gta3Frame.inspect(result)
+                }, Qt.size(gta3Frame.width, gta3Frame.height))
+                gta3Capture.captureFrame()
+            }
+        }
     }
 
     SequentialAnimation {
@@ -301,11 +403,7 @@ Scope {
     IpcHandler {
         target: "game-launcher"
         function open(): void { root.show() }
-        function close(): void {
-            if (root.steamPending)
-                root.cancelSteamWait()
-            root.open = false
-        }
+        function close(): void { root.close() }
     }
 
     IpcHandler {
@@ -336,6 +434,56 @@ Scope {
         Item {
             id: scene
             anchors.fill: parent
+
+            ScreencopyView {
+                id: gta3Capture
+                z: -1
+                width: gta3Frame.width
+                height: gta3Frame.height
+                visible: captureSource !== null
+            }
+
+            Canvas {
+                id: gta3Frame
+                z: -1
+                width: 32
+                height: 18
+                visible: gta3Capture.visible
+                property var frame: null
+
+                function inspect(result): void {
+                    frame = result
+                    loadImage(result.url)
+                    requestPaint()
+                }
+
+                function clearSample(): void {
+                    if (frame)
+                        unloadImage(frame.url)
+                    frame = null
+                }
+
+                onImageLoaded: requestPaint()
+                onPaint: {
+                    if (!frame || !isImageLoaded(frame.url))
+                        return
+                    const context = getContext("2d")
+                    context.clearRect(0, 0, width, height)
+                    context.drawImage(frame.url, 0, 0, width, height)
+                    const pixels = context.getImageData(0, 0, width, height).data
+                    let colored = 0
+                    // The first white and gray frames appear before the colored Rockstar logo.
+                    for (let i = 0; i < pixels.length; i += 4) {
+                        const brightest = Math.max(pixels[i], pixels[i + 1], pixels[i + 2])
+                        const darkest = Math.min(pixels[i], pixels[i + 1], pixels[i + 2])
+                        if (pixels[i + 3] > 240 && brightest > 55 && brightest - darkest > 35)
+                            colored++
+                    }
+                    gta3Handoff.visibleFrames = colored >= width * height * 0.02
+                        ? gta3Handoff.visibleFrames + 1 : 0
+                    clearSample()
+                }
+            }
 
             ColumnLayout {
                 id: browser
@@ -499,17 +647,19 @@ Scope {
                         width: parent.width
                         visible: text !== ""
                         text: root.steamMessage || root.ps5Message
+                            || (root.gta3Pending && gta3Handoff.activeGame ? "Жду заставку GTA3…" : root.gta3Message)
                             || (confirmPoster.running && !root.confirmedGame?.ps5Key ? "Запускаю…" : "")
                         textFormat: Text.PlainText
                         wrapMode: Text.Wrap
                         color: root.ps5Stage === "error" || (root.steamMessage && !root.steamPending)
+                            || (root.gta3Message && !root.gta3Pending)
                             ? Theme.red : Theme.text
                         font.pixelSize: 28
                     }
 
                     Rectangle {
                         id: track
-                        visible: root.ps5Pending || root.steamPending
+                        visible: root.ps5Pending || root.steamPending || root.gta3Pending
                         width: Math.min(parent.width, 320)
                         height: 4
                         radius: 2
@@ -538,7 +688,7 @@ Scope {
                 anchors.right: parent.right
                 anchors.rightMargin: browser.anchors.margins
                 y: browser.y + (heading.height - height) / 2
-                text: root.steamPending ? "B  Назад" : root.launchInProgress ? "B  Скрыть" : "Закрыть"
+                text: root.steamPending || root.gta3Pending ? "B  Назад" : root.launchInProgress ? "B  Скрыть" : "Закрыть"
                 font.pixelSize: 22
                 horizontalPadding: 20
                 verticalPadding: 12
