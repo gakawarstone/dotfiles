@@ -39,10 +39,9 @@ def send_actions(sdl, pad):
             pressed.add("up" if axis < 0 else "down")
         # Require a neutral pad once, so a held button cannot launch a game on open.
         ready = ready or not pressed
-        if ready:
-            if "b" in pressed - held:
-                print("close", flush=True)
-                return
+        if ready and "b" in pressed - held:
+            print("close", flush=True)
+        elif ready:
             if "a" in pressed - held:
                 print("launch", flush=True)
             direction = next((key for key in ("up", "down") if key in pressed), None)

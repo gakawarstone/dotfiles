@@ -52,14 +52,15 @@ def steam_games():
                     cache / f"{app_id}_header.jpg",
                 ) if path.is_file()), "")
                 last_played = values.get("lastplayed", "")
+                steam = ["flatpak", "run", "com.valvesoftware.Steam"] if ".var" in root.parts else ["steam"]
                 games[app_id] = {
                     "id": f"steam:{app_id}",
+                    "steamAppId": app_id,
                     "name": name,
                     "source": "Steam",
                     "artwork": artwork,
                     "lastPlayed": int(last_played) * 1000 if last_played.isdecimal() else 0,
-                    "command": ["flatpak", "run", "com.valvesoftware.Steam", f"steam://rungameid/{app_id}"]
-                    if ".var" in root.parts else ["steam", f"steam://rungameid/{app_id}"],
+                    "command": [*steam, "-silent", f"steam://rungameid/{app_id}"],
                 }
     return list(games.values())
 

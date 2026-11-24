@@ -43,7 +43,9 @@ Scope {
     property var steamGames: null
     property var recent: ({})
     property var confirmedGame: null
-    readonly property bool launchInProgress: confirmPoster.running || ps5Pending
+    readonly property bool launchInProgress: confirmPoster.running || ps5Pending || steamPending
+    property bool steamPending: false
+    property string steamMessage: ""
     property string ps5Stage: ""
     property string ps5Message: ""
     readonly property bool ps5Pending: ["checking", "waiting", "connecting"].includes(ps5Stage)
@@ -60,6 +62,12 @@ Scope {
         else if (!launchInProgress || !targetScreen)
             open = false
     }
+    onTargetScreenChanged: {
+        if (!targetScreen && steamPending) {
+            cancelSteamWait()
+            open = false
+        }
+    }
     Component.onCompleted: if (available) show()
 
     function show(): void {
@@ -70,6 +78,7 @@ Scope {
             return
         }
         resetPoster()
+        steamMessage = ""
         setPs5Status("", "")
         recent = readHistory()
         steamGames = null
@@ -91,14 +100,16 @@ Scope {
     function move(delta: int): void {
         if (!games.length || launchInProgress || collapsePoster.running)
             return
+        steamMessage = ""
         setPs5Status("", "")
         list.currentIndex = (list.currentIndex + delta + games.length) % games.length
     }
 
     function launch(): void {
         const game = games[list.currentIndex]
-        if (!open || !game || focusMonitor.running || launchInProgress || collapsePoster.running)
+        if (!open || !game || focusMonitor.running || steamLaunch.running || launchInProgress || collapsePoster.running)
             return
+        steamMessage = ""
         if (game.ps5Key && ps5Launch.running) {
             setPs5Status("busy", "Уже открыт сеанс PS5 Pro.")
             return
@@ -111,12 +122,20 @@ Scope {
             ps5Launch.existingStreams = ToplevelManager.toplevels.values
                 .filter(window => window.appId === "chiaki-ng-framegen")
             setPs5Status("checking", "Запускаю игру на PS5 Pro…")
+        } else if (game.steamAppId) {
+            steamMessage = "Жду окно игры Steam…"
+            steamPending = true
         }
         confirmPoster.restart()
     }
 
     function dispatchConfirmedGame(): void {
         const game = confirmedGame
+        if (game.steamAppId) {
+            steamLaunch.exec(["python3", Quickshell.shellPath("scripts/steam-launch.py"),
+                game.steamAppId, targetScreen.name, ...game.command])
+            return
+        }
         if (!game.ps5Key)
             open = false
         if (targetScreen) {
@@ -152,6 +171,21 @@ Scope {
     function finishPs5Handoff(): void {
         open = false
         setPs5Status("", "")
+    }
+
+    function cancelSteamWait(): void {
+        steamPending = false
+        steamMessage = ""
+        confirmPoster.stop()
+        steamLaunch.running = false
+        collapsePoster.restart()
+    }
+
+    function back(): void {
+        if (steamPending)
+            cancelSteamWait()
+        else
+            open = false
     }
 
     SequentialAnimation {
@@ -210,6 +244,24 @@ Scope {
     }
 
     Process {
+        id: steamLaunch
+        onExited: (exitCode, exitStatus) => {
+            if (!root.steamPending)
+                return
+            root.steamPending = false
+            if (exitCode === 0 && exitStatus === 0) {
+                root.open = false
+                root.steamMessage = ""
+            } else {
+                root.steamMessage = exitCode === 2 && exitStatus === 0
+                    ? "Окно игры Steam не появилось. Можно повторить запуск."
+                    : "Не удалось запустить игру Steam."
+                collapsePoster.restart()
+            }
+        }
+    }
+
+    Process {
         id: ps5Launch
         property var game: null
         property var existingStreams: []
@@ -240,7 +292,7 @@ Scope {
                 case "up": root.move(-1); break
                 case "down": root.move(1); break
                 case "launch": root.launch(); break
-                case "close": root.open = false; break
+                case "close": root.back(); break
                 }
             }
         }
@@ -249,7 +301,11 @@ Scope {
     IpcHandler {
         target: "game-launcher"
         function open(): void { root.show() }
-        function close(): void { root.open = false }
+        function close(): void {
+            if (root.steamPending)
+                root.cancelSteamWait()
+            root.open = false
+        }
     }
 
     IpcHandler {
@@ -442,16 +498,18 @@ Scope {
                     Text {
                         width: parent.width
                         visible: text !== ""
-                        text: root.ps5Message || (confirmPoster.running && !root.confirmedGame?.ps5Key ? "Запускаю…" : "")
+                        text: root.steamMessage || root.ps5Message
+                            || (confirmPoster.running && !root.confirmedGame?.ps5Key ? "Запускаю…" : "")
                         textFormat: Text.PlainText
                         wrapMode: Text.Wrap
-                        color: root.ps5Stage === "error" ? Theme.red : Theme.text
+                        color: root.ps5Stage === "error" || (root.steamMessage && !root.steamPending)
+                            ? Theme.red : Theme.text
                         font.pixelSize: 28
                     }
 
                     Rectangle {
                         id: track
-                        visible: root.ps5Pending
+                        visible: root.ps5Pending || root.steamPending
                         width: Math.min(parent.width, 320)
                         height: 4
                         radius: 2
@@ -480,12 +538,12 @@ Scope {
                 anchors.right: parent.right
                 anchors.rightMargin: browser.anchors.margins
                 y: browser.y + (heading.height - height) / 2
-                text: root.launchInProgress ? "B  Скрыть" : "Закрыть"
+                text: root.steamPending ? "B  Назад" : root.launchInProgress ? "B  Скрыть" : "Закрыть"
                 font.pixelSize: 22
                 horizontalPadding: 20
                 verticalPadding: 12
                 hoverEnabled: true
-                onClicked: root.open = false
+                onClicked: root.back()
 
                 contentItem: Text {
                     text: closeButton.text
