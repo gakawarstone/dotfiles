@@ -111,7 +111,7 @@ Scope {
             return
         steamMessage = ""
         if (game.ps5Key && ps5Launch.running) {
-            setPs5Status("busy", "Уже открыт сеанс PS5 Pro.")
+            setPs5Status("busy", "Игра на PS5 Pro уже запускается или открыта.")
             return
         }
         const updated = Object.assign({}, readHistory(), { [game.id]: Date.now() })
@@ -121,7 +121,7 @@ Scope {
             ps5Launch.game = game
             ps5Launch.existingStreams = ToplevelManager.toplevels.values
                 .filter(window => window.appId === "chiaki-ng-framegen")
-            setPs5Status("checking", "Запускаю игру на PS5 Pro…")
+            setPs5Status("checking", "Запускаем игру на PS5 Pro…")
         } else if (game.steamAppId) {
             steamMessage = "Жду окно игры Steam…"
             steamPending = true

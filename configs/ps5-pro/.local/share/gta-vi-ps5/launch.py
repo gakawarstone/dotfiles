@@ -104,7 +104,7 @@ def launch(game, title_id, profile, report, chiaki_env=None):
         str(row.get("npTitleId", "")).upper().removesuffix("_00") == title_id
         for row in titles
     ):
-        report("error", f"В списке установленных игр PS5 Pro нет {game}.")
+        report("error", f"Установите {game} на PS5 Pro и попробуйте снова.")
         return 1
 
     sony.launch(
@@ -112,10 +112,10 @@ def launch(game, title_id, profile, report, chiaki_env=None):
         console["duid"],
         timeout=65,
         on_accepted=lambda: report(
-            "waiting", "PSN приняла команду. Жду подтверждения от консоли."
+            "waiting", "Ждём, пока PS5 Pro запустит игру…"
         ),
     )
-    report("connecting", "Подключаю Chiaki. Жду изображение с PS5 Pro.")
+    report("connecting", "Подключаемся к PS5 Pro. Ждём видео с консоли…")
     print(f"PSN confirmed {game} launch. Opening Chiaki-ng with profile {profile or 'Default'}.", flush=True)
     result = subprocess.run(
         [
@@ -129,7 +129,7 @@ def launch(game, title_id, profile, report, chiaki_env=None):
         check=False,
     )
     if result.returncode != 0:
-        report("error", "Chiaki завершился с ошибкой подключения.")
+        report("error", "Не удалось запустить видеотрансляцию с PS5 Pro.")
     return result.returncode
 
 
@@ -151,7 +151,7 @@ def main():
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
-            report("busy", "Уже открыт сеанс PS5 из игрового ярлыка.")
+            report("busy", "Игра на PS5 Pro уже запускается или открыта.")
             return 1
         try:
             report("checking", "Проверяю авторизацию и установленную игру.")
@@ -168,9 +168,10 @@ def main():
                         return 1
                 return launch(game, title_id, profile, report, chiaki_env)
         except CloudAuthorizationError:
-            report("error", "PSN отклонила авторизацию. Обнови вход для игровых ярлыков.")
+            report("error", "Войдите заново в PlayStation Network для запуска игр с ярлыков.")
         except CloudError as exc:
-            report("error", f"PSN не подтвердила запуск {game}. {exc}")
+            report("error", f"Не удалось подтвердить запуск игры «{game}».")
+            print(exc, file=sys.stderr, flush=True)
         except Exception as exc:
             report("error", f"Не удалось запустить {game}. {type(exc).__name__}")
     return 1
