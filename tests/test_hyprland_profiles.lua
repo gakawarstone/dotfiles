@@ -25,16 +25,33 @@ for _, case in ipairs({
 end
 
 local required = {}
+local monitor_count = 0
+local workspace_rules = {}
 local env = setmetatable({
-    hl = { monitor = function() end, device = function() end },
+    hl = {
+        monitor = function() monitor_count = monitor_count + 1 end,
+        device = function() end,
+        workspace_rule = function(rule) workspace_rules[#workspace_rules + 1] = rule end,
+    },
     require = function(name) required[name] = true end,
 }, { __index = _G })
 assert(loadfile(root .. "hosts/pc.lua", "t", env))()
 assert(required.autostart and required.workspaces and required.ipad and required.iphone)
 assert(required["hosts.pc-window-rules"])
 required = {}
+monitor_count = 0
+workspace_rules = {}
 assert(loadfile(root .. "hosts/laptop.lua", "t", env))()
 assert(next(required) == nil, "laptop profile must not load autostart")
+assert(monitor_count == 0, "laptop profile must not configure external monitors")
+assert(#workspace_rules == 2, "laptop profile must define two workspace rules")
+local scrolling_workspaces = {}
+for _, rule in ipairs(workspace_rules) do
+    assert(rule.layout == "scrolling", "laptop workspace must use scrolling")
+    assert(rule.monitor == nil, "laptop workspace must not be assigned to a monitor")
+    scrolling_workspaces[rule.workspace] = true
+end
+assert(scrolling_workspaces["3"] and scrolling_workspaces["4"], "laptop workspaces 3 and 4 must use scrolling")
 
 for _, case in ipairs({ { "archlinux", 6 }, { "gklaptop", 100 } }) do
     local groupbar
