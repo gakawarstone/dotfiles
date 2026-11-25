@@ -14,6 +14,7 @@
     ./ideavim.nix
     ./dotfiles.nix
     ./fish.nix
+    ./foot.nix
     ./gtk3.nix
     ./arch-gtk4.nix
     ./starship.nix
