@@ -63,11 +63,13 @@ Rectangle {
             Wifi { visible: root.showWifi }
             HsflVpn { visible: root.showHsflVpn }
             Loader {
+                Layout.fillHeight: true
                 active: root.showLanMouse
                 visible: active
                 sourceComponent: LanMouse {}
             }
             Loader {
+                Layout.fillHeight: true
                 active: root.showPomodoro
                 visible: active
                 sourceComponent: Pomodoro { pomoState: root.pomoState }
@@ -78,6 +80,7 @@ Rectangle {
             Battery { visible: root.showBattery && UPower.displayDevice && UPower.displayDevice.isLaptopBattery }
             KeyboardLayout { visible: root.showKeyboardLayout }
             Loader {
+                Layout.fillHeight: true
                 active: root.showNotificationIndicator
                 visible: active
                 sourceComponent: NotificationIndicator {
