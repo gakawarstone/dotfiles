@@ -11,22 +11,24 @@ Rectangle {
     property var pomoState
     property var notificationController
     property string hostname: ""
+    readonly property bool isLaptop: hostname === "gklaptop"
 
     // Set these properties per host using hostname. See README.md.
     property bool showWorkspaces: true
     property bool showMedia: true
-    property bool showNetworkSpeed: hostname !== "archlinux"
+    property bool showNetworkSpeed: hostname !== "archlinux" && !isLaptop
     property bool showCodexUsage: true
-    property bool showWifi: hostname === "archlinux"
+    property bool showWifi: hostname === "archlinux" || isLaptop
+    property bool showCpu: isLaptop
     property bool showHsflVpn: true
-    property bool showLanMouse: hostname !== "archlinux"
-    property bool showPomodoro: hostname !== "archlinux"
-    property bool showVolume: true
-    property bool showMicrophone: true
+    property bool showLanMouse: hostname !== "archlinux" && !isLaptop
+    property bool showPomodoro: hostname !== "archlinux" && !isLaptop
+    property bool showVolume: !isLaptop
+    property bool showMicrophone: !isLaptop
     property bool showBluetooth: true
     property bool showBattery: true
     property bool showKeyboardLayout: true
-    property bool showNotificationIndicator: hostname !== "archlinux"
+    property bool showNotificationIndicator: hostname !== "archlinux" && !isLaptop
 
     RowLayout {
         anchors.fill: parent
@@ -60,7 +62,7 @@ Rectangle {
                 sourceComponent: NetworkSpeed {}
             }
             CodexUsage { visible: root.showCodexUsage }
-            Wifi { visible: root.showWifi }
+            Wifi { visible: root.showWifi && !root.isLaptop }
             HsflVpn { visible: root.showHsflVpn }
             Loader {
                 Layout.fillHeight: true
@@ -76,6 +78,12 @@ Rectangle {
             }
             Volume { visible: root.showVolume }
             Microphone { visible: root.showMicrophone }
+            Wifi { visible: root.showWifi && root.isLaptop }
+            Loader {
+                active: root.showCpu
+                visible: active
+                sourceComponent: Cpu {}
+            }
             Bluetooth { visible: root.showBluetooth }
             Battery { visible: root.showBattery && UPower.displayDevice && UPower.displayDevice.isLaptopBattery }
             KeyboardLayout { visible: root.showKeyboardLayout }
