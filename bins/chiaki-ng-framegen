@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+umask 077
+
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}/chiaki-ng-framegen"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/chiaki-ng-framegen"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}/chiaki-ng-framegen"
+export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}/chiaki-ng-framegen"
+
+exec "$HOME/.local/opt/chiaki-ng-framegen/chiaki" "$@"

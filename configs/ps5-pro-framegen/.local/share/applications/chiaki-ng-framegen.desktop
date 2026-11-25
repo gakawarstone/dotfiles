@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=PS5 PRO (Frame Generation)
+Comment=PlayStation Remote Play with optical flow frame generation
+Exec=chiaki-ng-framegen
+Icon=ps5-pro-framegen
+Terminal=false
+Categories=Game;
+Keywords=PS5;PS5 PRO;PlayStation;Sony;Chiaki;Remote Play;Frame Generation;Optical Flow;
+StartupWMClass=chiaki-ng-framegen

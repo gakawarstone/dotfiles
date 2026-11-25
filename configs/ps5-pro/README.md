@@ -37,6 +37,12 @@ session needs `~/.local/bin` on `PATH` for the application entry.
 Search for **PS5 PRO** in the application launcher. Press **Ctrl+Q** in Chiaki
 to disconnect and choose whether to put the console into Rest Mode.
 
+For [Frame Generation](../ps5-pro-framegen/README.md) and PS5 game shortcuts on
+the PC, install the separate Chiaki build and run
+`bash ~/dotfiles/scripts/install_ps5_game_shortcuts.sh`. The shortcut installer
+uses `curl` and ImageMagick. Launching a game requires `uv`, `secret-tool` and the
+paired Chiaki profile. Search for **PS5 Pro Games** to open the Quickshell menu.
+
 ```bash
 ps5-pro --check
 PS5_PRO_HOST=192.168.178.60 ps5-pro

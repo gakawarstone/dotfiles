@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=FC 27 (EA SPORTS FC 27)
+GenericName=FC27 for PS5 Pro
+Comment=Launch FC 27 on PS5 Pro and stream with frame generation
+Exec=ps5-game fc-27
+Icon=fc-27-ps5
+Terminal=false
+Categories=Game;SportsGame;
+Keywords=FC 27;FC27;EA SPORTS;PS5;Chiaki;Remote Play;
+StartupNotify=false
+StartupWMClass=chiaki-ng-framegen

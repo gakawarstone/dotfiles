@@ -19,3 +19,11 @@ hl.window_rule({
     },
     fullscreen = true,
 })
+
+hl.window_rule({
+    name = "ps5-launch-window",
+    match = { class = "^org\\.quickshell$", title = "^Запуск PS5 Pro$" },
+    float = true,
+    center = true,
+    group = "barred",
+})

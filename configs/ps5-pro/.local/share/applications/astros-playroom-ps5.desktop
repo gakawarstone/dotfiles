@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Astro's Playroom
+GenericName=Astros Playroom for PS5 Pro
+Comment=Launch Astro's Playroom on PS5 Pro and stream with frame generation
+Exec=ps5-game astros-playroom
+Icon=astros-playroom-ps5
+Terminal=false
+Categories=Game;ArcadeGame;
+Keywords=Astro;Astros Playroom;PS5;Chiaki;Remote Play;
+StartupNotify=false
+StartupWMClass=chiaki-ng-framegen

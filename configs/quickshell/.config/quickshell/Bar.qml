@@ -21,6 +21,7 @@ Rectangle {
     property bool showWifi: hostname === "archlinux" || isLaptop
     property bool showCpu: isLaptop
     property bool showHsflVpn: true
+    property bool showPs5: hostname === "archlinux"
     property bool showLanMouse: hostname !== "archlinux" && !isLaptop
     property bool showPomodoro: hostname !== "archlinux" && !isLaptop
     property bool showVolume: !isLaptop
@@ -62,8 +63,18 @@ Rectangle {
                 sourceComponent: NetworkSpeed {}
             }
             CodexUsage { visible: root.showCodexUsage }
-            Wifi { visible: root.showWifi && !root.isLaptop }
+            Loader {
+                Layout.fillHeight: true
+                active: root.showWifi && !root.isLaptop
+                visible: active
+                sourceComponent: Wifi {}
+            }
             HsflVpn { visible: root.showHsflVpn }
+            Loader {
+                active: root.showPs5
+                visible: active
+                sourceComponent: Ps5Indicator {}
+            }
             Loader {
                 Layout.fillHeight: true
                 active: root.showLanMouse
@@ -78,7 +89,12 @@ Rectangle {
             }
             Volume { visible: root.showVolume }
             Microphone { visible: root.showMicrophone }
-            Wifi { visible: root.showWifi && root.isLaptop }
+            Loader {
+                Layout.fillHeight: true
+                active: root.showWifi && root.isLaptop
+                visible: active
+                sourceComponent: Wifi {}
+            }
             Loader {
                 active: root.showCpu
                 visible: active

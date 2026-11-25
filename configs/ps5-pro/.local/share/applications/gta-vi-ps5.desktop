@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=GTA VI (Grand Theft Auto VI)
+GenericName=GTA 6 for PS5 Pro
+Comment=Launch GTA VI on PS5 Pro and stream with frame generation
+Exec=ps5-game gta-vi
+Icon=gta-vi-ps5
+Terminal=false
+Categories=Game;ActionGame;
+Keywords=GTA;GTA VI;GTA 6;PS5;Chiaki;Remote Play;
+StartupNotify=false
+StartupWMClass=chiaki-ng-framegen

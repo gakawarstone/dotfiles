@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+set -eu
+
+data_dir=${XDG_DATA_HOME:-"$HOME/.local/share"}
+export PYTHONDONTWRITEBYTECODE=1
+exec uv run --no-project --script "$data_dir/gta-vi-ps5/launch.py" "$@"

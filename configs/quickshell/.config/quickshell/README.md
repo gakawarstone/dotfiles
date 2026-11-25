@@ -43,10 +43,24 @@ property bool showLanMouse: hostname !== "your-laptop-hostname"
 property bool showNetworkSpeed: hostname !== "your-desktop-hostname"
 ```
 
-On `archlinux` the checked-in settings preserve the current PC bar: Wi-Fi is
-visible, while network speed, LanMouse, Pomodoro and the notification indicator
-are hidden. Other hosts retain the existing defaults: all components are enabled
-except Wi-Fi; the laptop's final selection is still undecided. Hidden components
-are still instantiated and may run background processes. Shared services such as
-the notification center and Pomodoro timer remain available. Component positions
-stay fixed. Restart Quickshell after changing these properties.
+On `archlinux`, Wi-Fi and PS5 status are enabled. Network speed, LanMouse,
+Pomodoro and the notification indicator are hidden. On `gklaptop`, Wi-Fi and
+CPU appear before Bluetooth. Network speed, PS5 status, LanMouse, Pomodoro,
+volume, microphone and the notification indicator are hidden. The battery
+indicator appears only when UPower reports a laptop battery.
+
+Hidden components outside a `Loader` may still run background processes.
+The notification center and Pomodoro timer remain available on both hosts.
+Restart Quickshell after changing these properties.
+
+# PS5 Pro indicator
+
+On `archlinux`, the PlayStation logo is green when the console is on, orange in
+Rest Mode and gray when it does not respond. The bar checks the console over
+the local network every 15 seconds using Python 3. Click the logo to refresh
+immediately. Each status change after the first reading sends a desktop
+notification over D-Bus using `gdbus`. The border and status text match the logo's
+color for that state.
+The default console address is `192.168.178.60`. Set `PS5_PRO_HOST` in the desktop
+session to use another address.
+Set `showPs5` in `Bar.qml` to change which hosts display the indicator.
