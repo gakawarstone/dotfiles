@@ -20,6 +20,7 @@ ShellRoot {
     }
 
     AppLauncher {}
+    GameLauncher {}
     EnergyMeter {}
     Ps5LaunchWindow {}
 

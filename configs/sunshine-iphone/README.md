@@ -56,3 +56,9 @@ The IPHONE output starts at 6300x0, after the iPad output. `off` returns its
 workspaces to a physical monitor and stops only `iphone-screen.service`.
 Pairing keys and user configuration live in `~/.config/sunshine-iphone`.
 The Sunshine base port is 48089 and its local web UI uses 48090.
+
+On Arch, Home Manager manages `sunshine.conf` and `apps.json` from this
+repository. They remain regular files for installer compatibility. Stop the
+`iphone-screen` service before applying changed settings. If a file has been
+edited outside Home Manager, activation stops so the edits can be reviewed;
+pairing state, credentials and logs remain outside Home Manager.

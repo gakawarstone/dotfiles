@@ -30,6 +30,29 @@ verified without them. NetworkManager manages the VPN routes and DNS.
 Sources: [university VPN instructions](https://hs-flensburg.de/studium/service/IT-services/vpn)
 and [OpenConnect authentication with NetworkManager](https://www.infradead.org/openconnect/nonroot.html).
 
+# Bar components by host
+
+The `show` properties at the top of `Bar.qml` control the bar components.
+They use the Linux hostname from `/proc/sys/kernel/hostname` (also printed by
+`hostname`). To select different components, replace a property's value with
+an expression using `hostname`. For example, substitute your actual hostnames:
+
+```qml
+property bool showWifi: hostname === "your-laptop-hostname"
+property bool showLanMouse: hostname !== "your-laptop-hostname"
+property bool showNetworkSpeed: hostname !== "your-desktop-hostname"
+```
+
+On `archlinux`, Wi-Fi and PS5 status are enabled. Network speed, LanMouse,
+Pomodoro and the notification indicator are hidden. On `gklaptop`, Wi-Fi and
+CPU appear before Bluetooth. Network speed, PS5 status, LanMouse, Pomodoro,
+volume, microphone and the notification indicator are hidden. The battery
+indicator appears only when UPower reports a laptop battery.
+
+Hidden components outside a `Loader` may still run background processes.
+The notification center and Pomodoro timer remain available on both hosts.
+Restart Quickshell after changing these properties.
+
 # PS5 Pro indicator
 
 On `archlinux`, the PlayStation logo is green when the console is on, orange in

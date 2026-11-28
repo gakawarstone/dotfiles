@@ -1,5 +1,8 @@
 local theme = require("theme")
 local mainMod = "SUPER"
+local hostname_file = io.open("/proc/sys/kernel/hostname", "r")
+local hostname = hostname_file and hostname_file:read("*l")
+if hostname_file then hostname_file:close() end
 
 hl.config({
     group = {
@@ -14,7 +17,7 @@ hl.config({
             font_size = 12,
             gradients = true,
             height = 24,
-            priority = 100,
+            priority = hostname == "archlinux" and 6 or 100,
             render_titles = true,
             gradient_rounding = 10,
             scrolling = true,

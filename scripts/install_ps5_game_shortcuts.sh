@@ -51,10 +51,11 @@ for game in "${games[@]}"; do
     install -m 644 -- "$download_dir/$game-ps5.png" "$icon_dir/$game-ps5.png"
     link_file "$package_dir/applications/$game-ps5.desktop" "$data_dir/applications/$game-ps5.desktop"
 done
+link_file "$package_dir/applications/ps5-games.desktop" "$data_dir/applications/ps5-games.desktop"
 
 if command -v update-desktop-database >/dev/null; then
     update-desktop-database "$data_dir/applications"
 fi
 
-printf 'Installed four PS5 game shortcuts with artwork.\n'
+printf 'Installed the PS5 Pro Games launcher and four game shortcuts with artwork.\n'
 printf 'The desktop session needs %s on PATH. Launching requires uv, secret-tool, the paired gws profile and chiaki-ng-framegen.\n' "$bin_dir"

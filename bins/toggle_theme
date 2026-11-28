@@ -57,45 +57,77 @@ sync_portal_preference() {
 
 TARGET=$(detect_target_from_portal || detect_target_from_symlink)
 
+# Only replace theme links. A regular file may contain local settings.
+for path in "$HYPR_DIR/theme.conf" "$HYPR_DIR/hyprpaper.conf" \
+            "$FOOT_DIR/theme.ini" "$QUICKSHELL_DIR/Theme.qml"; do
+    if [ -d "$path" ] || { [ -e "$path" ] && [ ! -L "$path" ]; }; then
+        echo "Cannot replace non-symlink: $path" >&2
+        exit 1
+    fi
+done
+
+# The helper validates its own state before changing the GTK palette.
+if [ -e "$HOME/.local/bin/sync_gtk_theme" ] || [ -L "$HOME/.local/bin/sync_gtk_theme" ]; then
+    "$HOME/.local/bin/sync_gtk_theme" "$TARGET" || exit 1
+elif command -v sync_gtk_theme >/dev/null 2>&1; then
+    sync_gtk_theme "$TARGET" || exit 1
+fi
+
 echo "Switching theme to: $TARGET"
 
 if [[ "$TARGET" == "mocha" ]]; then
     # Swap symlinks in dotfiles repo
-    ln -sf mocha.conf "$HYPR_DIR/theme.conf"
-    ln -sf mocha_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf"
-    ln -sf mocha.ini "$FOOT_DIR/theme.ini"
-    ln -sf Mocha.qml "$QUICKSHELL_DIR/Theme.qml"
+    ln -sf mocha.conf "$HYPR_DIR/theme.conf" || exit 1
+    ln -sf mocha_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf" || exit 1
+    ln -sf mocha.ini "$FOOT_DIR/theme.ini" || exit 1
+    ln -sf Mocha.qml "$QUICKSHELL_DIR/Theme.qml" || exit 1
 else
     # Swap symlinks in dotfiles repo
-    ln -sf latte.conf "$HYPR_DIR/theme.conf"
-    ln -sf latte_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf"
-    ln -sf latte.ini "$FOOT_DIR/theme.ini"
-    ln -sf Latte.qml "$QUICKSHELL_DIR/Theme.qml"
+    ln -sf latte.conf "$HYPR_DIR/theme.conf" || exit 1
+    ln -sf latte_hyprpaper.conf "$HYPR_DIR/hyprpaper.conf" || exit 1
+    ln -sf latte.ini "$FOOT_DIR/theme.ini" || exit 1
+    ln -sf Latte.qml "$QUICKSHELL_DIR/Theme.qml" || exit 1
 fi
 
 sync_portal_preference
 
 # Keep Okular's interface and document palette in step with the desktop theme.
-"$DOTFILES/scripts/sync_okular_theme.sh" "$TARGET"
-
-# Reload applications
-hyprctl reload
-
-# Reload Hyprpaper
-if pgrep -x hyprpaper > /dev/null; then
-    killall hyprpaper
-    sleep 0.2
-    hyprpaper > /dev/null 2>&1 &
+if command -v sync_okular_theme >/dev/null 2>&1; then
+    sync_okular_theme "$TARGET"
+else
+    "$DOTFILES/scripts/sync_okular_theme.sh" "$TARGET"
 fi
 
-# Reload Foot
-if pgrep -x foot > /dev/null; then
-    killall -SIGUSR1 foot
+# Keep switching applications after a reload failure and report it to the caller.
+reload_status=0
+hyprctl reload || reload_status=1
+
+if pgrep -u "$UID" -x hyprpaper >/dev/null; then
+    if pkill -u "$UID" -x hyprpaper; then
+        sleep 0.2
+        hyprpaper >/dev/null 2>&1 &
+    else
+        reload_status=1
+    fi
 fi
 
-# Restart quickshell (as requested, it's better to restart it)
-if pgrep quickshell > /dev/null; then
-    killall quickshell
-    sleep 0.2
-    quickshell > /dev/null 2>&1 &
+if pgrep -u "$UID" -x foot >/dev/null; then
+    if [[ "$TARGET" == "mocha" ]]; then
+        foot_signal=USR1
+    else
+        foot_signal=USR2
+    fi
+    pkill "-$foot_signal" -u "$UID" -x foot || reload_status=1
 fi
+
+if [[ -f "$QUICKSHELL_DIR/shell.qml" ]] && command -v qs >/dev/null 2>&1; then
+    if instances=$(qs list --json); then
+        if [[ -n "$instances" && "$instances" != '[]' ]]; then
+            qs kill && qs --no-duplicate --daemonize || reload_status=1
+        fi
+    else
+        reload_status=1
+    fi
+fi
+
+exit "$reload_status"

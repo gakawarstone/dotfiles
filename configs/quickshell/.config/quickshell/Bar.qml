@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Services.UPower
 import "."
 import "./components"
 
@@ -10,12 +11,25 @@ Rectangle {
     property var pomoState
     property var notificationController
     property string hostname: ""
-    property bool showNetworkSpeed: hostname !== "archlinux"
-    property bool showWifi: hostname === "archlinux"
+    readonly property bool isLaptop: hostname === "gklaptop"
+
+    // Set these properties per host using hostname. See README.md.
+    property bool showWorkspaces: true
+    property bool showMedia: true
+    property bool showNetworkSpeed: hostname !== "archlinux" && !isLaptop
+    property bool showCodexUsage: true
+    property bool showWifi: hostname === "archlinux" || isLaptop
+    property bool showCpu: isLaptop
+    property bool showHsflVpn: true
     property bool showPs5: hostname === "archlinux"
-    property bool showLanMouse: hostname !== "archlinux"
-    property bool showPomodoro: hostname !== "archlinux"
-    property bool showNotificationIndicator: hostname !== "archlinux"
+    property bool showLanMouse: hostname !== "archlinux" && !isLaptop
+    property bool showPomodoro: hostname !== "archlinux" && !isLaptop
+    property bool showVolume: !isLaptop
+    property bool showMicrophone: !isLaptop
+    property bool showBluetooth: true
+    property bool showBattery: true
+    property bool showKeyboardLayout: true
+    property bool showNotificationIndicator: hostname !== "archlinux" && !isLaptop
 
     RowLayout {
         anchors.fill: parent
@@ -24,6 +38,7 @@ Rectangle {
         spacing: 15
 
         Workspaces {
+            visible: root.showWorkspaces
             Layout.alignment: Qt.AlignLeft
             screen: root.screen
         }
@@ -34,6 +49,7 @@ Rectangle {
 
             Media {
                 anchors.centerIn: parent
+                visible: root.showMedia && player !== null
             }
         }
 
@@ -46,14 +62,14 @@ Rectangle {
                 visible: active
                 sourceComponent: NetworkSpeed {}
             }
-            CodexUsage {}
+            CodexUsage { visible: root.showCodexUsage }
             Loader {
                 Layout.fillHeight: true
-                active: root.showWifi
+                active: root.showWifi && !root.isLaptop
                 visible: active
                 sourceComponent: Wifi {}
             }
-            HsflVpn {}
+            HsflVpn { visible: root.showHsflVpn }
             Loader {
                 active: root.showPs5
                 visible: active
@@ -71,11 +87,22 @@ Rectangle {
                 visible: active
                 sourceComponent: Pomodoro { pomoState: root.pomoState }
             }
-            Volume {}
-            Microphone {}
-            Bluetooth {}
-            Battery {}
-            KeyboardLayout {}
+            Volume { visible: root.showVolume }
+            Microphone { visible: root.showMicrophone }
+            Loader {
+                Layout.fillHeight: true
+                active: root.showWifi && root.isLaptop
+                visible: active
+                sourceComponent: Wifi {}
+            }
+            Loader {
+                active: root.showCpu
+                visible: active
+                sourceComponent: Cpu {}
+            }
+            Bluetooth { visible: root.showBluetooth }
+            Battery { visible: root.showBattery && UPower.displayDevice && UPower.displayDevice.isLaptopBattery }
+            KeyboardLayout { visible: root.showKeyboardLayout }
             Loader {
                 Layout.fillHeight: true
                 active: root.showNotificationIndicator
